@@ -2319,7 +2319,7 @@
 											"top": 236,
 											"width": 279,
 											"height": 13,
-											"text": "-powerDescription: String",
+											"text": "-description: String",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2422,7 +2422,7 @@
 											"top": 304,
 											"width": 279,
 											"height": 13,
-											"text": "+getType(): null",
+											"text": "+getType(): String",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2439,24 +2439,7 @@
 											"top": 319,
 											"width": 279,
 											"height": 13,
-											"text": "+getPowerDescription(): String",
-											"horizontalAlignment": 0
-										},
-										{
-											"_type": "UMLOperationView",
-											"_id": "AAAAAAFw1HnSbopoLW4=",
-											"_parent": {
-												"$ref": "AAAAAAFwyqW6Sf/vmX0="
-											},
-											"model": {
-												"$ref": "AAAAAAFw1HnSTopcPBQ="
-											},
-											"font": "Arial;13;0",
-											"left": 2829,
-											"top": 334,
-											"width": 279,
-											"height": 13,
-											"text": "+getPower(): null",
+											"text": "+getDescription(): String",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2470,7 +2453,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 2829,
-											"top": 349,
+											"top": 334,
 											"width": 279,
 											"height": 13,
 											"text": "+applyAbilities(a: Abilities): Abilities",
@@ -2487,7 +2470,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 2829,
-											"top": 364,
+											"top": 349,
 											"width": 279,
 											"height": 13,
 											"text": "+applyOpponentAbilities(a: Abilities): Abilities",
@@ -2498,7 +2481,7 @@
 									"left": 2824,
 									"top": 269,
 									"width": 289,
-									"height": 113
+									"height": 98
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -10112,7 +10095,8 @@
 								"$ref": "AAAAAAFwyocHmK4tug0="
 							},
 							"name": "cell",
-							"visibility": "private"
+							"visibility": "private",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -11468,7 +11452,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFwyqW6SP/m6yU="
 							},
-							"name": "powerDescription",
+							"name": "description",
 							"visibility": "private",
 							"type": "String"
 						},
@@ -11545,6 +11529,7 @@
 									"_parent": {
 										"$ref": "AAAAAAFwyqiprxf7CLY="
 									},
+									"type": "String",
 									"direction": "return"
 								}
 							]
@@ -11555,7 +11540,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFwyqW6SP/m6yU="
 							},
-							"name": "getPowerDescription",
+							"name": "getDescription",
 							"parameters": [
 								{
 									"_type": "UMLParameter",
@@ -11564,25 +11549,6 @@
 										"$ref": "AAAAAAFwyqjMgxiCWho="
 									},
 									"type": "String",
-									"direction": "return"
-								}
-							]
-						},
-						{
-							"_type": "UMLOperation",
-							"_id": "AAAAAAFw1HnSTopcPBQ=",
-							"_parent": {
-								"$ref": "AAAAAAFwyqW6SP/m6yU="
-							},
-							"name": "getPower",
-							"parameters": [
-								{
-									"_type": "UMLParameter",
-									"_id": "AAAAAAFw1Hnv6IrbNKE=",
-									"_parent": {
-										"$ref": "AAAAAAFw1HnSTopcPBQ="
-									},
-									"type": "",
 									"direction": "return"
 								}
 							]
