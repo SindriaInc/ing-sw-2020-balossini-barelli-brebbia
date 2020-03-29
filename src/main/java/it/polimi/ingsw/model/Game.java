@@ -6,7 +6,12 @@ import java.util.List;
 public class Game {
 
     /**
-     * A flag  that indicates if the game is a simple game or not.
+     * The Board of this game
+     */
+    private Board board = new Board();
+
+    /**
+     * A flag that indicates if the game is a simple game or not.
      * A simple game is a game played without god cards
      */
     private boolean simpleGame;
@@ -14,25 +19,26 @@ public class Game {
     /**
      * List of the god cards chosen for the current game
      */
-    private List<God> availableGods = new ArrayList<>();
+    private final List<God> availableGods = new ArrayList<>();
 
     /**
      * List of the players in the game
      */
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
 
-
-    public List<Player> getPlayers() {
-        return players;
+    public Board getBoard() {
+        return board;
     }
 
     /**
-     *  Get the current player
+     * Get the current player
      * @return The player
      */
-    public Player getCurrentPlayer() {
-        Player currentPlayer;
-        return currentPlayer;
+    // TODO: Implement method
+    public Player getCurrentPlayer() { return null; }
+
+    public List<Player> getPlayers() {
+        return List.copyOf(players);
     }
 
     /**
@@ -49,22 +55,25 @@ public class Game {
     /**
      * Starts the setup phase of the game
      */
+    // TODO: Implement method
     public void preStartGame () {}
 
     /**
      * Select the simple version of the game
      * @param isSimple Flag true for a simple game, false if not
      */
+    // TODO: Implement method
     public void selectSimpleGame (boolean isSimple) {}
 
     /**
      * Select the god cards to be used in the current game
      * @param godList The list of all the god cards
      */
+    // TODO: Implement method
     public void selectGods (List<God> godList) {}
 
     public List<God> getAvailableGods() {
-        return availableGods;
+        return List.copyOf(availableGods);
     }
 
     /**
@@ -72,81 +81,84 @@ public class Game {
      * @param player the player currently choosing
      * @param god the still available god cards
      */
-    public void chooseGod (Player player, God god) {}
+    // TODO: Implement method
+    public void chooseGod(Player player, God god) {}
 
     /**
      * Spawns the workers on the board
      * @param workers List of the workers to spawn
      */
-    public void spawnWorkers (List<Worker> workers) {}
+    // TODO: Implement method
+    public void spawnWorkers(List<Worker> workers) {}
 
     /**
      * Starts the real game
      */
-    public void startGame () {}
+    // TODO: Implement method
+    public void startGame() {}
 
     /**
      * Starts the turn of a player
      * @param currentPlayer The player whose turn is starting
      */
-    public void startTurn (Player currentPlayer) {}
+    // TODO: Implement method
+    public void startTurn(Player currentPlayer) {}
 
     /**
      * Get the available moves for a worker
      * @param worker The worker to move
      */
-    public List<Cell> getAvailableMoves (Worker worker) {
-        List<Cell> availableMoves = new ArrayList<>();
-        return availableMoves;
-    }
+    // TODO: Implement method
+    public List<Cell> getAvailableMoves(Worker worker) { return null; }
 
     /**
      * Move a worker to another cell
      * @param worker The worker to move
      * @param destination The destination of the worker
      */
-    public void moveWorker (Worker worker, Cell destination) {}
+    // TODO: Implement method
+    public void moveWorker(Worker worker, Cell destination) {}
 
     /**
      * Get the available builds for a worker
      * @param worker The worker building the block
      */
-    public List<Cell> getAvailableBlockBuilds (Worker worker) {
-        List<Cell> availableBlockBuilds = new ArrayList<>();
-        return availableBlockBuilds;
-    }
+    // TODO: Implement method
+    public List<Cell> getAvailableBlockBuilds(Worker worker) { return null; }
 
     /**
      * Build a block in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
      */
-    public void buildBlock (Worker worker, Cell destination) {}
+    // TODO: Implement method
+    public void buildBlock(Worker worker, Cell destination) {}
 
     /**
      * Get the available dome builds for a worker
      * @param worker The worker building the block
      */
-    public List<Cell> getAvailableDomeBuilds (Worker worker) {
-        List<Cell> availableDomeBuilds = new ArrayList<>();
-        return availableDomeBuilds;
-    }
+    // TODO: Implement method
+    public List<Cell> getAvailableDomeBuilds(Worker worker) { return null; }
 
     /**
      * Build a dome in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
      */
-    public void buildDome (Worker worker, Cell destination) {}
+    // TODO: Implement method
+    public void buildDome(Worker worker, Cell destination) {}
 
     /**
      * Ends the current turn
      */
+    // TODO: Implement method
     public void endTurn() {}
 
     /**
      * Ends the game
      */
+    // TODO: Implement method
     public void endGame() {}
 
 }

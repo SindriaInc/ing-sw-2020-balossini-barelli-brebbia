@@ -7,16 +7,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
 
-    public final static String DEFAULT_NAME_TEST = "gInton1c";
-    public final static int DEFAULT_AGE_TEST = 42;
-
     private Board board;
     private Player player;
 
     @BeforeEach
     void setUp() {
         board = new Board();
-        player = new Player(DEFAULT_NAME_TEST, DEFAULT_AGE_TEST);
+        player = new Player(Player.DEFAULT_NAME, Player.DEFAULT_AGE);
     }
 
     @Test

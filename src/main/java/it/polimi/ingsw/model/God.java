@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.IAbilities;
+
 public class God {
 
     /**
@@ -29,7 +31,6 @@ public class God {
         this.type = type;
     }
 
-
     public String getName() {
         return name;
     }
@@ -47,23 +48,19 @@ public class God {
     }
 
     /**
-     * Modifies player's ability with the god ability when the player decides to activate it
-     * @param abilities Previous player's ability
+     * Decorates the given player's abilities with the god effect
+     * @param abilities Previous player's abilities
      * @return The decorated abilities
      */
-    // TODO: Implement methods
-    public Abilities applyAbilities(Abilities abilities){return null;}
+    // TODO: Implement method
+    public IAbilities applyAbilities(IAbilities abilities) { return null; }
 
     /**
-     *
-     * @param abilities Previous other players'ability
+     * Decorates the given player's abilities with the god effect on opponents
+     * @param abilities Previous player' abilities
      * @return The decorated abilities
      */
-    // TODO: Implement methods
-    public Abilities applyOpponentAbilities(Abilities abilities){return null;}
-
-
-
-
+    // TODO: Implement method
+    public IAbilities applyOpponentAbilities(IAbilities abilities) { return null; }
 
 }

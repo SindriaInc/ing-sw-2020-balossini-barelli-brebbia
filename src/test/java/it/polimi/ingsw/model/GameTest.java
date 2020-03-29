@@ -12,29 +12,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameTest {
 
     private Game game;
-    private Board board;
 
     @BeforeEach
     void setUp() {
         game = new Game();
-        board = new Board();
     }
-
 
     @Test
     void checkSimpleGame() {}
 
     @Test
     void checkGetOpponents() {
-        assertEquals(game.getOpponents(),
-                     game.getPlayers().remove(game.getCurrentPlayer()));
+        List<Player> opponents = game.getPlayers();
+        opponents.remove(game.getCurrentPlayer());
+
+        assertEquals(game.getOpponents(), opponents);
     }
 
     @Test
-    void checkGetAvailableGods() {List<God> availableGods = game.getAvailableGods();
-        game.chooseGod(game.getCurrentPlayer(), availableGods.get(1));
+    void checkGetAvailableGods() {
+        List<God> availableGods = game.getAvailableGods();
+        game.chooseGod(game.getCurrentPlayer(), availableGods.get(0));
+        availableGods.remove(0);
 
-        assertEquals(availableGods.remove(1), game.getAvailableGods());
+        assertEquals(availableGods, game.getAvailableGods());
     }
 
     @Test
@@ -42,6 +43,7 @@ class GameTest {
         Worker worker1 = new Worker(getCell(0,0));
         Worker worker2 = new Worker(getCell(2,0));
         Worker worker3 = new Worker(getCell(3,3));
+
         List<Worker> workers = new ArrayList<>();
         workers.add(worker1);
         workers.add(worker2);
@@ -66,7 +68,7 @@ class GameTest {
                 )
         ));
 
-        assertTrue(() -> game.getAvailableMoves(worker2).equals(
+        assertTrue(() -> game.getAvailableMoves(worker3).equals(
                 Arrays.asList(
                         getCell(2, 2),
                         getCell(2, 3),
@@ -75,13 +77,14 @@ class GameTest {
                         getCell(3, 4),
                         getCell(4, 2),
                         getCell(4, 3),
-                        getCell(4, 4),
+                        getCell(4, 4)
                 )
         ));
 
         Worker worker4 = new Worker(getCell(4,4));
         List<Worker> workers2 = new ArrayList<>();
-        workers.add(worker4);
+        workers2.add(worker4);
+        game.spawnWorkers(workers2);
         game.buildBlock(worker4, getCell(4, 3));
         game.buildBlock(worker4, getCell(4, 3));
 
@@ -91,9 +94,9 @@ class GameTest {
                         getCell(2, 3),
                         getCell(2, 4),
                         getCell(3, 2),
-                        getCell(4, 2),
-                        getCell(3, 4)
-                        )
+                        getCell(3, 4),
+                        getCell(4, 2)
+                )
         ));
     }
 
@@ -102,6 +105,7 @@ class GameTest {
         Worker worker1 = new Worker(getCell(0,0));
         Worker worker2 = new Worker(getCell(2,0));
         Worker worker3 = new Worker(getCell(3,3));
+
         List<Worker> workers = new ArrayList<>();
         workers.add(worker1);
         workers.add(worker2);
@@ -135,13 +139,14 @@ class GameTest {
                         getCell(3, 4),
                         getCell(4, 2),
                         getCell(4, 3),
-                        getCell(4, 4),
-                        )
+                        getCell(4, 4)
+                )
         ));
 
         Worker worker4 = new Worker(getCell(4,4));
         List<Worker> workers2 = new ArrayList<>();
-        workers.add(worker4);
+        workers2.add(worker4);
+        game.spawnWorkers(workers2);
 
         assertTrue(() -> game.getAvailableMoves(worker2).equals(
                 Arrays.asList(
@@ -149,14 +154,15 @@ class GameTest {
                         getCell(2, 3),
                         getCell(2, 4),
                         getCell(3, 2),
-                        getCell(4, 2),
                         getCell(3, 4),
+                        getCell(4, 2),
                         getCell(4, 3)
                 )
         ));
     }
 
     private Cell getCell(int x, int y) {
-        return board.getCellFromCoords(x, y);
+        return game.getBoard().getCellFromCoords(x, y);
     }
+
 }

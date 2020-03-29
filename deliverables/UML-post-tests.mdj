@@ -1267,19 +1267,36 @@
 										},
 										{
 											"_type": "UMLOperationView",
-											"_id": "AAAAAAFw7oGlhALBacw=",
+											"_id": "AAAAAAFxJzIR9Z8kOS4=",
 											"_parent": {
 												"$ref": "AAAAAAFwyonEvq8MSJ8="
 											},
 											"model": {
-												"$ref": "AAAAAAFw7oGlXgK+o1M="
+												"$ref": "AAAAAAFxJzIR058h5jI="
 											},
 											"font": "Arial;13;0",
 											"left": 1429,
 											"top": 273,
 											"width": 359,
 											"height": 13,
-											"text": "+checkHasWon(): boolean",
+											"text": "+addWorker(Worker worker): void",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFxJwMb5Weq73c=",
+											"_parent": {
+												"$ref": "AAAAAAFwyonEvq8MSJ8="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJwMb0GenM0s="
+											},
+											"font": "Arial;13;0",
+											"left": 1429,
+											"top": 288,
+											"width": 359,
+											"height": 13,
+											"text": "+DELEGATED IAbilities METHODS()",
 											"horizontalAlignment": 0
 										}
 									],
@@ -1287,7 +1304,7 @@
 									"left": 1424,
 									"top": 223,
 									"width": 369,
-									"height": 68
+									"height": 83
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -1495,6 +1512,23 @@
 									"subViews": [
 										{
 											"_type": "UMLOperationView",
+											"_id": "AAAAAAFxJxf4QIHK6kY=",
+											"_parent": {
+												"$ref": "AAAAAAFwyqGkOO09RNs="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJxf4GYHH2dU="
+											},
+											"font": "Arial;13;0",
+											"left": 685,
+											"top": 260,
+											"width": 343,
+											"height": 13,
+											"text": "+getBoard(): Board",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
 											"_id": "AAAAAAFwyqUfjfbgY1Y=",
 											"_parent": {
 												"$ref": "AAAAAAFwyqGkOO09RNs="
@@ -1504,7 +1538,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 260,
+											"top": 275,
 											"width": 343,
 											"height": 13,
 											"text": "+getCurrentPlayer(): Player",
@@ -1521,7 +1555,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 275,
+											"top": 290,
 											"width": 343,
 											"height": 13,
 											"text": "+getPlayers(): List<Player>",
@@ -1538,7 +1572,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 290,
+											"top": 305,
 											"width": 343,
 											"height": 13,
 											"text": "+getOpponents(p: Player): List<Player>",
@@ -1555,7 +1589,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 305,
+											"top": 320,
 											"width": 343,
 											"height": 13,
 											"text": "+preStartGame(): void",
@@ -1590,7 +1624,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 320,
+											"top": 335,
 											"width": 343,
 											"height": 13,
 											"text": "+selectSimpleGame(b: boolean): void",
@@ -1607,7 +1641,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 335,
+											"top": 350,
 											"width": 343,
 											"height": 13,
 											"text": "+selectGods(g: List<God>): void",
@@ -1624,7 +1658,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 350,
+											"top": 365,
 											"width": 343,
 											"height": 13,
 											"text": "+getAvailableGods(): List<God>",
@@ -1641,7 +1675,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 365,
+											"top": 380,
 											"width": 343,
 											"height": 13,
 											"text": "+chooseGod(p: Player, g: God)",
@@ -1658,7 +1692,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 380,
+											"top": 395,
 											"width": 343,
 											"height": 13,
 											"text": "+spawnWorkers(cells: Cell...): void",
@@ -1675,7 +1709,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 395,
+											"top": 410,
 											"width": 343,
 											"height": 13,
 											"text": "+startGame(): void",
@@ -1692,7 +1726,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 410,
+											"top": 425,
 											"width": 343,
 											"height": 13,
 											"text": "+startTurn(p: Player): void",
@@ -1709,10 +1743,10 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 425,
+											"top": 440,
 											"width": 343,
 											"height": 13,
-											"text": "+canMove(w: Worker, c: Cell): void",
+											"text": "+getAvailableMoves(w: Worker): List<Cell>",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1726,7 +1760,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 440,
+											"top": 455,
 											"width": 343,
 											"height": 13,
 											"text": "+moveWorker(w: Worker, c: Cell): void",
@@ -1743,10 +1777,10 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 455,
+											"top": 470,
 											"width": 343,
 											"height": 13,
-											"text": "+canBuildBlock(w: Worker, c: Cell): void",
+											"text": "+getAvailableBlockBuilds(w: Worker): List<Cell>",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1760,7 +1794,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 470,
+											"top": 485,
 											"width": 343,
 											"height": 13,
 											"text": "+buildBlock(w: Worker, c: Cell): void",
@@ -1777,10 +1811,10 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 485,
+											"top": 500,
 											"width": 343,
 											"height": 13,
-											"text": "+canBuildDome(w: Worker, c: Cell): void",
+											"text": "+getAvailableDomeBuilds(w: Worker): List<Cell>",
 											"horizontalAlignment": 0
 										},
 										{
@@ -1794,7 +1828,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 500,
+											"top": 515,
 											"width": 343,
 											"height": 13,
 											"text": "+buildDome(w: Worker, c: Cell): void",
@@ -1811,7 +1845,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 515,
+											"top": 530,
 											"width": 343,
 											"height": 13,
 											"text": "+endTurn(p: Player): void",
@@ -1828,7 +1862,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 685,
-											"top": 530,
+											"top": 545,
 											"width": 343,
 											"height": 13,
 											"text": "+endGame(): void",
@@ -1839,7 +1873,7 @@
 									"left": 680,
 									"top": 255,
 									"width": 353,
-									"height": 293
+									"height": 308
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -2456,7 +2490,7 @@
 											"top": 334,
 											"width": 279,
 											"height": 13,
-											"text": "+applyAbilities(a: Abilities): Abilities",
+											"text": "+applyAbilities(a: IAbilities): IAbilities",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2473,7 +2507,7 @@
 											"top": 349,
 											"width": 279,
 											"height": 13,
-											"text": "+applyOpponentAbilities(a: Abilities): Abilities",
+											"text": "+applyOpponentAbilities(a: IAbilities): IAbilities",
 											"horizontalAlignment": 0
 										}
 									],
@@ -3710,7 +3744,7 @@
 											"top": 520,
 											"width": 262.77490234375,
 											"height": 13,
-											"text": "AbilitiesImpl"
+											"text": "DefaultAbilities"
 										},
 										{
 											"_type": "LabelView",
@@ -3806,6 +3840,23 @@
 										},
 										{
 											"_type": "UMLAttributeView",
+											"_id": "AAAAAAFxJzTSZrDJmsU=",
+											"_parent": {
+												"$ref": "AAAAAAFw7rYzJt+i7LY="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJzTSQ7C9Ofg="
+											},
+											"font": "Arial;13;0",
+											"left": 1850,
+											"top": 545,
+											"width": 262.77490234375,
+											"height": 13,
+											"text": "-board: Board",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
 											"_id": "AAAAAAFw7rYzJt+lYL8=",
 											"_parent": {
 												"$ref": "AAAAAAFw7rYzJt+i7LY="
@@ -3815,10 +3866,10 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1850,
-											"top": 545,
+											"top": 560,
 											"width": 262.77490234375,
 											"height": 13,
-											"text": "-minWinLevel: int = 3",
+											"text": "-player: Player",
 											"horizontalAlignment": 0
 										}
 									],
@@ -3826,7 +3877,7 @@
 									"left": 1845,
 									"top": 538,
 									"width": 272.77490234375,
-									"height": 25
+									"height": 40
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -3849,7 +3900,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1850,
-											"top": 568,
+											"top": 583,
 											"width": 262.77490234375,
 											"height": 13,
 											"text": "+IMPLEMENTED METHODS()",
@@ -3858,7 +3909,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 1845,
-									"top": 563,
+									"top": 578,
 									"width": 272.77490234375,
 									"height": 23
 								},
@@ -3961,7 +4012,7 @@
 											"top": 204,
 											"width": 295,
 											"height": 13,
-											"text": "Abilities"
+											"text": "IAbilities"
 										},
 										{
 											"_type": "LabelView",
@@ -4153,13 +4204,47 @@
 											"height": 13,
 											"text": "+doBuildDome(w: Worker, c: Cell): void",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFxJzGku5jR4JQ=",
+											"_parent": {
+												"$ref": "AAAAAAFw7rYzJt+xKpw="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJzGkmpjFQu4="
+											},
+											"font": "Arial;13;2",
+											"left": 2021,
+											"top": 332,
+											"width": 295,
+											"height": 13,
+											"text": "+getBoard(): Board",
+											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFxJwN7VWwglBI=",
+											"_parent": {
+												"$ref": "AAAAAAFw7rYzJt+xKpw="
+											},
+											"model": {
+												"$ref": "AAAAAAFxJwN7MmwUhtQ="
+											},
+											"font": "Arial;13;2",
+											"left": 2021,
+											"top": 347,
+											"width": 295,
+											"height": 13,
+											"text": "+getPlayer(): Player",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 2016,
 									"top": 222,
 									"width": 305,
-									"height": 113
+									"height": 143
 								},
 								{
 									"_type": "UMLReceptionCompartmentView",
@@ -4332,7 +4417,7 @@
 											"top": 543,
 											"width": 263,
 											"height": 13,
-											"text": "-abilities: Abilities",
+											"text": "-abilities: IAbilities",
 											"horizontalAlignment": 0
 										}
 									],
@@ -10711,22 +10796,39 @@
 						},
 						{
 							"_type": "UMLOperation",
-							"_id": "AAAAAAFw7oGlXgK+o1M=",
+							"_id": "AAAAAAFxJzIR058h5jI=",
 							"_parent": {
 								"$ref": "AAAAAAFwyonEva8D5oQ="
 							},
-							"name": "checkHasWon",
+							"name": "addWorker",
 							"parameters": [
 								{
 									"_type": "UMLParameter",
-									"_id": "AAAAAAFw7oH0EgOdrMI=",
+									"_id": "AAAAAAFxJzI3JaAwKWQ=",
 									"_parent": {
-										"$ref": "AAAAAAFw7oGlXgK+o1M="
+										"$ref": "AAAAAAFxJzIR058h5jI="
 									},
-									"type": "boolean",
+									"name": "Worker worker",
+									"type": ""
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJzI3JaAxyWY=",
+									"_parent": {
+										"$ref": "AAAAAAFxJzIR058h5jI="
+									},
+									"type": "void",
 									"direction": "return"
 								}
 							]
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFxJwMb0GenM0s=",
+							"_parent": {
+								"$ref": "AAAAAAFwyonEva8D5oQ="
+							},
+							"name": "DELEGATED IAbilities METHODS"
 						}
 					]
 				},
@@ -10760,6 +10862,27 @@
 						}
 					],
 					"operations": [
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFxJxf4GYHH2dU=",
+							"_parent": {
+								"$ref": "AAAAAAFwyqGkN+00Mfo="
+							},
+							"name": "getBoard",
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJxgw94LWuAg=",
+									"_parent": {
+										"$ref": "AAAAAAFxJxf4GYHH2dU="
+									},
+									"type": {
+										"$ref": "AAAAAAFwyn9N4q3APbI="
+									},
+									"direction": "return"
+								}
+							]
+						},
 						{
 							"_type": "UMLOperation",
 							"_id": "AAAAAAFwyqUfbPbXdIs=",
@@ -11060,7 +11183,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFwyqGkN+00Mfo="
 							},
-							"name": "canMove",
+							"name": "getAvailableMoves",
 							"parameters": [
 								{
 									"_type": "UMLParameter",
@@ -11075,22 +11198,11 @@
 								},
 								{
 									"_type": "UMLParameter",
-									"_id": "AAAAAAFw1LdfxMCzSpo=",
-									"_parent": {
-										"$ref": "AAAAAAFw1Lcdd8AbTWY="
-									},
-									"name": "c",
-									"type": {
-										"$ref": "AAAAAAFwyirkoaubEww="
-									}
-								},
-								{
-									"_type": "UMLParameter",
 									"_id": "AAAAAAFw1LdfxMC0yWY=",
 									"_parent": {
 										"$ref": "AAAAAAFw1Lcdd8AbTWY="
 									},
-									"type": "void",
+									"type": "List<Cell>",
 									"direction": "return"
 								}
 							]
@@ -11142,7 +11254,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFwyqGkN+00Mfo="
 							},
-							"name": "canBuildBlock",
+							"name": "getAvailableBlockBuilds",
 							"parameters": [
 								{
 									"_type": "UMLParameter",
@@ -11157,22 +11269,11 @@
 								},
 								{
 									"_type": "UMLParameter",
-									"_id": "AAAAAAFw6W8zrtP5tdE=",
-									"_parent": {
-										"$ref": "AAAAAAFw6W7+bdMZ4O4="
-									},
-									"name": "c",
-									"type": {
-										"$ref": "AAAAAAFwyirkoaubEww="
-									}
-								},
-								{
-									"_type": "UMLParameter",
 									"_id": "AAAAAAFw6W8zrtP6GwE=",
 									"_parent": {
 										"$ref": "AAAAAAFw6W7+bdMZ4O4="
 									},
-									"type": "void",
+									"type": "List<Cell>",
 									"direction": "return"
 								}
 							]
@@ -11224,7 +11325,7 @@
 							"_parent": {
 								"$ref": "AAAAAAFwyqGkN+00Mfo="
 							},
-							"name": "canBuildDome",
+							"name": "getAvailableDomeBuilds",
 							"parameters": [
 								{
 									"_type": "UMLParameter",
@@ -11239,22 +11340,11 @@
 								},
 								{
 									"_type": "UMLParameter",
-									"_id": "AAAAAAFw6W95xtbjhog=",
-									"_parent": {
-										"$ref": "AAAAAAFw6W9TEdYDieY="
-									},
-									"name": "c",
-									"type": {
-										"$ref": "AAAAAAFwyirkoaubEww="
-									}
-								},
-								{
-									"_type": "UMLParameter",
 									"_id": "AAAAAAFw6W95xtbkSUs=",
 									"_parent": {
 										"$ref": "AAAAAAFw6W9TEdYDieY="
 									},
-									"type": "void",
+									"type": "List<Cell>",
 									"direction": "return"
 								}
 							]
@@ -11703,7 +11793,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "AbilitiesImpl",
+					"name": "DefaultAbilities",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
@@ -11752,14 +11842,27 @@
 						},
 						{
 							"_type": "UMLAttribute",
+							"_id": "AAAAAAFxJzTSQ7C9Ofg=",
+							"_parent": {
+								"$ref": "AAAAAAFw7nTPbNxGh7U="
+							},
+							"name": "board",
+							"visibility": "private",
+							"type": {
+								"$ref": "AAAAAAFwyn9N4q3APbI="
+							}
+						},
+						{
+							"_type": "UMLAttribute",
 							"_id": "AAAAAAFw7pj+Kxw8ysg=",
 							"_parent": {
 								"$ref": "AAAAAAFw7nTPbNxGh7U="
 							},
-							"name": "minWinLevel",
+							"name": "player",
 							"visibility": "private",
-							"type": "int",
-							"defaultValue": "3"
+							"type": {
+								"$ref": "AAAAAAFwyonEva8D5oQ="
+							}
 						}
 					],
 					"operations": [
@@ -11779,7 +11882,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Abilities",
+					"name": "IAbilities",
 					"ownedElements": [
 						{
 							"_type": "UMLAssociation",
@@ -12110,6 +12213,50 @@
 									"type": {
 										"$ref": "AAAAAAFwyirkoaubEww="
 									}
+								}
+							],
+							"isAbstract": true
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFxJzGkmpjFQu4=",
+							"_parent": {
+								"$ref": "AAAAAAFw7oMD2CCF8rk="
+							},
+							"name": "getBoard",
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJzG/xZnU8N8=",
+									"_parent": {
+										"$ref": "AAAAAAFxJzGkmpjFQu4="
+									},
+									"type": {
+										"$ref": "AAAAAAFwyn9N4q3APbI="
+									},
+									"direction": "return"
+								}
+							],
+							"isAbstract": true
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFxJwN7MmwUhtQ=",
+							"_parent": {
+								"$ref": "AAAAAAFw7oMD2CCF8rk="
+							},
+							"name": "getPlayer",
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFxJwONZW0j4A0=",
+									"_parent": {
+										"$ref": "AAAAAAFxJwN7MmwUhtQ="
+									},
+									"type": {
+										"$ref": "AAAAAAFwyonEva8D5oQ="
+									},
+									"direction": "return"
 								}
 							],
 							"isAbstract": true

@@ -2,7 +2,6 @@ package it.polimi.ingsw.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
 import java.util.Arrays;
 
@@ -17,7 +16,7 @@ class BoardTest {
         board = new Board();
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void checkInvalidCoords() {
         assertThrows(IllegalArgumentException.class, () -> getCell(-1, 0));
         assertThrows(IllegalArgumentException.class, () -> getCell(0, -1));
@@ -27,7 +26,7 @@ class BoardTest {
         assertThrows(IllegalArgumentException.class, () -> getCell(Board.COLUMNS, Board.ROWS));
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void checkCorrectCell() {
         assertTrue(() -> {
             Cell cell = getCell(0, 0);

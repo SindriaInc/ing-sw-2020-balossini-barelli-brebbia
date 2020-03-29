@@ -36,8 +36,20 @@ public class Board {
         return map[x][y];
     }
 
-    // TODO: Implement methods
+    /**
+     * Checks if the cell is at the border of the board
+     * @param cell The Cell
+     * @return true if the cell doesn't have a neighbor in every possible direction
+     */
+    // TODO: Implement method
     public boolean isPerimeterSpace(Cell cell) { return false; }
+
+    /**
+     * Obtain a list of adiacent cells to the given cell
+     * @param cell The Cell
+     * @return The List
+     */
+    // TODO: Implement method
     public List<Cell> getNeighborings(Cell cell) { return null; }
 
 }
