@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
@@ -41,15 +42,47 @@ public class Board {
      * @param cell The Cell
      * @return true if the cell doesn't have a neighbor in every possible direction
      */
-    // TODO: Implement method
-    public boolean isPerimeterSpace(Cell cell) { return false; }
+    public boolean isPerimeterSpace(Cell cell) {
+        int x=cell.getX();
+        int y=cell.getY();
+
+        if (x==0 || y==0 || x==(COLUMNS-1) || y==(ROWS-1))
+            return true;
+        return false;
+    }
 
     /**
      * Obtain a list of adiacent cells to the given cell
      * @param cell The Cell
      * @return The List
      */
-    // TODO: Implement method
-    public List<Cell> getNeighborings(Cell cell) { return null; }
+    public List<Cell> getNeighborings(Cell cell) {
+        List<Cell> neighborings = new ArrayList<>();
+        int x=cell.getX();
+        int y=cell.getY();
+        //Ends of the square with center in the given cell
+        int minX=x-1, maxX=x+1, minY=y-1, maxY=y+1;
+
+        //Reduce the size of the square doing an intersection with the board
+        if (x==0)
+            minX=0;
+        else if (x==COLUMNS-1)
+            maxX=COLUMNS-1;
+        if (y==0)
+            minY=0;
+        else if (y==ROWS-1)
+            maxY=ROWS-1;
+
+        for (int i=minX; i<=maxX; i++)
+        {
+            for (int j=minY; j<=maxY; j++) {
+                neighborings.add(getCellFromCoords(i, j));
+            }
+        }
+        //Remove the given cell
+        neighborings.remove(cell);
+
+        return neighborings;
+    }
 
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,15 +67,15 @@ class BoardTest {
 
     @Test
     void checkNeighborings() {
-        assertTrue(() -> board.getNeighborings(getCell(0, 0)).equals(
+        assertTrue(() -> equalsNoOrder(board.getNeighborings(getCell(0, 0)),
                 Arrays.asList(
+                        getCell(0, 1),
                         getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(0, 1)
+                        getCell(1, 1)
                 )
         ));
 
-        assertTrue(() -> board.getNeighborings(getCell(1, 0)).equals(
+        assertTrue(() -> equalsNoOrder(board.getNeighborings(getCell(1, 0)),
                 Arrays.asList(
                         getCell(0, 0),
                         getCell(0, 1),
@@ -84,7 +85,7 @@ class BoardTest {
                 )
         ));
 
-        assertTrue(() -> board.getNeighborings(getCell(1, 1)).equals(
+        assertTrue(() -> equalsNoOrder(board.getNeighborings(getCell(1, 1)),
                 Arrays.asList(
                         getCell(0, 0),
                         getCell(0, 1),
@@ -100,6 +101,12 @@ class BoardTest {
 
     private Cell getCell(int x, int y) {
         return board.getCellFromCoords(x, y);
+    }
+
+    private boolean equalsNoOrder(List<Cell> list1, List<Cell> list2) {
+        return (list1.size()==list2.size()) &&
+                list1.containsAll(list2) &&
+                list2.containsAll(list1);
     }
 
 }

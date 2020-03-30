@@ -5,22 +5,22 @@ public class Cell {
     /**
      * The column number
      */
-    final int x;
+    private final int x;
 
     /**
      * The row number
      */
-    final int y;
+    private final int y;
 
     /**
      * Current building height, default Board.BASE_LEVEL
      */
-    int level;
+    private int level;
 
     /**
      * Whether or not there's a dome on the cell, default FALSE
      */
-    boolean doomed;
+    private boolean doomed;
 
     protected Cell(int x, int y) {
         this.x = x;
