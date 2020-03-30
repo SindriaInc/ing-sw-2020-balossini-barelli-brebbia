@@ -19,7 +19,10 @@ class GameTest {
     }
 
     @Test
-    void checkSimpleGame() {}
+    void checkSimpleGame() {
+        game.selectSimpleGame(true);
+        assertThrows(IllegalStateException.class, () -> game.selectGods(new ArrayList<>()));
+    }
 
     @Test
     void checkGetOpponents() {

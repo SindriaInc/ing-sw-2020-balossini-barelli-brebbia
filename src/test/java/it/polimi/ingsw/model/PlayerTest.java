@@ -1,7 +1,10 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +17,13 @@ class PlayerTest {
     void setUp() {
         board = new Board();
         player = new Player(Player.DEFAULT_NAME, Player.DEFAULT_AGE);
+    }
+
+    @Test
+    void testGetters() {
+        assertEquals(player.getWorkers(), new ArrayList<>());
+        assertEquals(player.getAge(), Player.DEFAULT_AGE);
+        assertEquals(player.getName(), Player.DEFAULT_NAME);
     }
 
     @Test

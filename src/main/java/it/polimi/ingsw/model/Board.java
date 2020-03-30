@@ -14,8 +14,8 @@ public class Board {
     private final Cell[][] map = new Cell[ROWS][COLUMNS];
 
     public Board() {
-        for (int x = 0; x < ROWS; x++) {
-            for (int y = 0; y < COLUMNS; y++) {
+        for (int x = 0; x < COLUMNS; x++) {
+            for (int y = 0; y < ROWS; y++) {
                 map[x][y] = new Cell(x, y);
             }
         }
