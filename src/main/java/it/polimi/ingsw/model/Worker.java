@@ -25,14 +25,17 @@ public class Worker {
      * Checks if the player has gone up at least 1 level in his most recent turn
      * @return true if the current cell is at least 1 level higher than the previous one
      */
-    // TODO: Implement method
-    public boolean hasMovedUp() { return false; }
+    public boolean hasMovedUp() {
+        return cell.getLevel() > previousCell.getLevel();
+    }
 
     /**
      * Move the player to the cell, updating the player current and previous position
      * @param cell The Cell
      */
-    // TODO: Implement method
-    public void move(Cell cell) { }
+    public void move(Cell cell) {
+        this.previousCell = this.cell;
+        this.cell = cell;
+    }
 
 }
