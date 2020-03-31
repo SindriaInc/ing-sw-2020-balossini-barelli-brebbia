@@ -5,10 +5,13 @@ import java.util.List;
 
 public class Game {
 
+    public static final int BOARD_ROWS = 5;
+    public static final int BOARD_COLUMNS = 5;
+
     /**
      * The Board of this game
      */
-    private Board board = new Board();
+    private Board board;
 
     /**
      * A flag that indicates if the game is a simple game or not.
@@ -25,6 +28,11 @@ public class Game {
      * List of the players in the game
      */
     private final List<Player> players = new ArrayList<>();
+
+    public Game() {
+        // TODO: Implement configuration loading
+        board = new Board(BOARD_ROWS, BOARD_COLUMNS);
+    }
 
     public Board getBoard() {
         return board;

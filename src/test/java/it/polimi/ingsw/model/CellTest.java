@@ -21,4 +21,5 @@ class CellTest {
         assertEquals(cell.getLevel(), 1);
         assertTrue(cell.isDoomed());
     }
+
 }

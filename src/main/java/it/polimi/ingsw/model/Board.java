@@ -5,21 +5,39 @@ import java.util.List;
 
 public class Board {
 
-    public static final int BASE_LEVEL = 0;
-    public static final int ROWS = 5;
-    public static final int COLUMNS = 5;
+    /**
+     * The number of rows (y coordinate)
+     */
+    private final int rows;
+
+    /**
+     * The number of columns (x coordinate)
+     */
+    private final int columns;
 
     /**
      * 2-dimensional array containing each cell in the board
      */
-    private final Cell[][] map = new Cell[ROWS][COLUMNS];
+    private final Cell[][] map;
 
-    public Board() {
-        for (int x = 0; x < COLUMNS; x++) {
-            for (int y = 0; y < ROWS; y++) {
+    public Board(int rows, int columns) {
+        this.rows = rows;
+        this.columns = columns;
+        this.map = new Cell[rows][columns];
+
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
                 map[x][y] = new Cell(x, y);
             }
         }
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
     }
 
     /**
@@ -30,7 +48,7 @@ public class Board {
      * @throws IllegalArgumentException If x or y are out of bounds
      */
     public Cell getCellFromCoords(int x, int y) throws IllegalArgumentException {
-        if (x < 0 || x >= COLUMNS || y < 0 || y >= ROWS) {
+        if (x < 0 || x >= getColumns() || y < 0 || y >= getRows()) {
             throw new IllegalArgumentException("Invalid coordinates");
         }
 
@@ -43,12 +61,10 @@ public class Board {
      * @return true if the cell doesn't have a neighbor in every possible direction
      */
     public boolean isPerimeterSpace(Cell cell) {
-        int x=cell.getX();
-        int y=cell.getY();
+        int x = cell.getX();
+        int y = cell.getY();
 
-        if (x==0 || y==0 || x==(COLUMNS-1) || y==(ROWS-1))
-            return true;
-        return false;
+        return x == 0 || y == 0 || x == getColumns() - 1 || y == getRows() - 1;
     }
 
     /**
@@ -58,30 +74,35 @@ public class Board {
      */
     public List<Cell> getNeighborings(Cell cell) {
         List<Cell> neighborings = new ArrayList<>();
-        int x=cell.getX();
-        int y=cell.getY();
-        //Ends of the square with center in the given cell
-        int minX=x-1, maxX=x+1, minY=y-1, maxY=y+1;
+        int x = cell.getX();
+        int y = cell.getY();
+
+        // Ends of the square with center in the given cell
+        int minX = x - 1;
+        int maxX = x + 1;
+        int minY = y - 1;
+        int maxY = y + 1;
 
         //Reduce the size of the square doing an intersection with the board
-        if (x==0)
-            minX=0;
-        else if (x==COLUMNS-1)
-            maxX=COLUMNS-1;
-        if (y==0)
-            minY=0;
-        else if (y==ROWS-1)
-            maxY=ROWS-1;
+        if (x == 0) {
+            minX = 0;
+        } else if (x == getColumns() - 1) {
+            maxX = getColumns() - 1;
+        }
+        if (y == 0) {
+            minY = 0;
+        } else if (y == getRows() - 1) {
+            maxY = getRows() - 1;
+        }
 
-        for (int i=minX; i<=maxX; i++)
-        {
-            for (int j=minY; j<=maxY; j++) {
+        for (int i = minX; i <= maxX; i++) {
+            for (int j = minY; j <= maxY; j++) {
                 neighborings.add(getCellFromCoords(i, j));
             }
         }
-        //Remove the given cell
-        neighborings.remove(cell);
 
+        // Remove the given cell
+        neighborings.remove(cell);
         return neighborings;
     }
 

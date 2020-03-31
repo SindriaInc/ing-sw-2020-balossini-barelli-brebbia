@@ -15,15 +15,15 @@ class PlayerTest {
 
     @BeforeEach
     void setUp() {
-        board = new Board();
-        player = new Player(Player.DEFAULT_NAME, Player.DEFAULT_AGE);
+        board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
+        player = new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE);
     }
 
     @Test
     void testGetters() {
         assertEquals(player.getWorkers(), new ArrayList<>());
-        assertEquals(player.getAge(), Player.DEFAULT_AGE);
-        assertEquals(player.getName(), Player.DEFAULT_NAME);
+        assertEquals(player.getName(), TestConstants.PLAYER_NAME);
+        assertEquals(player.getAge(), TestConstants.PLAYER_AGE);
     }
 
     @Test

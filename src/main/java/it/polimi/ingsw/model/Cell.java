@@ -13,7 +13,7 @@ public class Cell {
     private final int y;
 
     /**
-     * Current building height, default Board.BASE_LEVEL
+     * Current building height, default 0
      */
     private int level;
 
@@ -25,8 +25,6 @@ public class Cell {
     protected Cell(int x, int y) {
         this.x = x;
         this.y = y;
-
-        this.level = Board.BASE_LEVEL;
     }
 
     public int getX() {

@@ -7,10 +7,6 @@ import java.util.List;
 
 public class Player {
 
-    public final static String DEFAULT_NAME = "gInton1c";
-    public final static int DEFAULT_AGE = 42;
-    private static final int WORKERS = 2;
-
     /**
      * The user's nickname
      */

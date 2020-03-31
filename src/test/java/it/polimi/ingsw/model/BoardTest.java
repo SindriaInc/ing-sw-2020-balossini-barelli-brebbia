@@ -14,7 +14,7 @@ class BoardTest {
 
     @BeforeEach
     void setUp() {
-        board = new Board();
+        board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
     }
 
     @Test
@@ -22,9 +22,9 @@ class BoardTest {
         assertThrows(IllegalArgumentException.class, () -> getCell(-1, 0));
         assertThrows(IllegalArgumentException.class, () -> getCell(0, -1));
         assertThrows(IllegalArgumentException.class, () -> getCell(-1, -1));
-        assertThrows(IllegalArgumentException.class, () -> getCell(Board.COLUMNS, 0));
-        assertThrows(IllegalArgumentException.class, () -> getCell(0, Board.ROWS));
-        assertThrows(IllegalArgumentException.class, () -> getCell(Board.COLUMNS, Board.ROWS));
+        assertThrows(IllegalArgumentException.class, () -> getCell(TestConstants.BOARD_TEST_COLUMNS, 0));
+        assertThrows(IllegalArgumentException.class, () -> getCell(0, TestConstants.BOARD_TEST_ROWS));
+        assertThrows(IllegalArgumentException.class, () -> getCell(TestConstants.BOARD_TEST_COLUMNS, TestConstants.BOARD_TEST_ROWS));
     }
 
     @Test
@@ -53,9 +53,9 @@ class BoardTest {
     @Test
     void checkPerimeterSpace() {
         assertTrue(() -> board.isPerimeterSpace(getCell(0, 0)));
-        assertTrue(() -> board.isPerimeterSpace(getCell(0, Board.ROWS - 1)));
-        assertTrue(() -> board.isPerimeterSpace(getCell(Board.COLUMNS - 1, 0)));
-        assertTrue(() -> board.isPerimeterSpace(getCell(Board.COLUMNS - 1, Board.ROWS - 1)));
+        assertTrue(() -> board.isPerimeterSpace(getCell(0, TestConstants.BOARD_TEST_ROWS - 1)));
+        assertTrue(() -> board.isPerimeterSpace(getCell(TestConstants.BOARD_TEST_COLUMNS - 1, 0)));
+        assertTrue(() -> board.isPerimeterSpace(getCell(TestConstants.BOARD_TEST_COLUMNS - 1, TestConstants.BOARD_TEST_ROWS - 1)));
         assertTrue(() -> board.isPerimeterSpace(getCell(1, 0)));
         assertTrue(() -> board.isPerimeterSpace(getCell(0, 1)));
     }
@@ -104,7 +104,7 @@ class BoardTest {
     }
 
     private boolean equalsNoOrder(List<Cell> list1, List<Cell> list2) {
-        return (list1.size()==list2.size()) &&
+        return (list1.size() == list2.size()) &&
                 list1.containsAll(list2) &&
                 list2.containsAll(list1);
     }

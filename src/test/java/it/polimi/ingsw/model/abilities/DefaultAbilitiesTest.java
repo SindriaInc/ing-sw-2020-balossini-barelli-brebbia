@@ -9,14 +9,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultAbilitiesTest {
 
+
     private Board board;
     private Player player;
     private DefaultAbilities abilities;
 
     @BeforeEach
     void setUp() {
-        board = new Board();
-        player = new Player(Player.DEFAULT_NAME, Player.DEFAULT_AGE);
+        board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
+        player = new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE);
         abilities = new DefaultAbilities(board, player);
     }
 

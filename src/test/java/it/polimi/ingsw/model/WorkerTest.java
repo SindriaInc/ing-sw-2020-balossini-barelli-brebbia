@@ -7,51 +7,47 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WorkerTest {
 
-    private Board board;
     private Worker worker;
+    private Cell cell1;
+    private Cell cell2;
 
     @BeforeEach
     void setUp() {
-        board = new Board();
-        worker = new Worker(board.getCellFromCoords(0, 0));
+        cell1 = new Cell(0, 0);
+        cell2 = new Cell(0, 1);
+        worker = new Worker(cell1);
     }
 
     @Test
     void testGetters() {
-        assertEquals(worker.getCell(), getCell(0, 0));
+        assertEquals(worker.getCell(), cell1);
     }
 
     @Test
     void checkMoveUp() {
-        board.getCellFromCoords(1, 0).setLevel(1);
+        cell2.setLevel(1);
 
-        worker.move(getCell(1, 0));
+        worker.move(cell2);
         assertTrue(worker::hasMovedUp);
     }
 
     @Test
     void checkNoMoveUp() {
-        worker.move(getCell(1, 0));
+        worker.move(cell2);
         assertFalse(worker::hasMovedUp);
-        worker.move(getCell(0, 0));
+        worker.move(cell1);
         assertFalse(worker::hasMovedUp);
 
-        board.getCellFromCoords(0, 0).setLevel(1);
+        cell1.setLevel(1);
 
-        worker.move(getCell(1, 0));
+        worker.move(cell2);
         assertFalse(worker::hasMovedUp);
     }
 
     @Test
-    void doMove() {
-        Cell cell = getCell(1, 0);
-
-        worker.move(cell);
-        assertEquals(worker.getCell(), cell);
-    }
-
-    private Cell getCell(int x, int y) {
-        return board.getCellFromCoords(x, y);
+    void checkDoMove() {
+        worker.move(cell2);
+        assertEquals(worker.getCell(), cell2);
     }
 
 }
