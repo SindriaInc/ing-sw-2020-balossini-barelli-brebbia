@@ -1,73 +1,61 @@
 package it.polimi.ingsw.model.abilities;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
+
+import java.util.List;
 
 public interface IAbilities {
 
     /**
-     * Checks if the associated player meets any win condition
-     * @return true if any of the player win conditions is met
+     * Checks if the workers meet any win condition
+     * @param workers The Worker
+     * @return true if any of the workers met any win conditions
      */
-    boolean checkHasWon();
+    boolean checkHasWon(List<Worker> workers);
 
     /**
-     * Whether or not the worker can move into the specified cell
-     * @param worker The Worker to be moved
+     * Whether or not the worker selected in the turn can move into the specified cell
+     * @param turn The current Turn
      * @param cell The Cell
      * @return true if the action is allowed
      */
-    boolean checkCanMove(Worker worker, Cell cell);
+    boolean checkCanMove(Turn turn, Cell cell);
 
     /**
      * Move the worker in the specified cell
-     * @param worker The Worker to be moved
+     * @param turn The current Turn
      * @param cell The Cell
      */
-    void doMove(Worker worker, Cell cell);
+    void doMove(Turn turn, Cell cell);
 
     /**
      * Whether or not the worker can build a block in the specified cell
-     * @param worker The Worker to be used
+     * @param turn The current Turn
      * @param cell The Cell
      * @return true if the action is allowed
      */
-    boolean checkCanBuildBlock(Worker worker, Cell cell);
+    boolean checkCanBuildBlock(Turn turn, Cell cell);
 
     /**
      * Builds a block in the specified cell using the worker
-     * @param worker The Worker to be used
+     * @param turn The current Turn
      * @param cell The Cell
      */
-    void doBuildBlock(Worker worker, Cell cell);
+    void doBuildBlock(Turn turn, Cell cell);
 
     /**
      * Whether or not the worker can build a dome in the specified cell
-     * @param worker The Worker to be used
+     * @param turn The current Turn
      * @param cell The Cell
      * @return true if the action is allowed
      */
-    boolean checkCanBuildDome(Worker worker, Cell cell);
+    boolean checkCanBuildDome(Turn turn, Cell cell);
 
     /**
      * Builds a dome in the specified cell using the worker
-     * @param worker The Worker to be used
+     * @param turn The current Turn
      * @param cell The Cell
      */
-    void doBuildDome(Worker worker, Cell cell);
-
-    /**
-     * Returns the associated board
-     * @return The Board
-     */
-    Board getBoard();
-
-    /**
-     * Returns the associated player
-     * @return The Player
-     */
-    Player getPlayer();
+    void doBuildDome(Turn turn, Cell cell);
 
 }

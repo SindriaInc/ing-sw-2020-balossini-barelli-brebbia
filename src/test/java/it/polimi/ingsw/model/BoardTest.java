@@ -103,7 +103,7 @@ class BoardTest {
         return board.getCellFromCoords(x, y);
     }
 
-    private boolean equalsNoOrder(List<Cell> list1, List<Cell> list2) {
+    private <T> boolean equalsNoOrder(List<T> list1, List<T> list2) {
         return (list1.size() == list2.size()) &&
                 list1.containsAll(list2) &&
                 list2.containsAll(list1);

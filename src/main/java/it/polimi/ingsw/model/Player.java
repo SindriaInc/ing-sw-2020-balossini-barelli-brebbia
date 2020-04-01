@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.IAbilities;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class Player {
     public Player(String name, int age) {
         this.name = name;
         this.age = age;
+
+        abilities = new DefaultAbilities();
     }
 
     public String getName() {
@@ -58,52 +61,53 @@ public class Player {
     }
 
     /**
-     * @see IAbilities#checkHasWon()
+     * Checks if the player meets any win condition
+     * @return true if any win conditions is met
      */
     public boolean checkHasWon() {
-        return abilities.checkHasWon();
+        return abilities.checkHasWon(getWorkers());
     }
 
     /**
-     * @see IAbilities#checkCanMove(Worker, Cell)
+     * @see IAbilities#checkCanMove(Turn, Cell)
      */
-    public boolean checkCanMove(Worker worker, Cell cell) {
-        return abilities.checkCanMove(worker, cell);
+    public boolean checkCanMove(Turn turn, Cell cell) {
+        return abilities.checkCanMove(turn, cell);
     }
 
     /**
-     * @see IAbilities#doMove(Worker, Cell)
+     * @see IAbilities#doMove(Turn, Cell)
      */
-    public void doMove(Worker worker, Cell cell) {
-        abilities.doMove(worker, cell);
+    public void doMove(Turn turn, Cell cell) {
+        abilities.doMove(turn, cell);
     }
 
     /**
-     * @see IAbilities#checkCanBuildBlock(Worker, Cell)
+     * @see IAbilities#checkCanBuildBlock(Turn, Cell)
      */
-    public boolean checkCanBuildBlock(Worker worker, Cell cell) {
-        return abilities.checkCanBuildBlock(worker, cell);
+    public boolean checkCanBuildBlock(Turn turn, Cell cell) {
+        return abilities.checkCanBuildBlock(turn, cell);
     }
 
     /**
-     * @see IAbilities#doBuildBlock(Worker, Cell)
+     * @see IAbilities#doBuildBlock(Turn, Cell)
      */
-    public void doBuildBlock(Worker worker, Cell cell) {
-        abilities.doBuildBlock(worker, cell);
+    public void doBuildBlock(Turn turn, Cell cell) {
+        abilities.doBuildBlock(turn, cell);
     }
 
     /**
-     * @see IAbilities#checkCanBuildDome(Worker, Cell)
+     * @see IAbilities#checkCanBuildDome(Turn, Cell)
      */
-    public boolean checkCanBuildDome(Worker worker, Cell cell) {
-        return abilities.checkCanBuildDome(worker, cell);
+    public boolean checkCanBuildDome(Turn turn, Cell cell) {
+        return abilities.checkCanBuildDome(turn, cell);
     }
 
     /**
-     * @see IAbilities#doBuildDome(Worker, Cell)
+     * @see IAbilities#doBuildDome(Turn, Cell)
      */
-    public void doBuildDome(Worker worker, Cell cell) {
-        abilities.doBuildDome(worker, cell);
+    public void doBuildDome(Turn turn, Cell cell) {
+        abilities.doBuildDome(turn, cell);
     }
 
 }

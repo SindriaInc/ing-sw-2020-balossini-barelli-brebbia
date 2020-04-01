@@ -1,9 +1,8 @@
 package it.polimi.ingsw.model.abilities;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
+
+import java.util.List;
 
 public abstract class AbilitiesDecorator implements IAbilities {
 
@@ -14,48 +13,38 @@ public abstract class AbilitiesDecorator implements IAbilities {
     }
 
     @Override
-    public boolean checkHasWon() {
-        return abilities.checkHasWon();
+    public boolean checkHasWon(List<Worker> workers) {
+        return abilities.checkHasWon(workers);
     }
 
     @Override
-    public boolean checkCanMove(Worker worker, Cell cell) {
-        return abilities.checkCanMove(worker, cell);
+    public boolean checkCanMove(Turn turn, Cell cell) {
+        return abilities.checkCanMove(turn, cell);
     }
 
     @Override
-    public void doMove(Worker worker, Cell cell) {
-        abilities.doMove(worker, cell);
+    public void doMove(Turn turn, Cell cell) {
+        abilities.doMove(turn, cell);
     }
 
     @Override
-    public boolean checkCanBuildBlock(Worker worker, Cell cell) {
-        return abilities.checkCanBuildBlock(worker, cell);
+    public boolean checkCanBuildBlock(Turn turn, Cell cell) {
+        return abilities.checkCanBuildBlock(turn, cell);
     }
 
     @Override
-    public void doBuildBlock(Worker worker, Cell cell) {
-        abilities.doBuildBlock(worker, cell);
+    public void doBuildBlock(Turn turn, Cell cell) {
+        abilities.doBuildBlock(turn, cell);
     }
 
     @Override
-    public boolean checkCanBuildDome(Worker worker, Cell cell) {
-        return abilities.checkCanBuildDome(worker, cell);
+    public boolean checkCanBuildDome(Turn turn, Cell cell) {
+        return abilities.checkCanBuildDome(turn, cell);
     }
 
     @Override
-    public void doBuildDome(Worker worker, Cell cell) {
-        abilities.doBuildDome(worker, cell);
+    public void doBuildDome(Turn turn, Cell cell) {
+        abilities.doBuildDome(turn, cell);
     }
-
-    @Override
-    public Board getBoard() {
-        return abilities.getBoard();
-    }
-
-    @Override
-    public Player getPlayer() {
-        return abilities.getPlayer();
-    }
-
+    
 }

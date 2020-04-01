@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import java.util.Objects;
+
 public class Cell {
 
     /**
@@ -22,7 +24,7 @@ public class Cell {
      */
     private boolean doomed;
 
-    protected Cell(int x, int y) {
+    public Cell(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -51,4 +53,22 @@ public class Cell {
         this.doomed = doomed;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        Cell cell = (Cell) object;
+        return x == cell.x && y == cell.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

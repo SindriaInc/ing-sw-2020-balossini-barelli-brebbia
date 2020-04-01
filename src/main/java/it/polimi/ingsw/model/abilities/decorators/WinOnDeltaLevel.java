@@ -1,7 +1,12 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
+import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
+
+import java.util.List;
 
 public class WinOnDeltaLevel extends AbilitiesDecorator {
 
@@ -12,10 +17,10 @@ public class WinOnDeltaLevel extends AbilitiesDecorator {
     }
 
     @Override
-    public boolean checkHasWon() {
+    public boolean checkHasWon(List<Worker> workers) {
         boolean check = false;
         // TODO: Implement additional check
-        return check || super.checkHasWon();
+        return check || super.checkHasWon(workers);
     }
 
 }

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
@@ -12,10 +14,10 @@ public class AdditionalMove extends AbilitiesDecorator {
     }
 
     @Override
-    public boolean checkCanMove(Worker worker, Cell cell) {
+    public boolean checkCanMove(Turn turn, Cell cell) {
         boolean check = false;
         // TODO: Implement additional check
-        return check || super.checkCanMove(worker, cell);
+        return check || super.checkCanMove(turn, cell);
     }
 
 }

@@ -88,6 +88,7 @@ class GameTest {
         List<Worker> workers2 = new ArrayList<>();
         workers2.add(worker4);
         game.spawnWorkers(workers2);
+        // TODO: Set cell level directly?
         game.buildBlock(worker4, getCell(4, 3));
         game.buildBlock(worker4, getCell(4, 3));
 
