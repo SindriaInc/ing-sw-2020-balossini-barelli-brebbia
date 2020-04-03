@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.abilities;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.abilities.strategies.DefaultUse;
 
 import java.util.List;
 
@@ -12,6 +13,11 @@ public class DefaultAbilities implements IAbilities {
     public static final int DEFAULT_MAX_UP = 1;
     public static final int DEFAULT_MAX_MOVES = 1;
     public static final int DEFAULT_MAX_BUILDS = 1;
+
+    private IUseStrategy useStrategy;
+    public DefaultAbilities() {
+        useStrategy = new DefaultUse();
+    }
 
     @Override
     public boolean checkHasWon(List<Worker> workers) {
@@ -36,7 +42,7 @@ public class DefaultAbilities implements IAbilities {
             return false;
         }
 
-        return canInteract(turn, cell);
+        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class DefaultAbilities implements IAbilities {
             return false;
         }
 
-        return canInteract(turn, cell);
+        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
     }
 
     @Override
@@ -74,7 +80,7 @@ public class DefaultAbilities implements IAbilities {
             return false;
         }
 
-        return canInteract(turn, cell);
+        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
     }
 
     @Override
@@ -98,23 +104,4 @@ public class DefaultAbilities implements IAbilities {
 
         return !hasBuilt(turn);
     }
-
-    private boolean canInteract(Turn turn, Cell cell) {
-        if (turn.getWorker().getCell().equals(cell)) {
-            return false;
-        }
-
-        if (!turn.isNeighbour(cell)) {
-            return false;
-        }
-
-        for (Worker other : turn.getOtherWorkers()) {
-            if (other.getCell().equals(cell)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }

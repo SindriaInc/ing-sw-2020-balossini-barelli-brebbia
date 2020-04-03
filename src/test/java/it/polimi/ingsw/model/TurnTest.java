@@ -23,7 +23,7 @@ class TurnTest {
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(worker2, false);
 
-        turn = new Turn(worker1, otherWorkers, (cell) -> Arrays.asList(cell, cell2).contains(worker1.getCell()));
+        turn = new Turn(worker1, otherWorkers, (cell) -> Arrays.asList(cell, cell2));
     }
 
     @Test

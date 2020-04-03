@@ -17,6 +17,9 @@ class BoardTest {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
     }
 
+    /**
+     * Check that getCell returns an exception for non existing cells
+     */
     @Test
     void checkInvalidCoords() {
         assertThrows(IllegalArgumentException.class, () -> getCell(-1, 0));
@@ -27,6 +30,9 @@ class BoardTest {
         assertThrows(IllegalArgumentException.class, () -> getCell(TestConstants.BOARD_TEST_COLUMNS, TestConstants.BOARD_TEST_ROWS));
     }
 
+    /**
+     * Check the getCell method for existing cells
+     */
     @Test
     void checkCorrectCell() {
         assertTrue(() -> {
@@ -50,6 +56,9 @@ class BoardTest {
         });
     }
 
+    /**
+     * Check the method isPerimeterSpace with perimeter cells
+     */
     @Test
     void checkPerimeterSpace() {
         assertTrue(() -> board.isPerimeterSpace(getCell(0, 0)));
@@ -60,11 +69,18 @@ class BoardTest {
         assertTrue(() -> board.isPerimeterSpace(getCell(0, 1)));
     }
 
+    /**
+     * Check the method isPerimeterSpace with inner cells
+     */
     @Test
     void checkNotPerimeterSpace() {
         assertFalse(() -> board.isPerimeterSpace(getCell(1, 1)));
     }
 
+    /**
+     * Check the method getNeighborings with an angular cell (3 neighborings),
+     * a side cell (5 neighborings) and an inner cell (8 neighborings)
+     */
     @Test
     void checkNeighborings() {
         assertTrue(() -> equalsNoOrder(board.getNeighborings(getCell(0, 0)),

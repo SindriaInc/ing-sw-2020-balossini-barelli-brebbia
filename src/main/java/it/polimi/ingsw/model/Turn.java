@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class Turn {
@@ -18,7 +19,7 @@ public class Turn {
     /**
      * The neighbouring cells
      */
-    private final Predicate<Cell> isNeighbour;
+    private final Function<Cell, List<Cell>> getNeighbours;
 
     /**
      * List of cell occupied by the worker
@@ -39,25 +40,21 @@ public class Turn {
      * Instantiates a Turn
      * @param worker The Worker used during the Turn
      * @param otherWorkers The other Workers present, the boolean represents whether or not they belong to the same player
-     * @param isNeighbour Supplier that checks if a given cell is a neighbour of the worker position
+     * @param getNeighbours List of neighboring to a cell
      */
-    public Turn(Worker worker, Map<Worker, Boolean> otherWorkers, Predicate<Cell> isNeighbour) {
+    public Turn(Worker worker, Map<Worker, Boolean> otherWorkers, Function<Cell, List<Cell>> getNeighbours) {
         this.worker = worker;
         this.otherWorkers = Map.copyOf(otherWorkers);
-        this.isNeighbour = isNeighbour;
+        this.getNeighbours = getNeighbours;
     }
 
     public Worker getWorker() {
         return worker;
     }
 
-    public List<Worker> getOtherWorkers() {
-        return List.copyOf(otherWorkers.keySet());
-    }
+    public List<Worker> getOtherWorkers() { return List.copyOf(otherWorkers.keySet()); }
 
-    public boolean isNeighbour(Cell cell) {
-        return isNeighbour.test(cell);
-    }
+    public List<Cell> getNeighbours(Cell cell) { return getNeighbours.apply(cell); }
 
     public boolean hasSamePlayer(Worker worker) {
         return otherWorkers.get(worker);

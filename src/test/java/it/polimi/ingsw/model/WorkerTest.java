@@ -23,6 +23,10 @@ class WorkerTest {
         assertEquals(worker.getCell(), cell1);
     }
 
+    /**
+     * Check the hasMovedUp method with movements in a higher cell.
+     * Expect true
+     */
     @Test
     void checkMoveUp() {
         cell2.setLevel(1);
@@ -31,6 +35,10 @@ class WorkerTest {
         assertTrue(worker::hasMovedUp);
     }
 
+    /**
+     * Check the hasMovedUp method with movements in a same level or lower cell.
+     * Expect false
+     */
     @Test
     void checkNoMoveUp() {
         worker.move(cell2);
@@ -44,6 +52,10 @@ class WorkerTest {
         assertFalse(worker::hasMovedUp);
     }
 
+    /**
+     * Check the move method.
+     * Expect to find a worker in the destination cell.
+     */
     @Test
     void checkDoMove() {
         worker.move(cell2);

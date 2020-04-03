@@ -25,7 +25,7 @@ class DefaultAbilitiesTest {
         otherWorkers.put(worker2, false);
 
         abilities = new DefaultAbilities();
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell).contains(worker1.getCell()));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
     }
 
     @Test
