@@ -1,22 +1,30 @@
 package it.polimi.ingsw.model.abilities;
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.abilities.strategies.DefaultUse;
+import it.polimi.ingsw.model.abilities.predicates.*;
 
 import java.util.List;
 
-public class DefaultAbilities implements IAbilities {
+public class DefaultAbilities {
 
     public static final int DEFAULT_WIN_LEVEL = 3;
     public static final int DEFAULT_DOME_LEVEL = 3;
     public static final int DEFAULT_MAX_BUILD_LEVEL = 3;
-    public static final int DEFAULT_MAX_UP = 1;
     public static final int DEFAULT_MAX_MOVES = 1;
-    public static final int DEFAULT_MAX_BUILDS = 1;
+    public static final int DEFAULT_MAX_UP = 1;
 
-    private IUseStrategy useStrategy;
+    private ITriPredicate movePhase;
+    private ITriPredicate buildPhase;
+    private ITriPredicate maxBuildLevel;
+    private ITriPredicate canInteractNoWorkers;
+    private ITriPredicate cellLevelDifference;
+
     public DefaultAbilities() {
-        useStrategy = new DefaultUse();
+        movePhase = new MovePhase(DEFAULT_MAX_MOVES);
+        buildPhase = new BuildPhase();
+        maxBuildLevel = new MaxLevel(DEFAULT_MAX_BUILD_LEVEL);
+        canInteractNoWorkers = new CanInteractNoWorkers();
+        cellLevelDifference = new CellLevelDifference(DEFAULT_MAX_UP);
     }
 
     @Override
@@ -32,17 +40,15 @@ public class DefaultAbilities implements IAbilities {
 
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
-        Worker worker = turn.getWorker();
-
-        if (hasMoved(turn)) {
+        if (!movePhase.check(turn, cell)) {
             return false;
         }
 
-        if (cell.getLevel() - worker.getCell().getLevel() > DEFAULT_MAX_UP) {
+        if (!cellLevelDifference.check(turn, cell)) {
             return false;
         }
 
-        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
+        return canInteractNoWorkers.check(turn, cell);
     }
 
     @Override
@@ -53,15 +59,15 @@ public class DefaultAbilities implements IAbilities {
 
     @Override
     public boolean checkCanBuildBlock(Turn turn, Cell cell) {
-        if (!canBuild(turn)) {
+        if (!buildPhase.check(turn, cell)) {
             return false;
         }
 
-        if (cell.getLevel() >= DEFAULT_MAX_BUILD_LEVEL) {
+        if (maxBuildLevel.check(turn, cell)) {
             return false;
         }
 
-        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
+        return canInteractNoWorkers.check(turn, cell);
     }
 
     @Override
@@ -72,15 +78,15 @@ public class DefaultAbilities implements IAbilities {
 
     @Override
     public boolean checkCanBuildDome(Turn turn, Cell cell) {
-        if (!canBuild(turn)) {
+        if (!buildPhase.check(turn, cell)) {
             return false;
         }
 
-        if (cell.isDoomed() || cell.getLevel() < DEFAULT_DOME_LEVEL) {
+        if (!maxBuildLevel.check(turn, cell)) {
             return false;
         }
 
-        return useStrategy.canInteractWorkersNotIncluded(turn, cell);
+        return canInteractNoWorkers.check(turn, cell);
     }
 
     @Override
@@ -89,19 +95,4 @@ public class DefaultAbilities implements IAbilities {
         cell.setDoomed(true);
     }
 
-    private boolean hasMoved(Turn turn) {
-        return turn.getMoves().size() > 0;
-    }
-
-    private boolean hasBuilt(Turn turn) {
-        return turn.getBlocksPlaced().size() > 0 || turn.getDomesPlaced().size() > 0;
-    }
-
-    private boolean canBuild(Turn turn) {
-        if (!hasMoved(turn)) {
-            return false;
-        }
-
-        return !hasBuilt(turn);
-    }
 }

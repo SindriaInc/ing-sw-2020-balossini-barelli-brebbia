@@ -68,4 +68,5 @@ class ForcePushMoveTest {
 
         assertEquals(forcedWorker.getCell(), board.getCellFromCoords(2, 2));
     }
+
 }

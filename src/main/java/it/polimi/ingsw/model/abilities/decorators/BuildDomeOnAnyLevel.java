@@ -1,28 +1,32 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
-import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
-import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
-import it.polimi.ingsw.model.abilities.IUseStrategy;
-import it.polimi.ingsw.model.abilities.strategies.DefaultUse;
+import it.polimi.ingsw.model.abilities.ITriPredicate;
+import it.polimi.ingsw.model.abilities.predicates.BuildPhase;
+import it.polimi.ingsw.model.abilities.predicates.CanInteractNoWorkers;
 
 public class BuildDomeOnAnyLevel extends AbilitiesDecorator {
 
-    private IUseStrategy useStrategy;
+    private ITriPredicate buildPhase;
+    private ITriPredicate canInteractNoWorkers;
 
     public BuildDomeOnAnyLevel(IAbilities abilities) {
         super(abilities);
-        useStrategy = new DefaultUse();
+
+        buildPhase = new BuildPhase();
+        canInteractNoWorkers = new CanInteractNoWorkers();
     }
 
     @Override
     public boolean checkCanBuildDome(Turn turn, Cell cell) {
-        boolean check = useStrategy.canInteractWorkersNotIncluded(turn, cell);
+        if (!buildPhase.check(turn, cell)) {
+            return super.checkCanBuildDome(turn, cell);
+        }
 
-        return check || super.checkCanBuildDome(turn, cell);
+        return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildDome(turn, cell);
     }
 
 }

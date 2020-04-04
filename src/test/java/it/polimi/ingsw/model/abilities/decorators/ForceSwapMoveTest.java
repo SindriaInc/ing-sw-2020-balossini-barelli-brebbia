@@ -41,19 +41,25 @@ class ForceSwapMoveTest {
      * Check that a worker with power can swap another opponent worker
      */
     @Test
-    void CheckCanSwap(){assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(1, 0)));}
+    void checkCanSwap() {
+        assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(1, 0)));
+    }
 
     /**
      * Check that a worker with this power can't swap another opponent worker if not in a neighbour cell
      */
     @Test
-    void CheckNoSwap(){assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(2, 0)));}
+    void checkNoSwap() {
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(2, 0)));
+    }
 
     /**
      * Check that a worker with this power can't swap another opponent worker if the levels difference is greater than one
      */
     @Test
-    void CheckNoSwapDiffLevel(){assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0, 1)));}
+    void checkNoSwapDiffLevel() {
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0, 1)));
+    }
 
     /**
      * Check that the worker does a correct force swap move
@@ -71,4 +77,5 @@ class ForceSwapMoveTest {
 
         assertEquals(forcedWorker.getCell(),board.getCellFromCoords(0,0));
     }
+
 }

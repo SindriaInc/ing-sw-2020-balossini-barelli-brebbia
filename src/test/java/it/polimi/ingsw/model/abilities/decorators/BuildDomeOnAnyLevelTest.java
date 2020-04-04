@@ -8,11 +8,11 @@ import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BuildDomeOnAnyLevelTest {
 
@@ -38,6 +38,10 @@ class BuildDomeOnAnyLevelTest {
      */
     @Test
     void checkCheckCanBuildDome() {
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1, 1)));
+
+        // The worker needs to move before being able to build
+        abilities.doMove(turn, board.getCellFromCoords(0, 0));
 
         assertTrue(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1, 1)));
     }
@@ -52,4 +56,5 @@ class BuildDomeOnAnyLevelTest {
         assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1, 1)));
         assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1, 0)));
     }
+
 }

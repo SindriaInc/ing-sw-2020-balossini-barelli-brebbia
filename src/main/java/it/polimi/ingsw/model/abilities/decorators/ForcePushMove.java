@@ -1,26 +1,48 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
-import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
-import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
-import it.polimi.ingsw.model.abilities.IUseStrategy;
-import it.polimi.ingsw.model.abilities.strategies.DefaultUse;
+import it.polimi.ingsw.model.abilities.ITriPredicate;
+import it.polimi.ingsw.model.abilities.predicates.CanInteractNoWorkers;
 
 import java.util.List;
+import java.util.Optional;
 
-public class ForcePushMove extends AbilitiesDecorator {
+public class ForcePushMove extends AbstractForceMove {
 
-    private IUseStrategy useStrategy;
+    private ITriPredicate canInteractNoWorkers;
 
     public ForcePushMove(IAbilities abilities) {
         super(abilities);
-        useStrategy = new DefaultUse();
+
+        canInteractNoWorkers = new CanInteractNoWorkers();
     }
 
-    private Cell findDestinationCell (Turn turn, Cell cell) {
+    @Override
+    public boolean checkCanForce(Turn turn, Worker forcedWorker) {
+        Optional<Cell> destinationCell = findDestinationCell(turn, forcedWorker.getCell());
+
+        if (destinationCell.isEmpty()) {
+            return false;
+        }
+
+        return canInteractNoWorkers.check(turn, forcedWorker, destinationCell.get());
+    }
+
+    @Override
+    public void doForce(Turn turn, Worker forcedWorker) {
+        Optional<Cell> destination = findDestinationCell(turn, forcedWorker.getCell());
+
+        if (destination.isEmpty()) {
+            throw new IllegalArgumentException("No destination cell available");
+        }
+
+        forcedWorker.force(destination.get());
+    }
+
+    private Optional<Cell> findDestinationCell(Turn turn, Cell cell) {
         Cell startCell = turn.getWorker().getCell();
         int destinationX = 2*cell.getX() - startCell.getX();
         int destinationY = 2*cell.getY() - startCell.getY();
@@ -28,43 +50,11 @@ public class ForcePushMove extends AbilitiesDecorator {
         List<Cell> cellNeighbors = turn.getNeighbours(cell);
         for (Cell destinationCell : cellNeighbors) {
             if (destinationCell.getX() == destinationX && destinationCell.getY() == destinationY) {
-                return destinationCell;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean checkCanMove(Turn turn, Cell cell) {
-        boolean check = false;
-        Worker forcedWorker = null;
-        Cell startCell = turn.getWorker().getCell();
-
-        for (Worker i : turn.getOtherWorkers()) {
-            if (i.getCell().equals(cell)) {
-                forcedWorker = i;
-                break;
-            }
-        }
-        if (forcedWorker != null && turn.hasSamePlayer(forcedWorker))
-            return false;
-
-        Cell destinationCell = findDestinationCell(turn, cell);
-        if (destinationCell != null)
-            check = useStrategy.canInteractWorkersNotIncluded(turn, destinationCell);
-
-        return check || super.checkCanMove(turn, cell);
-    }
-
-     @Override
-    public void doMove(Turn turn, Cell cell) {
-        for (Worker forcedWorker : turn.getOtherWorkers()) {
-            if (forcedWorker.getCell()==cell) {
-                forcedWorker.force(findDestinationCell(turn, cell));
-                break;
+                return Optional.of(destinationCell);
             }
         }
 
-        super.doMove(turn, cell);
+        return Optional.empty();
     }
+
 }

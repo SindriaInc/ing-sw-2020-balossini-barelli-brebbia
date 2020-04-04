@@ -33,6 +33,7 @@ class AdditionalMoveTest {
         turn.getWorker().move(board.getCellFromCoords(1,0));
         turn.addMovement(board.getCellFromCoords(1,0));
     }
+
     /**
      * Check that a worker with this power can move twice
      */
@@ -44,7 +45,6 @@ class AdditionalMoveTest {
     /**
      * Check that a worker with this power can't move another time on occupied cell
      */
-
     @Test
     void checkCannotMoveInOccupiedCell(){
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(1,1)));
@@ -57,6 +57,7 @@ class AdditionalMoveTest {
     void checkCanMoveBack(){
         assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(0,0)));
     }
+
     /**
      * Check that a worker with this power can't move three times
      */
@@ -66,5 +67,6 @@ class AdditionalMoveTest {
         turn.addMovement(board.getCellFromCoords(2,0));
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(3,0)));
     }
+
 }
 
