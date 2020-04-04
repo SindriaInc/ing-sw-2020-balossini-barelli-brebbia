@@ -19,7 +19,13 @@ public class WinOnDeltaLevel extends AbilitiesDecorator {
     @Override
     public boolean checkHasWon(List<Worker> workers) {
         boolean check = false;
-        // TODO: Implement additional check
+        for (Worker worker : workers) {
+            if (worker.getCell().getLevel() - worker.getPreviousCell().getLevel() <= -2) {
+                check = true;
+                break;
+            }
+        }
+
         return check || super.checkHasWon(workers);
     }
 

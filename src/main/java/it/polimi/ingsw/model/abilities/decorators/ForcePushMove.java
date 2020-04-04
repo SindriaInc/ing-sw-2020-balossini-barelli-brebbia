@@ -37,16 +37,26 @@ public class ForcePushMove extends AbilitiesDecorator {
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
         boolean check = false;
+        Worker forcedWorker = null;
         Cell startCell = turn.getWorker().getCell();
 
+        for (Worker i : turn.getOtherWorkers()) {
+            if (i.getCell().equals(cell)) {
+                forcedWorker = i;
+                break;
+            }
+        }
+        if (forcedWorker != null && turn.hasSamePlayer(forcedWorker))
+            return false;
+
         Cell destinationCell = findDestinationCell(turn, cell);
-        if (destinationCell!=null)
+        if (destinationCell != null)
             check = useStrategy.canInteractWorkersNotIncluded(turn, destinationCell);
 
         return check || super.checkCanMove(turn, cell);
     }
 
-    @Override
+     @Override
     public void doMove(Turn turn, Cell cell) {
         for (Worker forcedWorker : turn.getOtherWorkers()) {
             if (forcedWorker.getCell()==cell) {

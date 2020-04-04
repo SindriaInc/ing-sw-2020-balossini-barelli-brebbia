@@ -7,6 +7,7 @@ public class Worker {
      */
     private Cell cell;
 
+
     /**
      * The worker's previous position
      */
@@ -25,6 +26,8 @@ public class Worker {
     public Cell getCell() {
         return cell;
     }
+
+    public Cell getPreviousCell() {return previousCell;}
 
     /**
      * Checks if the worker has gone up at least 1 level in his most recent turn
