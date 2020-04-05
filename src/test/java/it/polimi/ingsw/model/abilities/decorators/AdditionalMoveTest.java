@@ -51,11 +51,11 @@ class AdditionalMoveTest {
     }
 
     /**
-     * Check that a worker with this power can return on the initial cell
+     * Check that a worker with this power can't return on the initial cell
      */
     @Test
-    void checkCanMoveBack(){
-        assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(0,0)));
+    void checkCannotMoveBack(){
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0,0)));
     }
 
     /**

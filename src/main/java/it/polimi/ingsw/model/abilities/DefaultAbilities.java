@@ -5,13 +5,14 @@ import it.polimi.ingsw.model.abilities.predicates.*;
 
 import java.util.List;
 
-public class DefaultAbilities {
+public class DefaultAbilities implements IAbilities{
 
     public static final int DEFAULT_WIN_LEVEL = 3;
     public static final int DEFAULT_DOME_LEVEL = 3;
     public static final int DEFAULT_MAX_BUILD_LEVEL = 3;
     public static final int DEFAULT_MAX_MOVES = 1;
     public static final int DEFAULT_MAX_UP = 1;
+    public static final int DEFAULT_MAX_BUILDS = 1;
 
     private ITriPredicate movePhase;
     private ITriPredicate buildPhase;

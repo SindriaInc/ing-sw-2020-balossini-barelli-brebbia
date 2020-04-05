@@ -4,9 +4,20 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
+import static it.polimi.ingsw.model.abilities.DefaultAbilities.*;
 
 public class BuildPhase implements ITriPredicate {
 
+    /**
+     * Max builds per build phase
+     */
+    private int maxBuilds;
+
+    public BuildPhase(int maxMoves) {
+        this.maxBuilds = maxMoves;
+    }
+
+    public BuildPhase() {this.maxBuilds = DEFAULT_MAX_BUILDS;}
     /**
      * Returns true if the Turn is in the build phase
      * The build phase begins after the Worker has moved at least once during the Turn
@@ -19,7 +30,7 @@ public class BuildPhase implements ITriPredicate {
             return false;
         }
 
-        return turn.getBlocksPlaced().size() <= 0 && turn.getDomesPlaced().size() <= 0;
+        return (turn.getBlocksPlaced().size() + turn.getDomesPlaced().size()) <= maxBuilds;
     }
 
 }

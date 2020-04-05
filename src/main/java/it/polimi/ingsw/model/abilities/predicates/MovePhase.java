@@ -7,6 +7,9 @@ import it.polimi.ingsw.model.abilities.ITriPredicate;
 
 public class MovePhase implements ITriPredicate {
 
+    /**
+     * Max moves per move phase
+     */
     private int maxMoves;
 
     public MovePhase(int maxMoves) {

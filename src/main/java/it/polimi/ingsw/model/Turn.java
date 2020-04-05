@@ -37,6 +37,11 @@ public class Turn {
     private final List<Cell> domesPlaced = new ArrayList<>();
 
     /**
+     * The starting cell
+     */
+    private final Cell startingCell;
+
+    /**
      * Instantiates a Turn
      * @param worker The Worker used during the Turn
      * @param otherWorkers The other Workers present, the boolean represents whether or not they belong to the same player
@@ -46,6 +51,7 @@ public class Turn {
         this.worker = worker;
         this.otherWorkers = Map.copyOf(otherWorkers);
         this.getNeighbours = getNeighbours;
+        this.startingCell = worker.getCell();
     }
 
     public Worker getWorker() {
@@ -83,5 +89,7 @@ public class Turn {
     public void addDomePlaced(Cell cell) {
         domesPlaced.add(cell);
     }
+
+    public Cell getStartingCell() { return startingCell; }
 
 }
