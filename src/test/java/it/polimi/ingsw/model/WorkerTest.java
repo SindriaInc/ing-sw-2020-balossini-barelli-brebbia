@@ -24,32 +24,36 @@ class WorkerTest {
     }
 
     /**
-     * Check the hasMovedUp method with movements in a higher cell.
-     * Expect true
+     * Check that the optional returns are not empty after calling move, then test that they are empty after clearing
      */
     @Test
-    void checkMoveUp() {
+    void checkMoves() {
         cell2.setLevel(1);
 
         worker.move(cell2);
-        assertTrue(worker::hasMovedUp);
+        assertTrue(worker.getLastMovementLevelDifference().isPresent());
+        assertTrue(worker.getLastMovementCell().isPresent());
+
+        worker.clearMovement();
+        assertTrue(worker.getLastMovementLevelDifference().isEmpty());
+        assertTrue(worker.getLastMovementCell().isEmpty());
     }
 
     /**
-     * Check the hasMovedUp method with movements in a same level or lower cell.
+     * Check the level difference method with movements in a same level or lower cell.
      * Expect false
      */
     @Test
     void checkNoMoveUp() {
         worker.move(cell2);
-        assertFalse(worker::hasMovedUp);
+        assertFalse(worker.getLastMovementLevelDifference().get() > 0);
         worker.move(cell1);
-        assertFalse(worker::hasMovedUp);
+        assertFalse(worker.getLastMovementLevelDifference().get() > 0);
 
         cell1.setLevel(1);
 
         worker.move(cell2);
-        assertFalse(worker::hasMovedUp);
+        assertFalse(worker.getLastMovementLevelDifference().get() > 0);
     }
 
     /**

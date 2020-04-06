@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.predicates.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DefaultAbilities implements IAbilities{
 
@@ -31,7 +32,15 @@ public class DefaultAbilities implements IAbilities{
     @Override
     public boolean checkHasWon(List<Worker> workers) {
         for (Worker worker : workers) {
-            if (worker.hasMovedUp() && worker.getCell().getLevel() >= DEFAULT_WIN_LEVEL) {
+            Optional<Integer> difference = worker.getLastMovementLevelDifference();
+
+            if (difference.isEmpty() || difference.get() <= 0) {
+                continue;
+            }
+
+            Optional<Cell> cell = worker.getLastMovementCell();
+
+            if (cell.isPresent() && cell.get().getLevel() >= DEFAULT_WIN_LEVEL) {
                 return true;
             }
         }

@@ -1,6 +1,22 @@
 package it.polimi.ingsw.model;
 
+import java.util.Optional;
+
 public class Worker {
+
+    private static class Movement {
+
+        private final int previousLevel;
+        private Cell next;
+        private final int nextLevel;
+
+        Movement(Cell previous, int previousLevel, Cell next, int nextLevel) {
+            this.previousLevel = previousLevel;
+            this.next = next;
+            this.nextLevel = nextLevel;
+        }
+
+    }
 
     /**
      * The worker's current position
@@ -8,34 +24,33 @@ public class Worker {
     private Cell cell;
 
     /**
-     * The worker's previous position
+     * The worker's last movement
+     * Can be null if there was no last movement
      */
-    private Cell previousCell;
-
-    /**
-     * True if previousCell was the worker position before being forced on the current cell
-     */
-    private boolean previousForced;
+    private Movement lastMovement;
 
     public Worker(Cell cell) {
         this.cell = cell;
-        this.previousCell = cell;
     }
 
     public Cell getCell() {
         return cell;
     }
 
-    public Cell getPreviousCell() {
-        return previousCell;
+    public Optional<Cell> getLastMovementCell() {
+        if (lastMovement == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(lastMovement.next);
     }
 
-    /**
-     * Checks if the worker has gone up at least 1 level in his most recent turn
-     * @return true if the current cell is at least 1 level higher than the previous one
-     */
-    public boolean hasMovedUp() {
-        return !previousForced && cell.getLevel() > previousCell.getLevel();
+    public Optional<Integer> getLastMovementLevelDifference() {
+        if (lastMovement == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(lastMovement.nextLevel - lastMovement.previousLevel);
     }
 
     /**
@@ -43,9 +58,8 @@ public class Worker {
      * @param cell The Cell
      */
     public void move(Cell cell) {
-        this.previousCell = this.cell;
-        this.cell = cell;
-        this.previousForced = false;
+        lastMovement = new Movement(this.cell, this.cell.getLevel(), cell, cell.getLevel());
+        force(cell);
     }
 
     /**
@@ -53,8 +67,14 @@ public class Worker {
      * @param cell The Cell
      */
     public void force(Cell cell) {
-        move(cell);
-        this.previousForced = true;
+        this.cell = cell;
+    }
+
+    /**
+     * Removes the last movement
+     */
+    public void clearMovement() {
+        lastMovement = null;
     }
 
 }

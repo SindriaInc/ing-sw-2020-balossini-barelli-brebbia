@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BlockOnPlayerMoveUp extends AbilitiesDecorator {
 
@@ -21,15 +22,19 @@ public class BlockOnPlayerMoveUp extends AbilitiesDecorator {
 
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
-        boolean check = false;
-        // TODO: Implement additional check
-        return check && super.checkCanMove(turn, cell);
-    }
+        if (cell.getLevel() <= turn.getWorker().getCell().getLevel()) {
+            return super.checkCanMove(turn, cell);
+        }
 
-    @Override
-    public void doMove(Turn turn, Cell cell) {
-        super.doMove(turn, cell);
-        // TODO: Implement additional effects
+        for (Worker worker : workersToCheck) {
+            Optional<Integer> difference = worker.getLastMovementLevelDifference();
+
+            if (difference.isPresent() && difference.get() > 0) {
+                return false;
+            }
+        }
+
+        return super.checkCanMove(turn, cell);
     }
 
 }

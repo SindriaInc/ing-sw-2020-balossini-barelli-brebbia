@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 
 import java.util.List;
+import java.util.Optional;
 
 public class WinOnDeltaLevel extends AbilitiesDecorator {
 
@@ -17,7 +18,9 @@ public class WinOnDeltaLevel extends AbilitiesDecorator {
     @Override
     public boolean checkHasWon(List<Worker> workers) {
         for (Worker worker : workers) {
-            if (worker.getCell().getLevel() - worker.getPreviousCell().getLevel() <= WIN_DELTA) {
+            Optional<Integer> difference = worker.getLastMovementLevelDifference();
+
+            if (difference.isPresent() && difference.get() <= WIN_DELTA) {
                 return true;
             }
         }
