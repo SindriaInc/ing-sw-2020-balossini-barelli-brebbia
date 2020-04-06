@@ -37,8 +37,8 @@ public class AdditionalMove extends AbilitiesDecorator {
             return super.checkCanMove(turn, cell);
         }
 
-        if (turn.getMoves().size()!=0 && cell.equals(turn.getStartingCell())) {
-            return false;
+        if (turn.getMoves().size() > 0 && cell.equals(turn.getStartingCell())) {
+            return super.checkCanMove(turn, cell);
         }
 
         return canInteractNoWorkers.check(turn, cell) || super.checkCanMove(turn, cell);

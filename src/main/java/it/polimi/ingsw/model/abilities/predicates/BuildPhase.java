@@ -30,7 +30,7 @@ public class BuildPhase implements ITriPredicate {
             return false;
         }
 
-        return (turn.getBlocksPlaced().size() + turn.getDomesPlaced().size()) <= maxBuilds;
+        return turn.getBuilds().size() < maxBuilds;
     }
 
 }

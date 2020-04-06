@@ -47,13 +47,15 @@ class AdditionalBuildOnDifferentCellTest {
      * Check that a worker with this power can't build on occupied cell
      */
     @Test
-    void checkCannotBuildInOccupiedCell() { assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0))); }
+    void checkCannotBuildInOccupiedCell() {
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
+    }
 
     /**
      * Check that a worker with this power can't build on the same cell
      */
     @Test
-    void checkCannotBuildSameCell(){
+    void checkCannotBuildSameCell() {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
     }
 
@@ -65,4 +67,5 @@ class AdditionalBuildOnDifferentCellTest {
         abilities.doBuildBlock(turn, board.getCellFromCoords(2,2));
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0,1)));
     }
+
 }

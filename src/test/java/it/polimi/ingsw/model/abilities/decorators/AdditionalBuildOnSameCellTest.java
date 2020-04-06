@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AdditionalBuildOnSameCellTest {
+
     private Board board;
     private AdditionalBuildOnSameCell abilities;
     private Turn turn;
@@ -46,8 +47,8 @@ class AdditionalBuildOnSameCellTest {
      * Check that a worker with this power can't build on another cell
      */
     @Test
-    void checkCannotBuildDifferentCell(){
-        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,1)));
+    void checkCannotBuildDifferentCell() {
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(1,0)));
     }
 
     /**
@@ -58,4 +59,5 @@ class AdditionalBuildOnSameCellTest {
         abilities.doBuildBlock(turn, board.getCellFromCoords(2,2));
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,2)));
     }
+
 }

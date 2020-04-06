@@ -1,10 +1,50 @@
 package it.polimi.ingsw.model;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Turn {
+
+    public enum ActionType {
+
+        MOVEMENT(false),
+        BLOCK(true),
+        DOME(true);
+
+        private final boolean build;
+
+        ActionType(boolean build) {
+            this.build = build;
+        }
+
+        public boolean isBuild() {
+            return build;
+        }
+
+    }
+
+    public class Action {
+
+        private ActionType type;
+        private Cell cell;
+
+        public Action(ActionType type, Cell cell) {
+            this.type = type;
+            this.cell = cell;
+        }
+
+        public ActionType getType() {
+            return type;
+        }
+
+        public Cell getCell() {
+            return cell;
+        }
+
+    }
 
     /**
      * The worker used in this turn
@@ -22,24 +62,15 @@ public class Turn {
     private final Function<Cell, List<Cell>> getNeighbours;
 
     /**
-     * List of cell occupied by the worker
-     */
-    private final List<Cell> moves = new ArrayList<>();
-
-    /**
-     * List of blocks placed by the worker
-     */
-    private final List<Cell> blocksPlaced = new ArrayList<>();
-
-    /**
-     * List of domes placed by the worker
-     */
-    private final List<Cell> domesPlaced = new ArrayList<>();
-
-    /**
      * The starting cell
      */
     private final Cell startingCell;
+
+    /**
+     * List of actions done by the worker
+     * The list is guaranteed to be sorted by insertion order
+     */
+    private final List<Action> actions = new LinkedList<>();
 
     /**
      * Instantiates a Turn
@@ -58,38 +89,64 @@ public class Turn {
         return worker;
     }
 
-    public List<Worker> getOtherWorkers() { return List.copyOf(otherWorkers.keySet()); }
+    public List<Worker> getOtherWorkers() {
+        return List.copyOf(otherWorkers.keySet());
+    }
 
-    public List<Cell> getNeighbours(Cell cell) { return getNeighbours.apply(cell); }
+    public List<Cell> getNeighbours(Cell cell) {
+        return getNeighbours.apply(cell);
+    }
 
     public boolean hasSamePlayer(Worker worker) {
         return otherWorkers.get(worker);
     }
 
     public List<Cell> getMoves() {
-        return List.copyOf(moves);
+        return actions.stream()
+                .filter(action -> action.getType() == ActionType.MOVEMENT)
+                .map(Action::getCell)
+                .collect(Collectors.toList());
+    }
+
+    public List<Cell> getBuilds() {
+        return actions.stream()
+                .filter(action -> action.getType().isBuild())
+                .map(Action::getCell)
+                .collect(Collectors.toList());
     }
 
     public List<Cell> getBlocksPlaced() {
-        return List.copyOf(blocksPlaced);
+        return actions.stream()
+                .filter(action -> action.getType() == ActionType.BLOCK)
+                .map(Action::getCell)
+                .collect(Collectors.toList());
     }
 
     public List<Cell> getDomesPlaced() {
-        return List.copyOf(domesPlaced);
+        return actions.stream()
+                .filter(action -> action.getType() == ActionType.DOME)
+                .map(Action::getCell)
+                .collect(Collectors.toList());
+    }
+
+    public List<Action> getActions() {
+        return List.copyOf(actions);
     }
 
     public void addMovement(Cell cell) {
-        moves.add(cell);
+        actions.add(new Action(ActionType.MOVEMENT, cell));
     }
 
     public void addBlockPlaced(Cell cell) {
-        blocksPlaced.add(cell);
+        actions.add(new Action(ActionType.BLOCK, cell));
     }
 
     public void addDomePlaced(Cell cell) {
-        domesPlaced.add(cell);
+        actions.add(new Action(ActionType.DOME, cell));
     }
 
-    public Cell getStartingCell() { return startingCell; }
+    public Cell getStartingCell() {
+        return startingCell;
+    }
 
 }
