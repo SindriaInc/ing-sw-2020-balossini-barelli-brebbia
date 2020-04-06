@@ -63,8 +63,7 @@ class AdditionalMoveTest {
      */
     @Test
     void checkNoMoveThreeTimes(){
-        turn.getWorker().move(board.getCellFromCoords(2,0));
-        turn.addMovement(board.getCellFromCoords(2,0));
+        abilities.doMove(turn,board.getCellFromCoords(2,0));
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(3,0)));
     }
 
