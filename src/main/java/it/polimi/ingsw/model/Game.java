@@ -61,24 +61,31 @@ public class Game {
     }
 
     /**
-     * Starts the setup phase of the game
-     */
-    // TODO: Implement method
-    public void preStartGame () {}
-
-    /**
      * Select the simple version of the game
      * @param isSimple Flag true for a simple game, false if not
      */
     // TODO: Implement method
-    public void selectSimpleGame (boolean isSimple) {}
+    public void selectSimpleGame(boolean isSimple) {}
+
+    /**
+     * Starts the setup phase of the game
+     */
+    // TODO: Implement method
+    public void preStartGame() {}
+
+    /**
+     * Spawns the workers on the board
+     * @param workers List of the workers to spawn
+     */
+    // TODO: Implement method
+    public void spawnWorkers(List<Worker> workers) {}
 
     /**
      * Select the god cards to be used in the current game
      * @param godList The list of all the god cards
      */
     // TODO: Implement method
-    public void selectGods (List<God> godList) {}
+    public void selectGods(List<God> godList) {}
 
     public List<God> getAvailableGods() {
         return List.copyOf(availableGods);
@@ -91,13 +98,6 @@ public class Game {
      */
     // TODO: Implement method
     public void chooseGod(Player player, God god) {}
-
-    /**
-     * Spawns the workers on the board
-     * @param workers List of the workers to spawn
-     */
-    // TODO: Implement method
-    public void spawnWorkers(List<Worker> workers) {}
 
     /**
      * Starts the real game

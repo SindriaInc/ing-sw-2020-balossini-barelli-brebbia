@@ -1,6 +1,10 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
+
+import java.util.List;
+import java.util.Map;
 
 public class God {
 
@@ -24,11 +28,18 @@ public class God {
      */
     private final String type;
 
-    public God(String name, int id, String description, String type) {
+    /**
+     * The list of decorators to apply, each class is mapped to a boolean that is true if the decorator must be applied to an opponent
+     */
+    private final Map<Class<? extends AbilitiesDecorator>, Boolean> effects;
+
+    public God(String name, int id, String description, String type, Map<Class<? extends AbilitiesDecorator>, Boolean> effects) {
         this.name = name;
         this.id = id;
         this.description = description;
         this.type = type;
+
+        this.effects = effects;
     }
 
     public String getName() {
@@ -52,15 +63,58 @@ public class God {
      * @param abilities Previous player's abilities
      * @return The decorated abilities
      */
-    // TODO: Implement method
-    public IAbilities applyAbilities(IAbilities abilities) { return null; }
+    public IAbilities applyAbilities(IAbilities abilities) {
+        try {
+            return doApplyAbilities(abilities);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Unable to instantiate decorators");
+        }
+    }
 
     /**
      * Decorates the given player's abilities with the god effect on opponents
      * @param abilities Previous player' abilities
      * @return The decorated abilities
      */
-    // TODO: Implement method
-    public IAbilities applyOpponentAbilities(IAbilities abilities) { return null; }
+    public IAbilities applyOpponentAbilities(IAbilities abilities, Player originalPlayer) {
+        try {
+            return doApplyOpponentAbilities(abilities, originalPlayer);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Unable to instantiate decorators");
+        }
+    }
+
+    private IAbilities doApplyAbilities(IAbilities abilities) throws ReflectiveOperationException {
+        for (Map.Entry<Class<? extends AbilitiesDecorator>, Boolean> entry : effects.entrySet()) {
+            // Skip opponent decorators
+            if (entry.getValue()) {
+                continue;
+            }
+
+            Class<? extends AbilitiesDecorator> decoratorClass = entry.getKey();
+            abilities = decoratorClass.getDeclaredConstructor(IAbilities.class)
+                    .newInstance(abilities);
+        }
+
+        return abilities;
+    }
+
+
+    private IAbilities doApplyOpponentAbilities(IAbilities abilities, Player originalPlayer) throws ReflectiveOperationException {
+        for (Map.Entry<Class<? extends AbilitiesDecorator>, Boolean> entry : effects.entrySet()) {
+            // Skip non-opponent decorators
+            if (!entry.getValue()) {
+                continue;
+            }
+
+            Class<? extends AbilitiesDecorator> decoratorClass = entry.getKey();
+            abilities = decoratorClass.getDeclaredConstructor(IAbilities.class, List.class)
+                    .newInstance(abilities, originalPlayer.getWorkers());
+        }
+
+        return abilities;
+    }
 
 }

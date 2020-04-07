@@ -1,7 +1,13 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.DefaultAbilities;
+import it.polimi.ingsw.model.abilities.IAbilities;
+import it.polimi.ingsw.model.abilities.decorators.AdditionalBuildOnDifferentCell;
+import it.polimi.ingsw.model.abilities.decorators.BlockOnPlayerMoveUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +22,7 @@ class GodTest {
 
     @BeforeEach
     void setUp() {
-        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE);
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of());
     }
 
     @Test
@@ -27,6 +33,44 @@ class GodTest {
         assertEquals(god.getType(), DEFAULT_TYPE);
     }
 
-    // TODO: Test decorators
+    @Test
+    void testNoAbilities() {
+        IAbilities abilities = new DefaultAbilities();
+        abilities = god.applyAbilities(abilities);
+
+        assertTrue(abilities instanceof DefaultAbilities);
+    }
+
+    @Test
+    void testApplyAbilities() {
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(AdditionalBuildOnDifferentCell.class, false));
+
+        IAbilities abilities = new DefaultAbilities();
+        abilities = god.applyAbilities(abilities);
+
+        assertFalse(abilities instanceof DefaultAbilities);
+        assertTrue(abilities instanceof AdditionalBuildOnDifferentCell);
+
+        abilities = new DefaultAbilities();
+        abilities = god.applyOpponentAbilities(abilities, new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE));
+
+        assertTrue(abilities instanceof DefaultAbilities);
+    }
+
+    @Test
+    void testApplyOpponentAbilities() {
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(BlockOnPlayerMoveUp.class, true));
+
+        IAbilities abilities = new DefaultAbilities();
+        abilities = god.applyOpponentAbilities(abilities, new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE));
+
+        assertFalse(abilities instanceof DefaultAbilities);
+        assertTrue(abilities instanceof BlockOnPlayerMoveUp);
+
+        abilities = new DefaultAbilities();
+        abilities = god.applyAbilities(abilities);
+
+        assertTrue(abilities instanceof DefaultAbilities);
+    }
 
 }
