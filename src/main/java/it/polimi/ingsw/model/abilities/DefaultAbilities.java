@@ -107,13 +107,13 @@ public class DefaultAbilities implements IAbilities{
         cell.setDoomed(true);
     }
 
-//    @Override
-//    public boolean checkCanForce(Turn turn) {
-//        return false;
-//    }
-//
-//    @Override
-//    public void doForce(Turn turn, Cell cell) {
-//        turn.getWorker().force(cell);
-//    }
+    @Override
+    public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
+        return false;
+    }
+
+    @Override
+    public void doForce(Turn turn, Worker worker, Cell cell) {
+        worker.force(cell);
+    }
 }
