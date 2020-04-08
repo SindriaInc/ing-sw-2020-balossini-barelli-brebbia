@@ -35,6 +35,9 @@ class BlockOnPlayerMoveUpTest {
         turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell));
     }
 
+    /**
+     * Check that when enemy hasn't moved up others can do it
+     */
     @Test
     void checkAllowMoveUp() {
         enemyWorker.move(board.getCellFromCoords(1, 1)); // No up movement
@@ -42,6 +45,9 @@ class BlockOnPlayerMoveUpTest {
         assertTrue(blockOnPlayerMoveUp.checkCanMove(turn, board.getCellFromCoords(0, 1)));
     }
 
+    /**
+     * Check that when enemy has moved up others can't do it
+     */
     @Test
     void checkNoMoveUp() {
         board.getCellFromCoords(1, 1).setLevel(1);

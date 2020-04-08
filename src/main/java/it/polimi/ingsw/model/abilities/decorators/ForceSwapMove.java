@@ -11,12 +11,12 @@ public class ForceSwapMove extends AbstractForceMove {
     }
 
     @Override
-    public boolean checkCanForce(Turn turn, Worker forcedWorker) {
+    public boolean checkCanForceInMovePhase(Turn turn, Worker forcedWorker) {
         return true;
     }
 
     @Override
-    public void doForce(Turn turn, Worker forcedWorker) {
+    public void doForceInMovePhase(Turn turn, Worker forcedWorker) {
         forcedWorker.force(turn.getWorker().getCell());
     }
 

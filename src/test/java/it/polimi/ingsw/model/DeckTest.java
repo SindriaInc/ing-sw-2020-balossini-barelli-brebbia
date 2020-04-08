@@ -13,7 +13,7 @@ class DeckTest {
 
     @BeforeEach
     void setUp() {
-        deck = new Deck();
+        deck = new Deck(new ArrayList<>());
     }
 
     @Test

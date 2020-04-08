@@ -35,14 +35,14 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
      * @param forcedWorker The Worker to be forced
      * @return true if the Worker can be forced
      */
-    public abstract boolean checkCanForce(Turn turn, Worker forcedWorker);
+    public abstract boolean checkCanForceInMovePhase(Turn turn, Worker forcedWorker);
 
     /**
      * Forces the worker to move
      * @param turn The Turn
      * @param forcedWorker The Worker to be forced
      */
-    public abstract void doForce(Turn turn, Worker forcedWorker);
+    public abstract void doForceInMovePhase(Turn turn, Worker forcedWorker);
 
     /**
      * Finds the Worker in the cell
@@ -80,7 +80,7 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
             return super.checkCanMove(turn, cell);
         }
 
-        return checkCanForce(turn, forcedWorker.get()) || super.checkCanMove(turn, cell);
+        return checkCanForceInMovePhase(turn, forcedWorker.get()) || super.checkCanMove(turn, cell);
     }
 
     @Override
@@ -92,7 +92,7 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
             return;
         }
 
-        doForce(turn, forcedWorker.get());
+        doForceInMovePhase(turn, forcedWorker.get());
         super.doMove(turn, cell);
     }
 

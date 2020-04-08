@@ -58,4 +58,17 @@ public interface IAbilities {
      */
     void doBuildDome(Turn turn, Cell cell);
 
+//    /**
+//     * Whether or not a worker can force another out of his cell
+//     * @param turn The current Turn
+//     * @return true if the action is allowed
+//     */
+//    boolean checkCanForce(Turn turn);
+//
+//    /**
+//     * Force a worker from his cell to another
+//     * @param turn The current Turn
+//     * @param cell The Cell
+//     */
+//    void doForce(Turn turn, Cell cell);
 }

@@ -21,7 +21,7 @@ public class ForcePushMove extends AbstractForceMove {
     }
 
     @Override
-    public boolean checkCanForce(Turn turn, Worker forcedWorker) {
+    public boolean checkCanForceInMovePhase(Turn turn, Worker forcedWorker) {
         Optional<Cell> destinationCell = findDestinationCell(turn, forcedWorker.getCell());
 
         if (destinationCell.isEmpty()) {
@@ -32,7 +32,7 @@ public class ForcePushMove extends AbstractForceMove {
     }
 
     @Override
-    public void doForce(Turn turn, Worker forcedWorker) {
+    public void doForceInMovePhase(Turn turn, Worker forcedWorker) {
         Optional<Cell> destination = findDestinationCell(turn, forcedWorker.getCell());
 
         if (destination.isEmpty()) {

@@ -6,6 +6,8 @@ import it.polimi.ingsw.model.abilities.predicates.*;
 import java.util.List;
 import java.util.Optional;
 
+import it.polimi.ingsw.model.Board;
+
 public class DefaultAbilities implements IAbilities{
 
     public static final int DEFAULT_WIN_LEVEL = 3;
@@ -105,4 +107,13 @@ public class DefaultAbilities implements IAbilities{
         cell.setDoomed(true);
     }
 
+//    @Override
+//    public boolean checkCanForce(Turn turn) {
+//        return false;
+//    }
+//
+//    @Override
+//    public void doForce(Turn turn, Cell cell) {
+//        turn.getWorker().force(cell);
+//    }
 }

@@ -46,5 +46,14 @@ public abstract class AbilitiesDecorator implements IAbilities {
     public void doBuildDome(Turn turn, Cell cell) {
         abilities.doBuildDome(turn, cell);
     }
-    
+
+//    @Override
+//    public boolean checkCanForce(Turn turn) {
+//        return abilities.checkCanForce(turn);
+//    }
+//
+//    @Override
+//    public void doForce(Turn turn, Cell cell) {
+//        abilities.doForce(turn, cell);
+//    }
 }
