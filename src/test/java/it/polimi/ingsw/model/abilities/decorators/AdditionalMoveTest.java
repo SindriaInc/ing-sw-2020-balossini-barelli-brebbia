@@ -29,7 +29,7 @@ class AdditionalMoveTest {
         otherWorkers.put(worker2, false);
 
         abilities = new AdditionalMove(new DefaultAbilities());
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
         turn.getWorker().move(board.getCellFromCoords(1,0));
         turn.addMovement(board.getCellFromCoords(1,0));
     }

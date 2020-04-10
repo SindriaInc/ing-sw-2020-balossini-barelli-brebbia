@@ -24,7 +24,7 @@ class SameCellTest {
         cell1 = new Cell(0, 0);
         cell2 = new Cell(0, 1);
         worker = new Worker(cell1);
-        turn = new Turn(worker, new HashMap<>(), (cell) -> List.of());
+        turn = new Turn(worker, new HashMap<>(), (cell) -> List.of(), cell -> false);
         sameCell = new SameCell();
     }
 

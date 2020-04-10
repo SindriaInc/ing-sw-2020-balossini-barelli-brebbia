@@ -1,11 +1,12 @@
 package it.polimi.ingsw.model.abilities;
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.abilities.decorators.BlockOnPlayerMoveUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,7 +26,7 @@ class DefaultAbilitiesTest {
         otherWorkers.put(worker2, false);
 
         abilities = new DefaultAbilities();
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> false);
     }
 
     @Test

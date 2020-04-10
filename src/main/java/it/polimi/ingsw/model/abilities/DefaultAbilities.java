@@ -1,12 +1,12 @@
 package it.polimi.ingsw.model.abilities;
 
-import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Turn;
+import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.predicates.*;
 
 import java.util.List;
 import java.util.Optional;
-
-import it.polimi.ingsw.model.Board;
 
 public class DefaultAbilities implements IAbilities{
 
@@ -116,4 +116,5 @@ public class DefaultAbilities implements IAbilities{
     public void doForce(Turn turn, Worker worker, Cell cell) {
         worker.force(cell);
     }
+
 }

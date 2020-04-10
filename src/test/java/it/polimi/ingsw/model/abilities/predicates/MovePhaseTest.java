@@ -22,7 +22,7 @@ class MovePhaseTest {
     @BeforeEach
     void setUp() {
         cell = new Cell(0, 0);
-        turn = new Turn(new Worker(cell), new HashMap<>(), (cell) -> List.of());
+        turn = new Turn(new Worker(cell), new HashMap<>(), (cell) -> List.of(), cell -> false);
         movePhase = new MovePhase(MAX_MOVES);
     }
 

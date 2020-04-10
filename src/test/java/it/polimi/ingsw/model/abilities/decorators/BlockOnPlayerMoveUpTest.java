@@ -32,7 +32,7 @@ class BlockOnPlayerMoveUpTest {
         otherWorkers.put(enemyWorker, false);
 
         blockOnPlayerMoveUp = new BlockOnPlayerMoveUp(new DefaultAbilities(), List.of(enemyWorker));
-        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
     }
 
     /**

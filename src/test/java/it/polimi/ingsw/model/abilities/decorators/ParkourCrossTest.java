@@ -34,7 +34,7 @@ class ParkourCrossTest {
         otherWorkers.put(worker4, false);
 
         abilities = new ParkourCross(new DefaultAbilities());
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
     }
 
     /**

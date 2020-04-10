@@ -29,7 +29,7 @@ class AdditionalBuildOnDifferentCellTest {
         otherWorkers.put(worker1, false);
 
         abilities = new AdditionalBuildOnDifferentCell(new DefaultAbilities());
-        turn = new Turn(worker2, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker2, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
         turn.addMovement(board.getCellFromCoords(1, 1));
         abilities.doBuildBlock(turn, board.getCellFromCoords(2, 0));
     }

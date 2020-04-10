@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.abilities.IAbilities;
 import it.polimi.ingsw.model.abilities.OpponentAbilitiesDecorator;
 
 import java.util.List;
-import java.util.Optional;
 
 public class BlockMoveHigherWorker extends OpponentAbilitiesDecorator {
 
@@ -18,7 +17,7 @@ public class BlockMoveHigherWorker extends OpponentAbilitiesDecorator {
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
         for (Worker worker : turn.getOtherWorkers()) {
-            if (turn.hasSamePlayer(worker) && turn.getWorker().getCell().getLevel()>worker.getCell().getLevel()) {
+            if (turn.hasSamePlayer(worker) && turn.getWorker().getCell().getLevel() > worker.getCell().getLevel()) {
                 return false;
             }
         }

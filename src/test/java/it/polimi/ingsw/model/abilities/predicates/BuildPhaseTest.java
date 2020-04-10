@@ -21,7 +21,7 @@ class BuildPhaseTest {
     @BeforeEach
     void setUp() {
         cell = new Cell(0, 0);
-        turn = new Turn(new Worker(cell), new HashMap<>(), (cell) -> List.of());
+        turn = new Turn(new Worker(cell), new HashMap<>(), (cell) -> List.of(), cell -> false);
         buildPhase = new BuildPhase();
     }
 

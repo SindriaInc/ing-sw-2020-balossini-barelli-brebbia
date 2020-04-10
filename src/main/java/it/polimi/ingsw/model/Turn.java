@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Turn {
@@ -62,6 +63,11 @@ public class Turn {
     private final Function<Cell, List<Cell>> getNeighbours;
 
     /**
+     * Whether or not a cell is part of the perimeter
+     */
+    private final Predicate<Cell> isPerimeterSpace;
+
+    /**
      * The starting cell
      */
     private final Cell startingCell;
@@ -78,10 +84,11 @@ public class Turn {
      * @param otherWorkers The other Workers present, the boolean represents whether or not they belong to the same player
      * @param getNeighbours List of neighboring to a cell
      */
-    public Turn(Worker worker, Map<Worker, Boolean> otherWorkers, Function<Cell, List<Cell>> getNeighbours) {
+    public Turn(Worker worker, Map<Worker, Boolean> otherWorkers, Function<Cell, List<Cell>> getNeighbours, Predicate<Cell> isPerimeterSpace) {
         this.worker = worker;
         this.otherWorkers = Map.copyOf(otherWorkers);
         this.getNeighbours = getNeighbours;
+        this.isPerimeterSpace = isPerimeterSpace;
         this.startingCell = worker.getCell();
     }
 
@@ -95,6 +102,10 @@ public class Turn {
 
     public List<Cell> getNeighbours(Cell cell) {
         return getNeighbours.apply(cell);
+    }
+
+    public boolean isPerimeterSpace(Cell cell) {
+        return isPerimeterSpace.test(cell);
     }
 
     public boolean hasSamePlayer(Worker worker) {

@@ -44,8 +44,8 @@ public class ForcePushMove extends AbstractForceMove {
 
     private Optional<Cell> findDestinationCell(Turn turn, Cell cell) {
         Cell startCell = turn.getWorker().getCell();
-        int destinationX = 2*cell.getX() - startCell.getX();
-        int destinationY = 2*cell.getY() - startCell.getY();
+        int destinationX = 2 * cell.getX() - startCell.getX();
+        int destinationY = 2 * cell.getY() - startCell.getY();
 
         List<Cell> cellNeighbors = turn.getNeighbours(cell);
         for (Cell destinationCell : cellNeighbors) {

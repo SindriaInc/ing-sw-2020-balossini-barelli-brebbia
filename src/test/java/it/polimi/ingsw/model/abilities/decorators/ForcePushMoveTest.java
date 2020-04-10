@@ -33,7 +33,7 @@ class ForcePushMoveTest {
         otherWorkers.put(worker4, false);
 
         abilities = new ForcePushMove(new DefaultAbilities());
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
     }
 
     /**

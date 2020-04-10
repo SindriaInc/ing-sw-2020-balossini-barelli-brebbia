@@ -13,6 +13,8 @@ public class OpponentAbilitiesDecorator extends AbilitiesDecorator {
 
     public OpponentAbilitiesDecorator(IAbilities abilities, List<Worker> workers) {
         super(abilities);
+
+        this.workers = workers;
     }
 
     public List<Worker> getWorkers() {

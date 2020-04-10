@@ -29,7 +29,7 @@ class BuildBelowTest {
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
 
         abilities = new BuildBelow(new DefaultAbilities());
-        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
         turn.addMovement(board.getCellFromCoords(1, 1));
     }
 

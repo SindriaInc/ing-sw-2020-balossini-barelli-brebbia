@@ -37,7 +37,7 @@ class CanInteractTest {
             }
 
             return List.of();
-        });
+        }, cell -> false);
         canInteract = new CanInteract();
     }
 

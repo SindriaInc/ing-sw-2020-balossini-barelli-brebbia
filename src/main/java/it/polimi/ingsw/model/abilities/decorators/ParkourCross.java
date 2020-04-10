@@ -14,23 +14,22 @@ public class ParkourCross extends AbilitiesDecorator {
 
     @Override
     public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
-        boolean check;
         Cell forcedWorkerCell = worker.getCell();
         Cell workerCell = turn.getWorker().getCell();
 
-        check = turn.getNeighbours(workerCell).contains(cell) &&                //cell near to worker
-                turn.getNeighbours(workerCell).contains(forcedWorkerCell) &&    //forcedWorker near to worker
-                2*workerCell.getX()-forcedWorkerCell.getX()-cell.getX()==0 &&   //cell and forcedWorker opposite on X axis
-                2*workerCell.getY()-forcedWorkerCell.getY()-cell.getY()==0 &&   //cell and forcedWorker opposite on Y axis
-                !turn.hasSamePlayer(worker);                                    //worker and forcedWorker have different players
-
         for (Worker others : turn.getOtherWorkers()) {
             if (cell.equals(others.getCell())) {
-                check = false;
-                break;
+                return super.checkCanForce(turn, worker, cell);
             }
         }
 
+        boolean check = turn.getNeighbours(workerCell).contains(cell) &&                // cell near to worker
+                turn.getNeighbours(workerCell).contains(forcedWorkerCell) &&            // forcedWorker near to worker
+                2 * workerCell.getX() - forcedWorkerCell.getX() - cell.getX() == 0 &&   // cell and forcedWorker opposite on X axis
+                2 * workerCell.getY() - forcedWorkerCell.getY() - cell.getY() == 0 &&   // cell and forcedWorker opposite on Y axis
+                !turn.hasSamePlayer(worker);                                            // worker and forcedWorker have different players
+
         return check || super.checkCanForce(turn, worker, cell);
     }
+
 }

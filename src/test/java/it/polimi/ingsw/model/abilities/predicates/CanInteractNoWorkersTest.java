@@ -47,7 +47,7 @@ class CanInteractNoWorkersTest {
             }
 
             return List.of();
-        });
+        }, cell -> false);
         canInteractNoWorkers = new CanInteractNoWorkers();
     }
 

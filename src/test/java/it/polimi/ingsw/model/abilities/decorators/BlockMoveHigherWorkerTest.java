@@ -36,7 +36,7 @@ class BlockMoveHigherWorkerTest {
         otherWorkers.put(enemyWorker, false);
 
         blockMoveHigherWorker = new BlockMoveHigherWorker(new DefaultAbilities(), List.of(enemyWorker));
-        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
     }
 
     /**

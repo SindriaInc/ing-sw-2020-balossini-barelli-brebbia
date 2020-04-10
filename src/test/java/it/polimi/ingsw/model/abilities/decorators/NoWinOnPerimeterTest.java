@@ -32,7 +32,7 @@ class NoWinOnPerimeterTest {
         otherWorkers.put(enemyWorker, false);
 
         noWinOnPerimeter = new NoWinOnPerimeter(new DefaultAbilities(), List.of(enemyWorker));
-        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell));
+        turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
 
         board.getCellFromCoords(0, 0).setLevel(2);
         board.getCellFromCoords(2, 0).setLevel(3);

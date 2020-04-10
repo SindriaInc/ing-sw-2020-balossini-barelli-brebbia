@@ -37,7 +37,7 @@ class NeighbourCellTest {
             }
 
             return List.of();
-        });
+        }, cell -> false);
         neighbourCell = new NeighbourCell();
     }
 

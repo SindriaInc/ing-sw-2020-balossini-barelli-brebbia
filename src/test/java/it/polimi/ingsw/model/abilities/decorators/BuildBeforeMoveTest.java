@@ -30,7 +30,7 @@ class BuildBeforeMoveTest {
             otherWorkers.put(worker2, false);
 
             abilities = new BuildBeforeMove(new DefaultAbilities());
-            turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell));
+            turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
         }
     /**
      * Check that a worker with this power can build a block before and after his move
