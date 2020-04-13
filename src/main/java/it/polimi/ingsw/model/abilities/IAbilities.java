@@ -1,17 +1,17 @@
 package it.polimi.ingsw.model.abilities;
 
-import it.polimi.ingsw.model.*;
-
-import java.util.List;
+import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Turn;
+import it.polimi.ingsw.model.Worker;
 
 public interface IAbilities {
 
     /**
-     * Checks if the workers meet any win condition
-     * @param workers The Worker
-     * @return true if any of the workers met any win conditions
+     * Checks if the workers at the end of the turn meet any win condition
+     * @param turn The Turn
+     * @return true if any of the workers (of the turn player) met any win conditions
      */
-    boolean checkHasWon(List<Worker> workers);
+    boolean checkHasWon(Turn turn);
 
     /**
      * Whether or not the worker selected in the turn can move into the specified cell

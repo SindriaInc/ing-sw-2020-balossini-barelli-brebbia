@@ -8,30 +8,27 @@ import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NoWinOnPerimeterTest {
 
     private Board board;
     private NoWinOnPerimeter noWinOnPerimeter;
     private Turn turn;
-    private Worker enemyWorker;
 
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
         Worker worker = new Worker(board.getCellFromCoords(0, 0));
-        enemyWorker = new Worker(board.getCellFromCoords(1, 0));
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
-        otherWorkers.put(enemyWorker, false);
 
-        noWinOnPerimeter = new NoWinOnPerimeter(new DefaultAbilities(), List.of(enemyWorker));
+        noWinOnPerimeter = new NoWinOnPerimeter(new DefaultAbilities(), List.of());
         turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
 
         board.getCellFromCoords(0, 0).setLevel(2);
@@ -44,10 +41,11 @@ class NoWinOnPerimeterTest {
      */
     @Test
     void checkCanWin() {
-        assertFalse(noWinOnPerimeter.checkHasWon(Collections.singletonList(turn.getOtherWorkers().get(0))));
+        assertFalse(noWinOnPerimeter.checkHasWon(turn));
 
-        enemyWorker.move(board.getCellFromCoords(1, 1));
-        assertTrue(noWinOnPerimeter.checkHasWon(Collections.singletonList(turn.getOtherWorkers().get(0))));
+        noWinOnPerimeter.doMove(turn, board.getCellFromCoords(1, 1));
+
+        assertTrue(noWinOnPerimeter.checkHasWon(turn));
     }
 
     /**
@@ -55,7 +53,9 @@ class NoWinOnPerimeterTest {
      */
     @Test
     void checkCannotWin() {
-        noWinOnPerimeter.doMove(turn,  board.getCellFromCoords(0, 1));
-        assertFalse(noWinOnPerimeter.checkHasWon(Collections.singletonList(turn.getOtherWorkers().get(0))));
+        noWinOnPerimeter.doMove(turn, board.getCellFromCoords(0, 1));
+
+        assertFalse(noWinOnPerimeter.checkHasWon(turn));
     }
+
 }

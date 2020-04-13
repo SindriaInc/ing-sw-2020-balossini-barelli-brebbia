@@ -8,12 +8,12 @@ import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD_LEVEL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BuildBelowTest {
 
@@ -45,6 +45,6 @@ class BuildBelowTest {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
 
         board.getCellFromCoords(0, 0).setLevel(DEFAULT_MAX_BUILD_LEVEL-1);
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
     }
 }

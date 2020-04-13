@@ -1,10 +1,10 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
+import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 
-import java.util.List;
 import java.util.Optional;
 
 public class WinOnDeltaLevel extends AbilitiesDecorator {
@@ -16,8 +16,8 @@ public class WinOnDeltaLevel extends AbilitiesDecorator {
     }
 
     @Override
-    public boolean checkHasWon(List<Worker> workers) {
-        for (Worker worker : workers) {
+    public boolean checkHasWon(Turn turn) {
+        for (Worker worker : turn.getCandidateWinWorkers()) {
             Optional<Integer> difference = worker.getLastMovementLevelDifference();
 
             if (difference.isPresent() && difference.get() <= WIN_DELTA) {
@@ -25,7 +25,7 @@ public class WinOnDeltaLevel extends AbilitiesDecorator {
             }
         }
 
-        return super.checkHasWon(workers);
+        return super.checkHasWon(turn);
     }
 
 }

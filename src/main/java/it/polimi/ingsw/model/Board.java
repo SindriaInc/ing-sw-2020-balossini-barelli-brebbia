@@ -1,7 +1,9 @@
 package it.polimi.ingsw.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Board {
 
@@ -104,6 +106,13 @@ public class Board {
         // Remove the given cell
         neighborings.remove(cell);
         return neighborings;
+    }
+
+    /**
+     * Obtain a list of every cell, in no particular order
+     */
+    public List<Cell> getCells() {
+        return Arrays.stream(map).flatMap(Arrays::stream).collect(Collectors.toList());
     }
 
 }

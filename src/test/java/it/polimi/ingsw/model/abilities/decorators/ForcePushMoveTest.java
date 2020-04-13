@@ -60,9 +60,9 @@ class ForcePushMoveTest {
         abilities.doMove(turn, board.getCellFromCoords(1, 1));
         assertEquals(turn.getWorker().getCell(), board.getCellFromCoords(1, 1));
         Worker forcedWorker=turn.getWorker();
-        for (Worker i : turn.getOtherWorkers()) {
-            if (i.getCell() == board.getCellFromCoords(2, 2)) {
-                forcedWorker = i;
+        for (Worker other : turn.getOtherWorkers()) {
+            if (other.getCell() == board.getCellFromCoords(2, 2)) {
+                forcedWorker = other;
             }
         }
 

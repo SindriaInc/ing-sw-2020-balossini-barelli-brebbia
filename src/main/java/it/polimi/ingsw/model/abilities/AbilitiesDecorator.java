@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.abilities;
 
-import it.polimi.ingsw.model.*;
-
-import java.util.List;
+import it.polimi.ingsw.model.Cell;
+import it.polimi.ingsw.model.Turn;
+import it.polimi.ingsw.model.Worker;
 
 public abstract class AbilitiesDecorator implements IAbilities {
 
@@ -13,8 +13,8 @@ public abstract class AbilitiesDecorator implements IAbilities {
     }
 
     @Override
-    public boolean checkHasWon(List<Worker> workers) {
-        return abilities.checkHasWon(workers);
+    public boolean checkHasWon(Turn turn) {
+        return abilities.checkHasWon(turn);
     }
 
     @Override

@@ -8,7 +8,8 @@ import it.polimi.ingsw.model.abilities.OpponentAbilitiesDecorator;
 
 import java.util.List;
 import java.util.Optional;
-import static it.polimi.ingsw.model.Game.*;
+
+import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_WIN_LEVEL;
 
 public class NoWinOnPerimeter extends OpponentAbilitiesDecorator {
 
@@ -17,15 +18,22 @@ public class NoWinOnPerimeter extends OpponentAbilitiesDecorator {
     }
 
     @Override
-    public boolean checkHasWon(List<Worker> workers) {
-        for (Worker worker : workers) {
-            Cell cell=worker.getCell();
-            if (cell.getX()==0 || cell.getX()==BOARD_COLUMNS-1 || cell.getY()==0 || cell.getY()==BOARD_ROWS-1) {
-                return false;
+    public boolean checkHasWon(Turn turn) {
+        for (Worker worker : turn.getCandidateWinWorkers()) {
+            Optional<Integer> difference = worker.getLastMovementLevelDifference();
+
+            if (difference.isEmpty() || difference.get() <= 0) {
+                continue;
+            }
+
+            Optional<Cell> cell = worker.getLastMovementCell();
+
+            if (cell.isPresent() && cell.get().getLevel() >= DEFAULT_WIN_LEVEL && turn.isPerimeterSpace(cell.get())) {
+                turn.addBannedWinWorker(worker);
             }
         }
 
-        return super.checkHasWon(workers);
+        return super.checkHasWon(turn);
     }
 
 }

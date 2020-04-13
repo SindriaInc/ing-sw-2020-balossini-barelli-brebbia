@@ -17,8 +17,8 @@ public class ParkourCross extends AbilitiesDecorator {
         Cell forcedWorkerCell = worker.getCell();
         Cell workerCell = turn.getWorker().getCell();
 
-        for (Worker others : turn.getOtherWorkers()) {
-            if (cell.equals(others.getCell())) {
+        for (Worker other : turn.getOtherWorkers()) {
+            if (cell.equals(other.getCell())) {
                 return super.checkCanForce(turn, worker, cell);
             }
         }

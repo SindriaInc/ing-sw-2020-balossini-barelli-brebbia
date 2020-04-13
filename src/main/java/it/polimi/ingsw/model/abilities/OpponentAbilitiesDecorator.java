@@ -4,7 +4,7 @@ import it.polimi.ingsw.model.Worker;
 
 import java.util.List;
 
-public class OpponentAbilitiesDecorator extends AbilitiesDecorator {
+public abstract class OpponentAbilitiesDecorator extends AbilitiesDecorator {
 
     /**
      * The original player workers

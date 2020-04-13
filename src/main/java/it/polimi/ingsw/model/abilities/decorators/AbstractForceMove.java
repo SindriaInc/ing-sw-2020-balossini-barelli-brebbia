@@ -52,7 +52,7 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
      */
     public Optional<Worker> findForcedWorker(Turn turn, Cell cell) {
         for (Worker other : turn.getOtherWorkers()) {
-            if (other.getCell().equals(cell)) {
+            if (!turn.hasSamePlayer(other) && other.getCell().equals(cell)) {
                 return Optional.of(other);
             }
         }

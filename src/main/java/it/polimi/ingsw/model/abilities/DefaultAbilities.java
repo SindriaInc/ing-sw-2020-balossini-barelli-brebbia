@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.predicates.*;
 
-import java.util.List;
 import java.util.Optional;
 
 public class DefaultAbilities implements IAbilities{
@@ -32,8 +31,8 @@ public class DefaultAbilities implements IAbilities{
     }
 
     @Override
-    public boolean checkHasWon(List<Worker> workers) {
-        for (Worker worker : workers) {
+    public boolean checkHasWon(Turn turn) {
+        for (Worker worker : turn.getCandidateWinWorkers()) {
             Optional<Integer> difference = worker.getLastMovementLevelDifference();
 
             if (difference.isEmpty() || difference.get() <= 0) {

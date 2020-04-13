@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.abilities.IAbilities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Player {
 
@@ -22,6 +23,11 @@ public class Player {
      * List containing the workers, starts empty, gets filled after the user chooses their positions
      */
     private final List<Worker> workers = new ArrayList<>();
+
+    /**
+     * The player's god, may be null
+     */
+    private God god;
 
     /**
      * The player abilities
@@ -61,11 +67,10 @@ public class Player {
     }
 
     /**
-     * Checks if the player meets any win condition
-     * @return true if any win conditions is met
+     * @see IAbilities#checkHasWon(Turn)
      */
-    public boolean checkHasWon() {
-        return abilities.checkHasWon(getWorkers());
+    public boolean checkHasWon(Turn turn) {
+        return abilities.checkHasWon(turn);
     }
 
     /**
@@ -108,6 +113,19 @@ public class Player {
      */
     public void doBuildDome(Turn turn, Cell cell) {
         abilities.doBuildDome(turn, cell);
+    }
+
+    public Optional<God> getGod() {
+        return Optional.ofNullable(god);
+    }
+
+    public void applyGod(God god) {
+        this.god = god;
+        abilities = god.applyAbilities(abilities);
+    }
+
+    public void applyOpponentGod(God god, Player owner) {
+        abilities = god.applyOpponentAbilities(abilities, owner);
     }
 
 }

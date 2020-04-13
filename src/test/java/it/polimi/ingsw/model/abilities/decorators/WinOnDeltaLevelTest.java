@@ -8,11 +8,11 @@ import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WinOnDeltaLevelTest {
 
@@ -41,10 +41,10 @@ class WinOnDeltaLevelTest {
         board.getCellFromCoords(0, 0).setLevel(2);
         board.getCellFromCoords(0, 1).setLevel(0);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
 
         abilities.doMove(turn,  board.getCellFromCoords(0, 1));
-        assertTrue(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertTrue(abilities.checkHasWon(turn));
     }
 
     /**
@@ -55,10 +55,10 @@ class WinOnDeltaLevelTest {
         board.getCellFromCoords(0, 0).setLevel(1);
         board.getCellFromCoords(0, 1).setLevel(0);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
 
         abilities.doMove(turn,  board.getCellFromCoords(0, 1));
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
     }
 
     /**
@@ -69,10 +69,10 @@ class WinOnDeltaLevelTest {
         board.getCellFromCoords(0, 0).setLevel(2);
         board.getCellFromCoords(0, 1).setLevel(3);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
 
         abilities.doMove(turn,  board.getCellFromCoords(0, 1));
-        assertTrue(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertTrue(abilities.checkHasWon(turn));
     }
 
 }

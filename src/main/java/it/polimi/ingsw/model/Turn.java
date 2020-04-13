@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,11 @@ public class Turn {
     private final List<Action> actions = new LinkedList<>();
 
     /**
+     * List of workers that can not win on this turn
+     */
+    private final List<Worker> bannedWinWorkers = new ArrayList<>();
+
+    /**
      * Instantiates a Turn
      * @param worker The Worker used during the Turn
      * @param otherWorkers The other Workers present, the boolean represents whether or not they belong to the same player
@@ -94,6 +100,20 @@ public class Turn {
 
     public Worker getWorker() {
         return worker;
+    }
+
+    public List<Worker> getCandidateWinWorkers() {
+        List<Worker> sameWorkers = new ArrayList<>();
+        sameWorkers.add(worker);
+
+        for (Map.Entry<Worker, Boolean> other : otherWorkers.entrySet()) {
+            if (other.getValue()) {
+                sameWorkers.add(worker);
+            }
+        }
+
+        sameWorkers.removeAll(bannedWinWorkers);
+        return sameWorkers;
     }
 
     public List<Worker> getOtherWorkers() {
@@ -154,6 +174,10 @@ public class Turn {
 
     public void addDomePlaced(Cell cell) {
         actions.add(new Action(ActionType.DOME, cell));
+    }
+
+    public void addBannedWinWorker(Worker worker) {
+        bannedWinWorkers.add(worker);
     }
 
     public Cell getStartingCell() {

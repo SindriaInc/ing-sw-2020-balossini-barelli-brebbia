@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,10 +33,10 @@ class DefaultAbilitiesTest {
         getCell(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
         getCell(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
 
         abilities.doMove(turn, getCell(0, 1));
-        assertTrue(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertTrue(abilities.checkHasWon(turn));
     }
 
     @Test
@@ -45,17 +44,17 @@ class DefaultAbilitiesTest {
         getCell(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
         getCell(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
 
         abilities.doMove(turn, getCell(0, 1));
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
     }
 
     @Test
     void checkNoMovementNoWin() {
         getCell(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
 
-        assertFalse(abilities.checkHasWon(Collections.singletonList(turn.getWorker())));
+        assertFalse(abilities.checkHasWon(turn));
     }
 
     @Test

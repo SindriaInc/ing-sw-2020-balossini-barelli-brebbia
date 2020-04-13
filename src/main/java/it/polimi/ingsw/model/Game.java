@@ -1,172 +1,244 @@
 package it.polimi.ingsw.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.polimi.ingsw.model.gamestates.AbstractGameState;
+import it.polimi.ingsw.model.gamestates.PreGodsGame;
+import it.polimi.ingsw.model.gamestates.PreWorkersGame;
+
+import java.util.*;
 
 public class Game {
 
     public static final int BOARD_ROWS = 5;
     public static final int BOARD_COLUMNS = 5;
+    public static final int MAX_WORKERS = 2;
 
     /**
-     * The Board of this game
+     * The current state of the game, implementing the available interactions
      */
-    private Board board;
+    private AbstractGameState currentState;
 
     /**
-     * A flag that indicates if the game is a simple game or not.
-     * A simple game is a game played without god cards
+     * Instantiates the Game
+     * @param players The Players
+     * @param simpleGame True for a simple game, skipping god selection
      */
-    private boolean simpleGame;
+    public Game(List<Player> players, boolean simpleGame) {
+        /*
+         * TODO: Implement configuration loading
+         * Needs to load: Board configuration, deck
+         */
 
-    /**
-     * List of the god cards chosen for the current game
-     */
-    private final List<God> availableGods = new ArrayList<>();
+        Board board = new Board(BOARD_ROWS, BOARD_COLUMNS);
+        List<God> gods = List.of();
 
-    /**
-     * List of the players in the game
-     */
-    private final List<Player> players = new ArrayList<>();
-
-    public Game() {
-        // TODO: Implement configuration loading
-        board = new Board(BOARD_ROWS, BOARD_COLUMNS);
+        if (simpleGame) {
+            currentState = new PreWorkersGame(board, players, MAX_WORKERS);
+        } else {
+            currentState = new PreGodsGame(board, players, MAX_WORKERS, gods);
+        }
     }
 
+    /**
+     * Obtain the game Board
+     * @return The Board
+     *
+     * <strong>This method has no side effect</strong>
+     */
     public Board getBoard() {
-        return board;
+        return currentState.getBoard();
     }
 
     /**
-     * Get the current player
-     * @return The player
-     */
-    // TODO: Implement method
-    public Player getCurrentPlayer() { return null; }
-
-    public List<Player> getPlayers() {
-        return List.copyOf(players);
-    }
-
-    /**
-     *  Get the list of the other players
+     * Obtain the list of every Player
      * @return The list of players
+     *
+     * <strong>This method has no side effect</strong>
      */
-    public List<Player> getOpponents() {
-        List<Player> opponents = getPlayers();
-        players.remove(getCurrentPlayer());
-
-        return opponents;
+    public List<Player> getPlayers() {
+        return currentState.getPlayers();
     }
 
     /**
-     * Select the simple version of the game
-     * @param isSimple Flag true for a simple game, false if not
+     * Get the list of the other players
+     * @param player The player
+     * @return The list of opponent players
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public void selectSimpleGame(boolean isSimple) {}
+    public List<Player> getOpponents(Player player) {
+        return currentState.getOpponents(player);
+    }
 
     /**
-     * Starts the setup phase of the game
+     * Obtain the current player that is able to interact with the game
+     * Calling this method repeatedly should not result in a different player unless other methods got called
+     * @return The Player
      */
-    // TODO: Implement method
-    public void preStartGame() {}
+    public Player getCurrentPlayer() {
+        return currentState.getCurrentPlayer();
+    }
 
     /**
-     * Spawns the workers on the board
-     * @param workers List of the workers to spawn
+     * Get the list of available gods
+     * If the selection has not been made the list will contain every god configured
+     * Otherwise, the list will contain only the remaining gods that can be picked by the current player
+     *
+     * @return The List of gods
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public void spawnWorkers(List<Worker> workers) {}
+    public List<God> getAvailableGods() {
+        return currentState.getAvailableGods();
+    }
+
+    /**
+     * Get the number of cards to be selected
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public int getSelectGodsCount() {
+        return currentState.getSelectGodsCount();
+    }
+
+    /**
+     * Check if the gods provided can be selected
+     * @param gods The list of the chosen god cards
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public boolean checkCanSelectGods(List<God> gods) {
+        return currentState.checkCanSelectGods(gods);
+    }
 
     /**
      * Select the god cards to be used in the current game
-     * @param godList The list of all the god cards
+     * @param gods The list of the chosen god cards
      */
-    // TODO: Implement method
-    public void selectGods(List<God> godList) {}
-
-    public List<God> getAvailableGods() {
-        return List.copyOf(availableGods);
+    public void selectGods(List<God> gods) {
+        currentState.selectGods(gods);
+        updateState();
     }
 
     /**
-     * Select your god card between the available gods
-     * @param player the player currently choosing
-     * @param god the still available god cards
+     * Select the god card, between the available gods, to be used by the current player
+     * @param god The god card, must be still available
      */
-    // TODO: Implement method
-    public void chooseGod(Player player, God god) {}
+    public void chooseGod(God god) {
+        currentState.chooseGod(god);
+        updateState();
+    }
 
     /**
-     * Starts the real game
+     * The list of available cells where a new Worker can be placed
+     * @return The list of cells
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public void startGame() {}
+    public List<Cell> getAvailableCells() {
+        return currentState.getAvailableCells();
+    }
 
     /**
-     * Starts the turn of a player
-     * @param currentPlayer The player whose turn is starting
+     * Spawns the worker, adding it to the current Player
+     * @param worker The Worker
      */
-    // TODO: Implement method
-    public void startTurn(Player currentPlayer) {}
+    public void spawnWorker(Worker worker) {
+        currentState.spawnWorker(worker);
+        updateState();
+    }
 
     /**
      * Get the available moves for a worker
      * @param worker The worker to move
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public List<Cell> getAvailableMoves(Worker worker) { return null; }
+    public List<Cell> getAvailableMoves(Worker worker) {
+        return currentState.getAvailableMoves(worker);
+    }
 
     /**
      * Move a worker to another cell
      * @param worker The worker to move
      * @param destination The destination of the worker
      */
-    // TODO: Implement method
-    public void moveWorker(Worker worker, Cell destination) {}
+    public void moveWorker(Worker worker, Cell destination) {
+        currentState.moveWorker(worker, destination);
+        updateState();
+    }
 
     /**
      * Get the available builds for a worker
      * @param worker The worker building the block
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public List<Cell> getAvailableBlockBuilds(Worker worker) { return null; }
+    public List<Cell> getAvailableBlockBuilds(Worker worker) {
+        return currentState.getAvailableBlockBuilds(worker);
+    }
 
     /**
      * Build a block in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
      */
-    // TODO: Implement method
-    public void buildBlock(Worker worker, Cell destination) {}
+    public void buildBlock(Worker worker, Cell destination) {
+        currentState.buildBlock(worker, destination);
+        updateState();
+    }
 
     /**
      * Get the available dome builds for a worker
      * @param worker The worker building the block
+     *
+     * <strong>This method has no side effect</strong>
      */
-    // TODO: Implement method
-    public List<Cell> getAvailableDomeBuilds(Worker worker) { return null; }
+    public List<Cell> getAvailableDomeBuilds(Worker worker) {
+        return currentState.getAvailableDomeBuilds(worker);
+    }
 
     /**
      * Build a dome in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
      */
-    // TODO: Implement method
-    public void buildDome(Worker worker, Cell destination) {}
+    public void buildDome(Worker worker, Cell destination) {
+        currentState.buildDome(worker, destination);
+        updateState();
+    }
+
+    /**
+     * Get the available force moves for the worker targeting an opponent worker
+     * @param worker The worker to use
+     * @param target The worker to be forced
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public List<Cell> getAvailableForces(Worker worker, Worker target) {
+        return currentState.getAvailableForces(worker, target);
+    }
+
+    /**
+     * Force the target to another cell
+     * @param worker The worker to use
+     * @param target The worker to be forced
+     * @param destination The destination of the target
+     */
+    public void forceWorker(Worker worker, Worker target, Cell destination) {
+        currentState.forceWorker(worker, target, destination);
+        updateState();
+    }
 
     /**
      * Ends the current turn
      */
-    // TODO: Implement method
-    public void endTurn() {}
+    public void endTurn() {
+        currentState.endTurn();
+        updateState();
+    }
 
-    /**
-     * Ends the game
-     */
-    // TODO: Implement method
-    public void endGame() {}
+    private void updateState() {
+        currentState = currentState.nextState();
+    }
 
 }

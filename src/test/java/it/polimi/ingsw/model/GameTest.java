@@ -1,29 +1,22 @@
 package it.polimi.ingsw.model;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static it.polimi.ingsw.model.TestConstants.equalsNoOrder;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
-    private Game game;
-
-    @BeforeEach
-    void setUp() {
-        game = new Game();
-    }
-
     /**
-     * Check the simpleGame setter and Exception for the God choice in a simple game
+     * Check that the simple game rule throws an exception for the God choice in a simple game
      */
     @Test
     void checkSimpleGame() {
-        game.selectSimpleGame(true);
+        Game game = new Game(List.of(new Player("A", 0), new Player("B", 1)), true);
         assertThrows(IllegalStateException.class, () -> game.selectGods(new ArrayList<>()));
     }
 
@@ -32,10 +25,13 @@ class GameTest {
      */
     @Test
     void checkGetOpponents() {
-        List<Player> opponents = game.getPlayers();
-        opponents.remove(game.getCurrentPlayer());
+        Game game = constructNormalGame();
 
-        assertEquals(game.getOpponents(), opponents);
+        List<Player> opponents = game.getPlayers();
+        Player player = opponents.get(0);
+        opponents.remove(player);
+
+        assertEquals(game.getOpponents(player), opponents);
     }
 
     /**
@@ -43,8 +39,10 @@ class GameTest {
      */
     @Test
     void checkGetAvailableGods() {
+        Game game = constructNormalGame();
+
         List<God> availableGods = game.getAvailableGods();
-        game.chooseGod(game.getCurrentPlayer(), availableGods.get(0));
+        game.chooseGod(availableGods.get(0));
         availableGods.remove(0);
 
         assertEquals(availableGods, game.getAvailableGods());
@@ -54,66 +52,67 @@ class GameTest {
      * Check the getAvailableMoves method with an angular worker, a side one and an inner one.
      * Later put constraints in movement like neighbor workers, tall towers and domes
      */
-    // TODO: Fix equals. Need equalsNoOrder
     @Test
     void checkGetAvailableMoves() {
-        Worker worker1 = new Worker(getCell(0,0));
-        Worker worker2 = new Worker(getCell(2,0));
-        Worker worker3 = new Worker(getCell(3,3));
+        Game game = constructNormalGame();
 
-        List<Worker> workers = new ArrayList<>();
-        workers.add(worker1);
-        workers.add(worker2);
-        workers.add(worker3);
-        game.spawnWorkers(workers);
+        Worker worker1 = new Worker(getCell(game, 0,0));
+        Worker worker2 = new Worker(getCell(game, 2,0));
+        Worker worker3 = new Worker(getCell(game, 3,3));
 
-        assertTrue(() -> game.getAvailableMoves(worker1).equals(
+        game.spawnWorker(worker1);
+        game.spawnWorker(worker2);
+        game.spawnWorker(worker3);
+
+        assertTrue(() -> equalsNoOrder(
+                game.getAvailableMoves(worker1),
                 Arrays.asList(
-                        getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(0, 1)
+                        getCell(game, 1, 0),
+                        getCell(game, 1, 1),
+                        getCell(game, 0, 1)
                 )
         ));
 
-        assertTrue(() -> game.getAvailableMoves(worker2).equals(
+        assertTrue(() -> equalsNoOrder(
+                game.getAvailableMoves(worker2),
                 Arrays.asList(
-                        getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(2, 1),
-                        getCell(3, 1),
-                        getCell(3, 0)
+                        getCell(game, 1, 0),
+                        getCell(game, 1, 1),
+                        getCell(game, 2, 1),
+                        getCell(game, 3, 1),
+                        getCell(game, 3, 0)
                 )
         ));
 
-        assertTrue(() -> game.getAvailableMoves(worker3).equals(
+        assertTrue(() -> equalsNoOrder(
+                game.getAvailableMoves(worker3),
                 Arrays.asList(
-                        getCell(2, 2),
-                        getCell(2, 3),
-                        getCell(2, 4),
-                        getCell(3, 2),
-                        getCell(3, 4),
-                        getCell(4, 2),
-                        getCell(4, 3),
-                        getCell(4, 4)
+                        getCell(game, 2, 2),
+                        getCell(game, 2, 3),
+                        getCell(game, 2, 4),
+                        getCell(game, 3, 2),
+                        getCell(game, 3, 4),
+                        getCell(game, 4, 2),
+                        getCell(game, 4, 3),
+                        getCell(game, 4, 4)
                 )
         ));
 
-        Worker worker4 = new Worker(getCell(4,4));
-        List<Worker> workers2 = new ArrayList<>();
-        workers2.add(worker4);
-        game.spawnWorkers(workers2);
-        // TODO: Set cell level directly?
-        game.buildBlock(worker4, getCell(4, 3));
-        game.buildBlock(worker4, getCell(4, 3));
-        getCell(4, 2).setDoomed(true);
+        Worker worker4 = new Worker(getCell(game, 4,4));
+        game.spawnWorker(worker4);
 
-        assertTrue(() -> game.getAvailableMoves(worker2).equals(
+        getCell(game, 4, 3).setLevel(1);
+        getCell(game, 4, 3).setLevel(2);
+        getCell(game, 4, 2).setDoomed(true);
+
+        assertTrue(() -> equalsNoOrder(
+                game.getAvailableMoves(worker2),
                 Arrays.asList(
-                        getCell(2, 2),
-                        getCell(2, 3),
-                        getCell(2, 4),
-                        getCell(3, 2),
-                        getCell(3, 4)
+                        getCell(game, 2, 2),
+                        getCell(game, 2, 3),
+                        getCell(game, 2, 4),
+                        getCell(game, 3, 2),
+                        getCell(game, 3, 4)
                 )
         ));
     }
@@ -124,67 +123,74 @@ class GameTest {
      */
     @Test
     void checkGetAvailableBlockBuilds() {
-        Worker worker1 = new Worker(getCell(0,0));
-        Worker worker2 = new Worker(getCell(2,0));
-        Worker worker3 = new Worker(getCell(3,3));
+        Game game = constructNormalGame();
 
-        List<Worker> workers = new ArrayList<>();
-        workers.add(worker1);
-        workers.add(worker2);
-        workers.add(worker3);
-        game.spawnWorkers(workers);
+        Worker worker1 = new Worker(getCell(game, 0,0));
+        Worker worker2 = new Worker(getCell(game, 2,0));
+        Worker worker3 = new Worker(getCell(game, 3,3));
+
+        game.spawnWorker(worker1);
+        game.spawnWorker(worker2);
+        game.spawnWorker(worker3);
 
         assertTrue(() -> game.getAvailableBlockBuilds(worker1).equals(
                 Arrays.asList(
-                        getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(0, 1)
+                        getCell(game, 1, 0),
+                        getCell(game, 1, 1),
+                        getCell(game, 0, 1)
                 )
         ));
 
         assertTrue(() -> game.getAvailableBlockBuilds(worker2).equals(
                 Arrays.asList(
-                        getCell(1, 0),
-                        getCell(1, 1),
-                        getCell(2, 1),
-                        getCell(3, 1),
-                        getCell(3, 0)
+                        getCell(game, 1, 0),
+                        getCell(game, 1, 1),
+                        getCell(game, 2, 1),
+                        getCell(game, 3, 1),
+                        getCell(game, 3, 0)
                 )
         ));
 
         assertTrue(() -> game.getAvailableBlockBuilds(worker2).equals(
                 Arrays.asList(
-                        getCell(2, 2),
-                        getCell(2, 3),
-                        getCell(2, 4),
-                        getCell(3, 2),
-                        getCell(3, 4),
-                        getCell(4, 2),
-                        getCell(4, 3),
-                        getCell(4, 4)
+                        getCell(game, 2, 2),
+                        getCell(game, 2, 3),
+                        getCell(game, 2, 4),
+                        getCell(game, 3, 2),
+                        getCell(game, 3, 4),
+                        getCell(game, 4, 2),
+                        getCell(game, 4, 3),
+                        getCell(game, 4, 4)
                 )
         ));
 
-        Worker worker4 = new Worker(getCell(4,4));
-        List<Worker> workers2 = new ArrayList<>();
-        workers2.add(worker4);
-        game.spawnWorkers(workers2);
-        getCell(2, 2).setDoomed(true);
+        Worker worker4 = new Worker(getCell(game, 4,4));
+        game.spawnWorker(worker4);
+        getCell(game, 2, 2).setDoomed(true);
 
         assertTrue(() -> game.getAvailableMoves(worker2).equals(
                 Arrays.asList(
-                        getCell(2, 3),
-                        getCell(2, 4),
-                        getCell(3, 2),
-                        getCell(3, 4),
-                        getCell(4, 2),
-                        getCell(4, 3)
+                        getCell(game, 2, 3),
+                        getCell(game, 2, 4),
+                        getCell(game, 3, 2),
+                        getCell(game, 3, 4),
+                        getCell(game, 4, 2),
+                        getCell(game, 4, 3)
                 )
         ));
     }
 
-    private Cell getCell(int x, int y) {
+    private Cell getCell(Game game, int x, int y) {
         return game.getBoard().getCellFromCoords(x, y);
+    }
+
+    private Game constructNormalGame() {
+        List<Player> players = new ArrayList<>();
+        players.add(new Player("A", 1));
+        players.add(new Player("B", 2));
+        players.add(new Player("C", 3));
+
+        return new Game(players, false);
     }
 
 }
