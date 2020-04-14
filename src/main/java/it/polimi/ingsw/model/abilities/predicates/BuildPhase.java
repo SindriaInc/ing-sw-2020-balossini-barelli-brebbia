@@ -11,7 +11,7 @@ public class BuildPhase implements ITriPredicate {
     /**
      * Max builds per build phase
      */
-    private int maxBuilds;
+    private final int maxBuilds;
 
     public BuildPhase(int maxMoves) {
         this.maxBuilds = maxMoves;

@@ -54,6 +54,7 @@ class AbstractGameStateTest {
         assertThrows(IllegalStateException.class, () -> abstractGameState.buildDome(null, null));
         assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableForces(null, null));
         assertThrows(IllegalStateException.class, () -> abstractGameState.forceWorker(null, null, null));
+        assertThrows(IllegalStateException.class, () -> abstractGameState.checkCanEndTurn());
         assertThrows(IllegalStateException.class, () -> abstractGameState.endTurn());
     }
 
@@ -64,6 +65,24 @@ class AbstractGameStateTest {
     }
 
     @Test
+    void checkGetOpponents() {
+        List<Player> opponents = abstractGameState.getPlayers();
+        Player player = opponents.get(0);
+        opponents.remove(player);
+
+        assertEquals(abstractGameState.getOpponents(player), opponents);
+    }
+
+    @Test
+    void testRemove() {
+        List<Player> current = new LinkedList<>(players);
+        current.remove(1);
+
+        abstractGameState.removePlayer(players.get(1));
+        assertEquals(current, abstractGameState.getPlayers());
+    }
+
+    @Test
     void testSort() {
         List<Player> sorted = new LinkedList<>(players);
         Collections.reverse(sorted);
@@ -71,6 +90,9 @@ class AbstractGameStateTest {
         abstractGameState.sortPlayers(sorted);
         assertEquals(sorted, abstractGameState.getPlayers());
         assertNotEquals(players, abstractGameState.getPlayers());
+
+        sorted.remove(0);
+        assertThrows(IllegalArgumentException.class, () -> abstractGameState.sortPlayers(sorted));
     }
 
 }

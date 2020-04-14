@@ -10,7 +10,7 @@ public class MovePhase implements ITriPredicate {
     /**
      * Max moves per move phase
      */
-    private int maxMoves;
+    private final int maxMoves;
 
     public MovePhase(int maxMoves) {
         this.maxMoves = maxMoves;

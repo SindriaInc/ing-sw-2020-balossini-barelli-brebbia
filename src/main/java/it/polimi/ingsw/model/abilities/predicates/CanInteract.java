@@ -7,8 +7,8 @@ import it.polimi.ingsw.model.abilities.ITriPredicate;
 
 public class CanInteract implements ITriPredicate {
 
-    private ITriPredicate neighbourCell = new NeighbourCell();
-    private ITriPredicate sameCell = new SameCell();
+    private final ITriPredicate neighbourCell = new NeighbourCell();
+    private final ITriPredicate sameCell = new SameCell();
 
     /**
      * Returns true if the Worker can interact with the Cell

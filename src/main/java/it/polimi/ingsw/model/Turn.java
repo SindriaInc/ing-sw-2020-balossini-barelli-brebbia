@@ -28,10 +28,10 @@ public class Turn {
 
     }
 
-    public class Action {
+    public static class Action {
 
-        private ActionType type;
-        private Cell cell;
+        private final ActionType type;
+        private final Cell cell;
 
         public Action(ActionType type, Cell cell) {
             this.type = type;

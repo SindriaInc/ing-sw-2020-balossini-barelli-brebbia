@@ -82,6 +82,10 @@ public abstract class AbstractGameState {
         throw new IllegalStateException();
     }
 
+    public boolean checkCanEndTurn() {
+        throw new IllegalStateException();
+    }
+
     public void endTurn() {
         throw new IllegalStateException();
     }
@@ -102,10 +106,17 @@ public abstract class AbstractGameState {
     }
 
     /**
+     * Remove the player from the players list
+     */
+    final void removePlayer(Player player) {
+        this.players.remove(player);
+    }
+
+    /**
      * Update the list of players with the given sorted list
      * The list must contain each and every player originally present
      */
-    void sortPlayers(List<Player> players) {
+    final void sortPlayers(List<Player> players) {
         if (players.size() != this.players.size() || !players.containsAll(this.players) || !this.players.containsAll(players)) {
             throw new IllegalArgumentException("The new player list is not a sort of the original list");
         }

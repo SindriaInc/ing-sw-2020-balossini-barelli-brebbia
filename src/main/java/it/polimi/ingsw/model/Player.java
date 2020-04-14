@@ -115,6 +115,20 @@ public class Player {
         abilities.doBuildDome(turn, cell);
     }
 
+    /**
+     * @see IAbilities#checkCanForce(Turn, Worker, Cell)
+     */
+    public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
+        return abilities.checkCanForce(turn, worker, cell);
+    }
+
+    /**
+     * @see IAbilities#doForce(Turn, Worker, Cell)
+     */
+    public void doForce(Turn turn, Worker worker, Cell cell) {
+        abilities.doForce(turn, worker, cell);
+    }
+
     public Optional<God> getGod() {
         return Optional.ofNullable(god);
     }

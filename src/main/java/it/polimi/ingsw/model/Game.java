@@ -29,12 +29,12 @@ public class Game {
          */
 
         Board board = new Board(BOARD_ROWS, BOARD_COLUMNS);
-        List<God> gods = List.of();
+        Deck deck = new Deck(List.of());
 
         if (simpleGame) {
             currentState = new PreWorkersGame(board, players, MAX_WORKERS);
         } else {
-            currentState = new PreGodsGame(board, players, MAX_WORKERS, gods);
+            currentState = new PreGodsGame(board, players, MAX_WORKERS, deck.getGods());
         }
     }
 
@@ -103,6 +103,7 @@ public class Game {
     /**
      * Check if the gods provided can be selected
      * @param gods The list of the chosen god cards
+     * @return true if the selection is valid
      *
      * <strong>This method has no side effect</strong>
      */
@@ -227,6 +228,16 @@ public class Game {
     public void forceWorker(Worker worker, Worker target, Cell destination) {
         currentState.forceWorker(worker, target, destination);
         updateState();
+    }
+
+    /**
+     * Check if the current player can end the turn
+     * @return true if the turn can be ended
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public boolean checkCanEndTurn() {
+        return currentState.checkCanEndTurn();
     }
 
     /**

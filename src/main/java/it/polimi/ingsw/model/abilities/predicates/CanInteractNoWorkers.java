@@ -7,7 +7,7 @@ import it.polimi.ingsw.model.abilities.ITriPredicate;
 
 public class CanInteractNoWorkers implements ITriPredicate {
 
-    private ITriPredicate canInteract = new CanInteract();
+    private final ITriPredicate canInteract = new CanInteract();
 
     /**
      * Returns true if the Worker can interact with the Cell and there is no Worker in the cell
