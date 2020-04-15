@@ -34,6 +34,9 @@ class PreGodsGameTest {
         preGodsGame = new PreGodsGame(board, players, TestConstants.MAX_WORKERS, gods);
     }
 
+    /**
+     * Check the list of gods
+     */
     @Test
     void checkGetAvailableGods() {
         assertEquals(preGodsGame.getAvailableGods(), gods);
@@ -51,11 +54,17 @@ class PreGodsGameTest {
         assertEquals(preGodsGame.getAvailableGods(), List.of());
     }
 
+    /**
+     * Check the number of player to assign the god cards
+     */
     @Test
     void checkGetSelectGodsCount() {
         assertEquals(preGodsGame.getSelectGodsCount(), playerCount);
     }
 
+    /**
+     * Check the correct selection of gods
+     */
     @Test
     void checkCanSelectGods() {
         assertTrue(preGodsGame.checkCanSelectGods(List.of(gods.get(0), gods.get(1))));
@@ -65,6 +74,9 @@ class PreGodsGameTest {
         assertFalse(preGodsGame.checkCanSelectGods(List.of(gods.get(0), gods.get(0))));
     }
 
+    /**
+     * Check that can't select gods after a selection has already been done
+     */
     @Test
     void checkSelectGods() {
         assertThrows(IllegalArgumentException.class, () -> preGodsGame.selectGods(List.of()));
@@ -75,13 +87,15 @@ class PreGodsGameTest {
         assertEquals(preGodsGame.getPlayers().get(0), preGodsGame.getCurrentPlayer());
         assertEquals(preGodsGame.getAvailableGods(), List.of(gods.get(0), gods.get(1)));
 
-        // Can't select gods after a selection has already been done
         assertThrows(IllegalStateException.class, () -> preGodsGame.selectGods(List.of()));
     }
 
+    /**
+     * Check that a player can't choose a god before the challenger chooses the available gods, the correct selection
+     * and that after each player has chosen a god, the state should change
+     */
     @Test
     void checkChooseGod() {
-        // Can't choose a god before the challenger chooses the available gods
         assertThrows(IllegalStateException.class, () -> preGodsGame.chooseGod(gods.get(0)));
 
         preGodsGame.selectGods(List.of(gods.get(0), gods.get(1)));
@@ -94,7 +108,6 @@ class PreGodsGameTest {
 
         preGodsGame.chooseGod(gods.get(0));
 
-        // After each player has chosen a god, the state should change
         assertNotEquals(preGodsGame, preGodsGame.nextState());
         assertEquals(preGodsGame.getAvailableGods(), List.of());
     }

@@ -24,6 +24,9 @@ class PreWorkersGameTest {
         preWorkersGame = new PreWorkersGame(board, players, TestConstants.MAX_WORKERS);
     }
 
+    /**
+     * Check the available cell to place the worker
+     */
     @Test
     void checkGetAvailableCells() {
         assertEquals(preWorkersGame.getCurrentPlayer(), players.get(0));
@@ -37,6 +40,9 @@ class PreWorkersGameTest {
         assertTrue(equalsNoOrder(newCells, preWorkersGame.getAvailableCells()));
     }
 
+    /**
+     * Check that a player can spawn a worker but not on an existing worker
+     */
     @Test
     void checkSpawnWorker() {
         assertThrows(IllegalArgumentException.class, () -> preWorkersGame.spawnWorker(new Worker(new Cell(-1, -1))));
@@ -46,7 +52,6 @@ class PreWorkersGameTest {
         assertEquals(preWorkersGame, preWorkersGame.nextState());
         assertEquals(preWorkersGame.getCurrentPlayer(), players.get(0));
 
-        // Can't spawn a worker over an existing worker
         assertThrows(IllegalArgumentException.class, () -> preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 0))));
 
         preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 1)));

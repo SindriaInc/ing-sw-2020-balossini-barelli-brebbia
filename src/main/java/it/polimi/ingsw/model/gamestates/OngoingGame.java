@@ -143,7 +143,7 @@ public class OngoingGame extends AbstractGameState {
         }
 
         if (built) {
-            playerIndex = playerIndex + 1 % getPlayers().size();
+            playerIndex = (playerIndex + 1) % getPlayers().size();
             return;
         }
 

@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.gamestates.OngoingGame;
+import it.polimi.ingsw.model.gamestates.PreGodsGame;
+import it.polimi.ingsw.model.gamestates.PreWorkersGame;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import static it.polimi.ingsw.model.TestConstants.equalsNoOrder;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
+
 
     /**
      * Check that the simple game rule throws an exception for the God choice in a simple game
@@ -178,6 +182,63 @@ class GameTest {
                         getCell(game, 4, 3)
                 )
         ));
+    }
+
+    /**
+     * Simulate a simple game where two turns one player loses
+     */
+    @Test
+    void SimpleGameWithStates(){
+        List<Player> players = new ArrayList<>();
+        Player player1 = new Player("A", 1);
+        Player player2 = new Player("B", 2);
+        players.add(player1);
+        players.add(player2);
+        Game game1 = new Game(players, true);
+        Worker worker1 = new Worker(getCell(game1,1,0));
+        Worker worker2 = new Worker(getCell(game1,3,3));
+        Worker worker3 = new Worker(getCell(game1,4,2));
+        Worker worker4 = new Worker(getCell(game1,4,2));
+        Worker worker5 = new Worker(getCell(game1,2,1));
+        Worker worker6 = new Worker(getCell(game1,4,0));
+
+        game1.spawnWorker(worker1);
+        game1.spawnWorker(worker2);
+        game1.spawnWorker(worker3);
+        assertThrows(IllegalArgumentException.class, ()->game1.spawnWorker(worker4));
+        game1.spawnWorker(worker5);
+
+        game1.moveWorker(worker1, getCell(game1,2,0));
+        assertThrows(IllegalStateException.class, game1::endTurn);
+        assertThrows(IllegalArgumentException.class, ()->game1.buildDome(worker1,getCell(game1,3,0)));
+        game1.buildBlock(worker1,getCell(game1,3,0));
+        game1.endTurn();
+
+        assertThrows(IllegalArgumentException.class, ()->game1.moveWorker(worker5,getCell(game1,2,0)));
+        game1.moveWorker(worker3, getCell(game1,4,3));
+        assertThrows(IllegalStateException.class, game1::endTurn);
+        game1.buildBlock(worker3, getCell(game1,3,2));
+        game1.endTurn();
+
+        getCell(game1, 1,0).setLevel(3);
+        getCell(game1, 1,1).setLevel(3);
+        getCell(game1, 2,1).setLevel(3);
+        getCell(game1, 2,2).setLevel(3);
+        getCell(game1, 3,0).setLevel(3);
+        getCell(game1, 2,3).setLevel(3);
+        getCell(game1, 2,4).setLevel(3);
+        getCell(game1, 3,4).setLevel(3);
+        getCell(game1, 4,4).setLevel(3);
+        getCell(game1, 4,3).setLevel(3);
+        getCell(game1, 4,2).setLevel(3);
+        getCell(game1, 3,2).setLevel(3);
+        getCell(game1, 3,1).setLevel(3);
+        game1.endTurn();
+        assertFalse(game1.getPlayers().contains(player1));
+
+
+
+
     }
 
     private Cell getCell(Game game, int x, int y) {

@@ -30,6 +30,9 @@ class OngoingGameTest {
         ongoingGame = new OngoingGame(board, players);
     }
 
+    /**
+     * Check the available cell to move the worker
+     */
     @Test
     void checkGetAvailableMoves() {
         assertEquals(0, ongoingGame.getAvailableMoves(getWorker(0, 0)).size());
@@ -37,28 +40,31 @@ class OngoingGameTest {
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.getAvailableMoves(getWorker(1, 0)));
     }
 
+    /**
+     * Check that a player can't move the worker in a cell not contained in the list of available cells,
+     * can't move more than one time (with default abilities) and can't move two workers
+     */
     @Test
     void checkMoveSingleWorker() {
-        // Can't move the worker in a cell not contained in the list of available cells
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)));
 
         Worker worker = getWorker(0, 1);
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
-        // Can't move more than one time (with default abilities)
         assertEquals(0, ongoingGame.getAvailableMoves(worker).size());
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
 
-        // Can't move two workers
         Worker worker2 = players.get(0).getWorkers().get(0);
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that a player can't build before moving with default abilities
+     */
     @Test
     void checkGetAvailableBlockAndDomeBuilds() {
-        // Can't build before moving with default abilities
         assertEquals(0, ongoingGame.getAvailableBlockBuilds(getWorker(0, 0)).size());
         assertEquals(0, ongoingGame.getAvailableBlockBuilds(getWorker(0, 1)).size());
         assertEquals(0, ongoingGame.getAvailableDomeBuilds(getWorker(0, 0)).size());
@@ -77,33 +83,38 @@ class OngoingGameTest {
         assertEquals(1, ongoingGame.getAvailableDomeBuilds(worker).size());
     }
 
+    /**
+     * Check that a player can't build with another worker, can't build on a cell not contained in the list of available cells,
+     * can't build more than one time (with default abilities), can't build a dome after building (with default abilities) and
+     * can't move after building (with default abilities)
+     */
     @Test
     void checkBuildBlock() {
         Worker worker = getWorker(0, 1);
 
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
-        // Can't build with another worker
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 2)));
 
-        // Can't build on a cell not contained in the list of available cells
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 2)));
 
         ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
 
-        // Can't build more than one time (with default abilities)
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
 
-        // Can't build a dome after building (with default abilities)
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
 
-        // Can't move after building (with default abilities)
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that a player can't build a dome with another worker, can't build a dome on a cell not contained in the list of available cells,
+     * can't build a dome more than one time (with default abilities), can't build a block after building (with default abilities) and
+     * can't move after building (with default abilities)
+     */
     @Test
     void checkBuildDome() {
         Worker worker = getWorker(0, 1);
@@ -114,39 +125,41 @@ class OngoingGameTest {
         board.getCellFromCoords(0, 3).setLevel(3);
         board.getCellFromCoords(1, 3).setLevel(3);
 
-        // Can't build with another worker
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(0, 2)));
 
-        // Can't build on a cell not contained in the list of available cells
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(0, 2)));
 
         ongoingGame.buildDome(worker, board.getCellFromCoords(0, 3));
 
-        // Can't build more than one time (with default abilities)
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
 
-        // Can't build a block after building (with default abilities)
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
 
-        // Can't move after building (with default abilities)
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that, with default abilities, can't be offered to a player to force
+     */
     @Test
     void checkGetAvailableForces() {
-        // Can't force with default abilities
         assertEquals(0, ongoingGame.getAvailableForces(getWorker(0, 0), getWorker(1, 0)).size());
     }
 
+    /**
+     * Check that a player can't force with default abilities
+     */
     @Test
     void checkDoForce() {
-        // Can't force with default abilities
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.forceWorker(getWorker(0, 0), getWorker(1, 0), board.getCellFromCoords(2, 0)));
     }
 
+    /**
+     * Check that a player can end his turn only after moving and building
+     */
     @Test
     void checkCanEndTurnAfterMovingAndBuilding() {
         Worker worker = getWorker(0, 1);
@@ -164,6 +177,9 @@ class OngoingGameTest {
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that a player and the next player can end their turns
+     */
     @Test
     void checkEndTurn() {
         Worker worker = getWorker(0, 1);
@@ -178,7 +194,6 @@ class OngoingGameTest {
 
         ongoingGame.endTurn();
 
-        // Check for the next player
         Worker worker2 = getWorker(1, 0);
 
         assertThrows(IllegalStateException.class, () -> ongoingGame.endTurn());
@@ -194,9 +209,11 @@ class OngoingGameTest {
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that, if trapped, a player loses
+     */
     @Test
     void checkLose() {
-        // Trap the workers in their current position
         board.getCellFromCoords(0, 2).setLevel(2);
         board.getCellFromCoords(1, 2).setLevel(2);
 
