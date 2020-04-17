@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,7 @@ class AbstractGameStateTest {
 
     @Test
     void checkGetOpponents() {
-        List<Player> opponents = abstractGameState.getPlayers();
+        List<Player> opponents = new ArrayList<>(abstractGameState.getPlayers());
         Player player = opponents.get(0);
         opponents.remove(player);
 

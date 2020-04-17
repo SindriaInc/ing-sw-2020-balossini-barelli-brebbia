@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.IAbilities;
 import it.polimi.ingsw.model.abilities.decorators.AdditionalBuildOnDifferentCell;
+import it.polimi.ingsw.model.abilities.decorators.AdditionalBuildOnSameCell;
 import it.polimi.ingsw.model.abilities.decorators.BlockOnPlayerMoveUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,8 @@ class GodTest {
         god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(BlockOnPlayerMoveUp.class, true));
 
         IAbilities abilities = new DefaultAbilities();
-        abilities = god.applyOpponentAbilities(abilities, new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE));
+        Player player = new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE);
+        abilities = god.applyOpponentAbilities(abilities, player);
 
         assertFalse(abilities instanceof DefaultAbilities);
         assertTrue(abilities instanceof BlockOnPlayerMoveUp);
@@ -71,6 +73,20 @@ class GodTest {
         abilities = god.applyAbilities(abilities);
 
         assertTrue(abilities instanceof DefaultAbilities);
+    }
+
+    @Test
+    void testInvalidEffect() {
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(
+                BlockOnPlayerMoveUp.class, false,
+                AdditionalBuildOnSameCell.class, true
+        ));
+
+        IAbilities abilities = new DefaultAbilities();
+        Player player = new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE);
+
+        assertThrows(IllegalStateException.class, () -> god.applyAbilities(abilities));
+        assertThrows(IllegalStateException.class, () -> god.applyOpponentAbilities(abilities, player));
     }
 
 }

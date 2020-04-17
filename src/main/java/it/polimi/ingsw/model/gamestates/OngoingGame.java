@@ -113,7 +113,7 @@ public class OngoingGame extends AbstractGameState {
             return true;
         }
 
-        return !hasOptions(turn.getWorker());
+        return hasCompletedMandatoryInteractions(this.turn);
     }
 
     @Override
@@ -131,18 +131,7 @@ public class OngoingGame extends AbstractGameState {
             return;
         }
 
-        boolean moved = false;
-        boolean built = false;
-
-        for (Turn.Action action : turn.getActions()) {
-            if (action.getType() == Turn.ActionType.MOVEMENT) {
-                moved = true;
-            } else if (action.getType().isBuild() && moved) {
-                built = true;
-            }
-        }
-
-        if (built) {
+        if (hasCompletedMandatoryInteractions(turn)) {
             playerIndex = (playerIndex + 1) % getPlayers().size();
             return;
         }
@@ -220,6 +209,21 @@ public class OngoingGame extends AbstractGameState {
         }
 
         return getAvailableMoves(worker).size() > 0;
+    }
+
+    private boolean hasCompletedMandatoryInteractions(Turn turn) {
+        boolean moved = false;
+        boolean built = false;
+
+        for (Turn.Action action : turn.getActions()) {
+            if (action.getType() == Turn.ActionType.MOVEMENT) {
+                moved = true;
+            } else if (action.getType().isBuild() && moved) {
+                built = true;
+            }
+        }
+
+        return built;
     }
 
     private void doLose() {

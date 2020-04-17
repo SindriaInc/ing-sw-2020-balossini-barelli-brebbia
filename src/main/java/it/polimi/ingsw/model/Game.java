@@ -19,17 +19,12 @@ public class Game {
 
     /**
      * Instantiates the Game
-     * @param players The Players
+     * @param players The list of players
+     * @param deck The deck, containing the list of Gods
      * @param simpleGame True for a simple game, skipping god selection
      */
-    public Game(List<Player> players, boolean simpleGame) {
-        /*
-         * TODO: Implement configuration loading
-         * Needs to load: Board configuration, deck
-         */
-
+    public Game(List<Player> players, Deck deck, boolean simpleGame) {
         Board board = new Board(BOARD_ROWS, BOARD_COLUMNS);
-        Deck deck = new Deck(List.of());
 
         if (simpleGame) {
             currentState = new PreWorkersGame(board, players, MAX_WORKERS);
