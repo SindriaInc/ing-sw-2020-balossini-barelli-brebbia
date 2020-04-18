@@ -42,6 +42,9 @@ class BlockOnPlayerMoveUpTest {
     void checkAllowMoveUp() {
         enemyWorker.move(board.getCellFromCoords(1, 1)); // No up movement
 
+        board.getCellFromCoords(1, 0).setLevel(1); // Cell 1,0 is now empty but one level higher
+
+        assertTrue(blockOnPlayerMoveUp.checkCanMove(turn, board.getCellFromCoords(1, 0)));
         assertTrue(blockOnPlayerMoveUp.checkCanMove(turn, board.getCellFromCoords(0, 1)));
     }
 

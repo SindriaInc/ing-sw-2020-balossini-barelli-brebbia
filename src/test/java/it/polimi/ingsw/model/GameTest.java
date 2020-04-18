@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
 import org.junit.jupiter.api.Test;
 
@@ -145,7 +146,7 @@ class GameTest {
         game.buildBlock(player1worker1, getCell(game, 3, 0));
         game.endTurn();
 
-        getCell(game, 3, 2).setLevel(3);
+        getCell(game, 3, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         assertThrows(IllegalArgumentException.class, () -> game.moveWorker(player2worker2,getCell(game, 2, 0)));
         game.moveWorker(player2worker1, getCell(game, 4, 3));
         assertThrows(IllegalStateException.class, game::endTurn);
@@ -154,19 +155,19 @@ class GameTest {
         game.endTurn();
 
         assertFalse(game.checkCanEndTurn());
-        getCell(game, 1, 0).setLevel(3);
-        getCell(game, 1, 1).setLevel(3);
-        getCell(game, 2, 1).setLevel(3);
-        getCell(game, 2, 2).setLevel(3);
-        getCell(game, 3, 0).setLevel(3);
-        getCell(game, 2, 3).setLevel(3);
-        getCell(game, 2, 4).setLevel(3);
-        getCell(game, 3, 4).setLevel(3);
-        getCell(game, 4, 4).setLevel(3);
-        getCell(game, 4, 3).setLevel(3);
-        getCell(game, 4, 2).setLevel(3);
-        getCell(game, 3, 2).setLevel(3);
-        getCell(game, 3, 1).setLevel(3);
+        getCell(game, 1, 0).setLevel(2);
+        getCell(game, 1, 1).setLevel(2);
+        getCell(game, 2, 1).setLevel(2);
+        getCell(game, 2, 2).setLevel(2);
+        getCell(game, 3, 0).setLevel(2);
+        getCell(game, 2, 3).setLevel(2);
+        getCell(game, 2, 4).setLevel(2);
+        getCell(game, 3, 4).setLevel(2);
+        getCell(game, 4, 4).setLevel(2);
+        getCell(game, 4, 3).setLevel(2);
+        getCell(game, 4, 2).setLevel(2);
+        getCell(game, 3, 2).setLevel(2);
+        getCell(game, 3, 1).setLevel(2);
         Player toRemove = game.getCurrentPlayer();
         assertTrue(game.checkCanEndTurn());
         game.endTurn();

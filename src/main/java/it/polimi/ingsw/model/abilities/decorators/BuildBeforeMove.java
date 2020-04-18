@@ -14,9 +14,9 @@ import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_UP;
 
 public class BuildBeforeMove extends AbilitiesDecorator {
 
-    private ITriPredicate canInteractNoWorkers;
-    private ITriPredicate maxBuildLevel;
-    private ITriPredicate cellLevelDifference;
+    private final ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate maxBuildLevel;
+    private final ITriPredicate cellLevelDifference;
 
     public BuildBeforeMove(IAbilities abilities) {
         super(abilities);

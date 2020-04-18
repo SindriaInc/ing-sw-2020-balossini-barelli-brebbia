@@ -121,9 +121,9 @@ class OngoingGameTest {
 
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
-        board.getCellFromCoords(0, 2).setLevel(3);
-        board.getCellFromCoords(0, 3).setLevel(3);
-        board.getCellFromCoords(1, 3).setLevel(3);
+        board.getCellFromCoords(0, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        board.getCellFromCoords(0, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
 
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(0, 2)));
 

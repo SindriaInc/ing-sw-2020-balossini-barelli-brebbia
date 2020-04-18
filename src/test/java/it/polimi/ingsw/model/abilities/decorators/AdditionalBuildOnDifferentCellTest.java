@@ -39,7 +39,9 @@ class AdditionalBuildOnDifferentCellTest {
      */
     @Test
     void checkCanBuildInAnotherCell() {
-        board.getCellFromCoords(0, 1).setLevel(3);
+        assertTrue(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,1)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(0,1)));
+        board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         assertTrue(abilities.checkCanBuildDome(turn, board.getCellFromCoords(0,1)));
     }
 
@@ -49,6 +51,9 @@ class AdditionalBuildOnDifferentCellTest {
     @Test
     void checkCannotBuildInOccupiedCell() {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(0,0)));
+        board.getCellFromCoords(0, 0).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(0,0)));
     }
 
     /**
@@ -57,14 +62,26 @@ class AdditionalBuildOnDifferentCellTest {
     @Test
     void checkCannotBuildSameCell() {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,0)));
+        board.getCellFromCoords(2, 0).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,0)));
     }
 
     /**
-     * Check that a worker with this power can't build three times
+     * Check that a worker with this power can't build three times (after building a block)
      */
     @Test
-    void checkNoBuildThreeTimes(){
+    void checkNoBuildThreeTimesAfterBlock() {
         abilities.doBuildBlock(turn, board.getCellFromCoords(2,2));
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0,1)));
+    }
+
+    /**
+     * Check that a worker with this power can't build three times (after building a dome)
+     */
+    @Test
+    void checkNoBuildThreeTimes() {
+        abilities.doBuildDome(turn, board.getCellFromCoords(2,2));
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0,1)));
     }
 

@@ -26,7 +26,7 @@ class ForceSwapMoveTest {
         Worker worker2 = new Worker(board.getCellFromCoords(1, 0));
         Worker worker3 = new Worker(board.getCellFromCoords(2, 0));
         Worker worker4 = new Worker(board.getCellFromCoords(0, 1));
-        board.getCellFromCoords(0,1).setLevel(3);
+        board.getCellFromCoords(0,1).setLevel(2);
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(worker2, false);
@@ -35,6 +35,16 @@ class ForceSwapMoveTest {
 
         abilities = new ForceSwapMove(new DefaultAbilities());
         turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
+    }
+
+    /**
+     * Check that the decorator doesn't affect a normal move with no worker to be forced
+     */
+    @Test
+    void checkNoEffectMove() {
+        assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(1, 1)));
+        abilities.doMove(turn, board.getCellFromCoords(0, 1));
+        assertEquals(turn.getWorker().getCell(), board.getCellFromCoords(0, 1));
     }
 
     /**
@@ -65,7 +75,7 @@ class ForceSwapMoveTest {
      * Check that the worker does a correct force swap move
      */
     @Test
-    void doMove() {
+    void checkDoMove() {
         abilities.doMove(turn, board.getCellFromCoords(1, 0));
         assertEquals(turn.getWorker().getCell(), board.getCellFromCoords(1, 0));
         Worker forcedWorker = turn.getWorker();
@@ -76,6 +86,9 @@ class ForceSwapMoveTest {
         }
 
         assertEquals(forcedWorker.getCell(),board.getCellFromCoords(0,0));
+
+        // Can't move anymore after having already moved
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0, 0)));
     }
 
 }

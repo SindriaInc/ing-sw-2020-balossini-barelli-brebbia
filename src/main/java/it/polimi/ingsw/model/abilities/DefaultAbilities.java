@@ -16,11 +16,11 @@ public class DefaultAbilities implements IAbilities{
     public static final int DEFAULT_MAX_UP = 1;
     public static final int DEFAULT_MAX_BUILDS = 1;
 
-    private ITriPredicate movePhase;
-    private ITriPredicate buildPhase;
-    private ITriPredicate maxBuildLevel;
-    private ITriPredicate canInteractNoWorkers;
-    private ITriPredicate cellLevelDifference;
+    private final ITriPredicate movePhase;
+    private final ITriPredicate buildPhase;
+    private final ITriPredicate maxBuildLevel;
+    private final ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate cellLevelDifference;
 
     public DefaultAbilities() {
         movePhase = new MovePhase(DEFAULT_MAX_MOVES);

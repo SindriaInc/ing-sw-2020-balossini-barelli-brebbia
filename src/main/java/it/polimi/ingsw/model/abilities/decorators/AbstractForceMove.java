@@ -17,9 +17,9 @@ import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_UP;
 
 public abstract class AbstractForceMove extends AbilitiesDecorator {
 
-    private ITriPredicate movePhase;
-    private ITriPredicate cellLevelDifference;
-    private ITriPredicate canInteract;
+    private final ITriPredicate movePhase;
+    private final ITriPredicate cellLevelDifference;
+    private final ITriPredicate canInteract;
 
     public AbstractForceMove(IAbilities abilities) {
         super(abilities);

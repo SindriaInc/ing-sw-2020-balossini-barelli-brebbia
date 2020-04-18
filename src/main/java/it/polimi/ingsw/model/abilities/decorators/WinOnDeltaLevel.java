@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class WinOnDeltaLevel extends AbilitiesDecorator {
 
-    private static final int WIN_DELTA = -2;
+    protected static final int WIN_DELTA = -2;
 
     public WinOnDeltaLevel(IAbilities abilities) {
         super(abilities);

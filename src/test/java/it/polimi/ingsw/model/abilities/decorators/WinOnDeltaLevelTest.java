@@ -38,7 +38,7 @@ class WinOnDeltaLevelTest {
      */
     @Test
     void checkDeltaWinCondition() {
-        board.getCellFromCoords(0, 0).setLevel(2);
+        board.getCellFromCoords(0, 0).setLevel(-WinOnDeltaLevel.WIN_DELTA);
         board.getCellFromCoords(0, 1).setLevel(0);
 
         assertFalse(abilities.checkHasWon(turn));
@@ -66,8 +66,8 @@ class WinOnDeltaLevelTest {
      */
     @Test
     void checkDefaultWinCondition() {
-        board.getCellFromCoords(0, 0).setLevel(2);
-        board.getCellFromCoords(0, 1).setLevel(3);
+        board.getCellFromCoords(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
+        board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
 
         assertFalse(abilities.checkHasWon(turn));
 

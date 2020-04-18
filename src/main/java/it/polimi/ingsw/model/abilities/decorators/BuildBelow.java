@@ -11,7 +11,7 @@ import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD
 
 public class BuildBelow extends AbilitiesDecorator {
 
-    private ITriPredicate maxBuildLevel;
+    private final ITriPredicate maxBuildLevel;
 
     public BuildBelow(IAbilities abilities) {
         super(abilities);

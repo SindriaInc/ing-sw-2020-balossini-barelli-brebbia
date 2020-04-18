@@ -15,9 +15,9 @@ public abstract class AbstractAdditionalBuild extends AbilitiesDecorator {
 
     private static final int BUILDS = 2;
 
-    private ITriPredicate buildPhase;
-    private ITriPredicate canInteractNoWorkers;
-    private ITriPredicate maxBuildLevel;
+    private final ITriPredicate buildPhase;
+    private final ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate maxBuildLevel;
 
     public AbstractAdditionalBuild(IAbilities abilities) {
         super(abilities);

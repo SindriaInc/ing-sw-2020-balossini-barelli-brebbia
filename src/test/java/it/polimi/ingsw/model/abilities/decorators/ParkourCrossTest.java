@@ -18,14 +18,15 @@ class ParkourCrossTest {
     private Board board;
     private ParkourCross abilities;
     private Turn turn;
-    private Worker worker1, worker2, worker3, worker4;
+    private Worker worker2;
+    private Worker worker4;
 
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        worker1 = new Worker(board.getCellFromCoords(1, 1));
+        Worker worker1 = new Worker(board.getCellFromCoords(1, 1));
         worker2 = new Worker(board.getCellFromCoords(0, 0));
-        worker3 = new Worker(board.getCellFromCoords(2, 2));
+        Worker worker3 = new Worker(board.getCellFromCoords(2, 2));
         worker4 = new Worker(board.getCellFromCoords(1, 0));
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();

@@ -51,6 +51,17 @@ class DefaultAbilitiesTest {
     }
 
     @Test
+    void checkNoWinLevelNoWin() {
+        getCell(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 2);
+        getCell(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
+
+        assertFalse(abilities.checkHasWon(turn));
+
+        abilities.doMove(turn, getCell(0, 1));
+        assertFalse(abilities.checkHasWon(turn));
+    }
+
+    @Test
     void checkNoMovementNoWin() {
         getCell(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
 

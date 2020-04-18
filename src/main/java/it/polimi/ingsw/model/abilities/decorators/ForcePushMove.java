@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public class ForcePushMove extends AbstractForceMove {
 
-    private ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate canInteractNoWorkers;
 
     public ForcePushMove(IAbilities abilities) {
         super(abilities);

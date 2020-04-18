@@ -43,10 +43,19 @@ class AdditionalMoveTest {
     }
 
     /**
+     * Check that a worker with this power can move twice
+     */
+    @Test
+    void checkCannotMoveWithTooMuchDifference() {
+        board.getCellFromCoords(2, 0).setLevel(2);
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(2,0)));
+    }
+
+    /**
      * Check that a worker with this power can't move another time on occupied cell
      */
     @Test
-    void checkCannotMoveInOccupiedCell(){
+    void checkCannotMoveInOccupiedCell() {
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(1,1)));
     }
 
@@ -54,7 +63,7 @@ class AdditionalMoveTest {
      * Check that a worker with this power can't return on the initial cell
      */
     @Test
-    void checkCannotMoveBack(){
+    void checkCannotMoveBack() {
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0,0)));
     }
 
@@ -62,7 +71,7 @@ class AdditionalMoveTest {
      * Check that a worker with this power can't move three times
      */
     @Test
-    void checkNoMoveThreeTimes(){
+    void checkNoMoveThreeTimes() {
         abilities.doMove(turn,board.getCellFromCoords(2,0));
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(3,0)));
     }

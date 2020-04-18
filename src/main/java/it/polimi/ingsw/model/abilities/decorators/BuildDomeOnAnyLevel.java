@@ -10,8 +10,8 @@ import it.polimi.ingsw.model.abilities.predicates.CanInteractNoWorkers;
 
 public class BuildDomeOnAnyLevel extends AbilitiesDecorator {
 
-    private ITriPredicate buildPhase;
-    private ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate buildPhase;
+    private final ITriPredicate canInteractNoWorkers;
 
     public BuildDomeOnAnyLevel(IAbilities abilities) {
         super(abilities);

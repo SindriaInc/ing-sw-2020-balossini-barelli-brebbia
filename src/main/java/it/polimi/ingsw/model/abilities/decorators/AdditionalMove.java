@@ -15,9 +15,9 @@ public class AdditionalMove extends AbilitiesDecorator {
 
     private static final int MOVES = 2;
 
-    private ITriPredicate movePhase;
-    private ITriPredicate cellLevelDifference;
-    private ITriPredicate canInteractNoWorkers;
+    private final ITriPredicate movePhase;
+    private final ITriPredicate cellLevelDifference;
+    private final ITriPredicate canInteractNoWorkers;
 
     public AdditionalMove(IAbilities abilities) {
         super(abilities);

@@ -37,10 +37,36 @@ class ForcePushMoveTest {
     }
 
     /**
-     * Check that a worker cant move on a worker that can't be forced
+     * Check that the decorator doesn't affect a normal move with no worker to be forced
      */
     @Test
-    void checkCheckCanMove() {
+    void checkNoEffectMove() {
+        assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(0, 1)));
+        abilities.doMove(turn, board.getCellFromCoords(0, 1));
+        assertEquals(turn.getWorker().getCell(), board.getCellFromCoords(0, 1));
+    }
+
+    /**
+     * Check that the worker can't push a worker out of the board
+     */
+    @Test
+    void checkCannotForceWithNoDestination() {
+        Worker worker1 = new Worker(board.getCellFromCoords(0, 1));
+        Worker worker2 = new Worker(board.getCellFromCoords(0, 0));
+
+        Map<Worker, Boolean> otherWorkers = new HashMap<>();
+        otherWorkers.put(worker2, false);
+
+        turn = new Turn(worker1, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0, 0)));
+        assertThrows(IllegalArgumentException.class, () -> abilities.doMove(turn, board.getCellFromCoords(0, 0)));
+    }
+
+    /**
+     * Check that a worker can't move on a worker that can't be forced
+     */
+    @Test
+    void checkCannotForceWithForcedCellOccupied() {
         assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(1, 0)));
     }
 
@@ -48,7 +74,7 @@ class ForcePushMoveTest {
      * Check that a worker with this power can force a worker out of his cell
      */
     @Test
-    void checkCheckCanNotMove() {
+    void checkCanForcePush() {
         assertTrue(abilities.checkCanMove(turn, board.getCellFromCoords(1, 1)));
     }
 
@@ -56,10 +82,10 @@ class ForcePushMoveTest {
      * Check that the worker does a correct force push move
      */
     @Test
-    void doMove() {
+    void checkDoMove() {
         abilities.doMove(turn, board.getCellFromCoords(1, 1));
         assertEquals(turn.getWorker().getCell(), board.getCellFromCoords(1, 1));
-        Worker forcedWorker=turn.getWorker();
+        Worker forcedWorker = turn.getWorker();
         for (Worker other : turn.getOtherWorkers()) {
             if (other.getCell() == board.getCellFromCoords(2, 2)) {
                 forcedWorker = other;
@@ -67,6 +93,9 @@ class ForcePushMoveTest {
         }
 
         assertEquals(forcedWorker.getCell(), board.getCellFromCoords(2, 2));
+
+        // Can't move anymore after having already moved
+        assertFalse(abilities.checkCanMove(turn, board.getCellFromCoords(0, 0)));
     }
 
 }

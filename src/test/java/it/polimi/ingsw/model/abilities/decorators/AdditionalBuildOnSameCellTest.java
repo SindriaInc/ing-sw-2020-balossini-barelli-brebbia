@@ -31,7 +31,6 @@ class AdditionalBuildOnSameCellTest {
         abilities = new AdditionalBuildOnSameCell(new DefaultAbilities());
         turn = new Turn(worker2, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
         turn.addMovement(board.getCellFromCoords(1, 1));
-        board.getCellFromCoords(1, 0).setLevel(2);
         abilities.doBuildBlock(turn, board.getCellFromCoords(1, 0));
     }
 
@@ -39,7 +38,10 @@ class AdditionalBuildOnSameCellTest {
      * Check that a worker with this power can build twice
      */
     @Test
-    void checkCanBuildInAnotherCell() {
+    void checkCanBuildSameCell() {
+        assertTrue(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(1,0)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1,0)));
+        board.getCellFromCoords(1, 0).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         assertTrue(abilities.checkCanBuildDome(turn, board.getCellFromCoords(1,0)));
     }
 
@@ -48,16 +50,20 @@ class AdditionalBuildOnSameCellTest {
      */
     @Test
     void checkCannotBuildDifferentCell() {
-        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(1,0)));
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
+        board.getCellFromCoords(2, 0).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
     }
 
     /**
      * Check that a worker with this power can't build three times
      */
     @Test
-    void checkNoBuildThreeTimes(){
+    void checkNoBuildThreeTimes() {
         abilities.doBuildBlock(turn, board.getCellFromCoords(2,2));
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,2)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,2)));
     }
 
 }

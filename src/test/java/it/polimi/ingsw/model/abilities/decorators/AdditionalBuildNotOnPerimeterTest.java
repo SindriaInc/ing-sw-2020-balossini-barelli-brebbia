@@ -39,8 +39,10 @@ class AdditionalBuildNotOnPerimeterTest {
      */
     @Test
     void checkCanBuildInAnotherCell() {
-        board.getCellFromCoords(0, 1).setLevel(3);
         assertTrue(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,1)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,1)));
+        board.getCellFromCoords(2, 1).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertTrue(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,1)));
     }
 
     /**
@@ -49,6 +51,9 @@ class AdditionalBuildNotOnPerimeterTest {
     @Test
     void checkCannotBuildInOccupiedCell() {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,2)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,2)));
+        board.getCellFromCoords(2, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,2)));
     }
 
     /**
@@ -57,6 +62,9 @@ class AdditionalBuildNotOnPerimeterTest {
     @Test
     void checkCannotBuildSameCell() {
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(2,0)));
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,0)));
+        board.getCellFromCoords(2, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertFalse(abilities.checkCanBuildDome(turn, board.getCellFromCoords(2,0)));
     }
 
     /**

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class NoWinOnPerimeterTest {
 
     private Board board;
-    private NoWinOnPerimeter noWinOnPerimeter;
+    private NoWinOnPerimeter abilities;
     private Turn turn;
 
     @BeforeEach
@@ -28,12 +28,12 @@ class NoWinOnPerimeterTest {
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
 
-        noWinOnPerimeter = new NoWinOnPerimeter(new DefaultAbilities(), List.of());
+        abilities = new NoWinOnPerimeter(new DefaultAbilities(), List.of());
         turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
 
-        board.getCellFromCoords(0, 0).setLevel(2);
-        board.getCellFromCoords(2, 0).setLevel(3);
-        board.getCellFromCoords(1, 1).setLevel(3);
+        board.getCellFromCoords(0, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
+        board.getCellFromCoords(2, 0).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
+        board.getCellFromCoords(1, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
     }
 
     /**
@@ -41,11 +41,22 @@ class NoWinOnPerimeterTest {
      */
     @Test
     void checkCanWin() {
-        assertFalse(noWinOnPerimeter.checkHasWon(turn));
+        assertFalse(abilities.checkHasWon(turn));
 
-        noWinOnPerimeter.doMove(turn, board.getCellFromCoords(1, 1));
+        abilities.doMove(turn, board.getCellFromCoords(1, 1));
 
-        assertTrue(noWinOnPerimeter.checkHasWon(turn));
+        assertTrue(abilities.checkHasWon(turn));
+    }
+
+
+    /**
+     * Check that the decorator does not have an effect if the worker didn't move up
+     */
+    @Test
+    void checkNoEffectOnNoUp() {
+        abilities.doMove(turn, board.getCellFromCoords(0, 1));
+
+        assertFalse(abilities.checkHasWon(turn));
     }
 
     /**
@@ -53,9 +64,10 @@ class NoWinOnPerimeterTest {
      */
     @Test
     void checkCannotWin() {
-        noWinOnPerimeter.doMove(turn, board.getCellFromCoords(0, 1));
+        board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
+        abilities.doMove(turn, board.getCellFromCoords(0, 1));
 
-        assertFalse(noWinOnPerimeter.checkHasWon(turn));
+        assertFalse(abilities.checkHasWon(turn));
     }
 
 }
