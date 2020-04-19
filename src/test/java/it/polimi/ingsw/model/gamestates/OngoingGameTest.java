@@ -222,6 +222,42 @@ class OngoingGameTest {
         assertNotEquals(ongoingGame, ongoingGame.nextState());
     }
 
+    /**
+     * Check that, without a build, a player loses
+     */
+    @Test
+    void checkLoseNoBuild() {
+        Worker worker = getWorker(0, 1);
+        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        board.getCellFromCoords(0, 1).setDoomed(true);
+        board.getCellFromCoords(1, 2).setDoomed(true);
+        board.getCellFromCoords(1, 3).setDoomed(true);
+        board.getCellFromCoords(0, 3).setDoomed(true);
+
+        assertTrue(ongoingGame.checkCanEndTurn());
+        ongoingGame.endTurn();
+
+        assertNotEquals(ongoingGame, ongoingGame.nextState());
+    }
+
+    /**
+     * Check that a worker has options after moving
+     */
+    @Test
+    void checkHasOptions() {
+        Worker worker = getWorker(0, 1);
+        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+
+        assertFalse(ongoingGame.checkCanEndTurn());
+
+        board.getCellFromCoords(0, 1).setDoomed(true);
+        board.getCellFromCoords(1, 2).setDoomed(true);
+        board.getCellFromCoords(1, 3).setDoomed(true);
+        board.getCellFromCoords(0, 3).setLevel(3);
+
+        assertFalse(ongoingGame.checkCanEndTurn());
+    }
+
     private Worker getWorker(int player, int worker) {
         return players.get(player).getWorkers().get(worker);
     }

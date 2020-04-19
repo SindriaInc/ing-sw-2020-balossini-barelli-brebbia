@@ -113,7 +113,11 @@ public class OngoingGame extends AbstractGameState {
             return true;
         }
 
-        return hasCompletedMandatoryInteractions(this.turn);
+        if (hasCompletedMandatoryInteractions(this.turn)) {
+            return true;
+        }
+
+        return !hasOptions(turn.getWorker());
     }
 
     @Override

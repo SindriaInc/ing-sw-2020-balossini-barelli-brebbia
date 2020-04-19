@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
+import it.polimi.ingsw.model.gamestates.AbstractGameState;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ class GameTest {
         gods.remove(3);
 
         assertEquals(game.getSelectGodsCount(), game.getPlayers().size());
+        assertEquals(game.getSelectGodsCount(), game.getPlayers().size());
         assertTrue(game.checkCanSelectGods(gods));
         game.selectGods(gods);
 
@@ -82,7 +84,7 @@ class GameTest {
         gods.remove(4);
         gods.remove(2);
         game.selectGods(gods);
-        game.chooseGod(gods.get(0)); // AdditionalBuildOnSameCell
+        game.chooseGod(gods.get(0)); // BuildBeforeMove
         game.chooseGod(gods.get(1)); // WinOnDeltaLevel
         game.chooseGod(gods.get(2)); // ParkourCross
 
@@ -92,6 +94,7 @@ class GameTest {
         Worker player2worker2 = new Worker(getCell(game, 2, 3));
         Worker player3worker1 = new Worker(getCell(game, 4, 3));
         Worker player3worker2 = new Worker(getCell(game, 2, 1));
+        Worker anotherWorker = new Worker(getCell(game, 4, 4));
 
         game.spawnWorker(player1worker1);
         game.spawnWorker(player1worker2);
@@ -100,6 +103,7 @@ class GameTest {
         game.spawnWorker(player3worker1);
         game.spawnWorker(player3worker2);
 
+        assertFalse(game.checkCanEndTurn());
         game.moveWorker(player1worker1, getCell(game, 0, 0));
         game.buildBlock(player1worker1, getCell(game, 1, 0));
         game.endTurn();
@@ -111,6 +115,14 @@ class GameTest {
         assertTrue(equalsNoOrder(game.getAvailableForces(player3worker2, player2worker2), List.of(getCell(game, 2, 0))));
         game.forceWorker(player3worker2, player2worker2, getCell(game, 2, 0));
         assertEquals(game.getCurrentPlayer(), game.getPlayers().get(2));
+        game.moveWorker(player3worker2, getCell(game, 2, 2));
+        game.buildBlock(player3worker2, getCell(game, 2, 1));
+        game.endTurn();
+
+        getCell(game, 1, 0).setLevel(3);
+        getCell(game, 0, 1).setLevel(3);
+        getCell(game, 1, 1).setLevel(3);
+        assertFalse(game.checkCanEndTurn());
     }
 
     /**
@@ -193,7 +205,7 @@ class GameTest {
         players.add(new Player(PLAYER_OLDEST_NAME, 3));
 
         List<God> gods = new ArrayList<>();
-        gods.add(new God("G1", 1, "", "", Map.of(AdditionalBuildOnSameCell.class, false)));
+        gods.add(new God("G1", 1, "", "", Map.of(BuildBeforeMove.class, false)));
         gods.add(new God("G2", 2, "", "", Map.of(WinOnDeltaLevel.class, false)));
         gods.add(new God("G3", 3, "", "", Map.of(BlockOnPlayerMoveUp.class, true)));
         gods.add(new God("G4", 4, "", "", Map.of(ParkourCross.class, false)));

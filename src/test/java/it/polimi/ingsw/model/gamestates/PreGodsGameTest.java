@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.TestConstants;
 import it.polimi.ingsw.model.abilities.decorators.AdditionalMove;
 import it.polimi.ingsw.model.abilities.decorators.BuildBeforeMove;
 import it.polimi.ingsw.model.abilities.decorators.BuildBelow;
+import it.polimi.ingsw.model.abilities.decorators.ParkourCross;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +20,7 @@ class PreGodsGameTest {
 
     private PreGodsGame preGodsGame;
     private List<God> gods;
+    God god4;
     private int playerCount;
 
     @BeforeEach
@@ -32,6 +34,8 @@ class PreGodsGameTest {
         playerCount = players.size();
 
         preGodsGame = new PreGodsGame(board, players, TestConstants.MAX_WORKERS, gods);
+
+        god4 = new God("G3", 4, "", "", Map.of(ParkourCross.class, false));
     }
 
     /**
@@ -72,6 +76,7 @@ class PreGodsGameTest {
         assertFalse(preGodsGame.checkCanSelectGods(List.of(gods.get(0))));
         assertFalse(preGodsGame.checkCanSelectGods(List.of(gods.get(0), gods.get(1), gods.get(2))));
         assertFalse(preGodsGame.checkCanSelectGods(List.of(gods.get(0), gods.get(0))));
+        assertFalse(preGodsGame.checkCanSelectGods(List.of(gods.get(0), god4)));
     }
 
     /**
@@ -79,6 +84,8 @@ class PreGodsGameTest {
      */
     @Test
     void checkSelectGods() {
+        assertEquals(preGodsGame, preGodsGame.nextState());
+
         assertThrows(IllegalArgumentException.class, () -> preGodsGame.selectGods(List.of()));
 
         preGodsGame.selectGods(List.of(gods.get(0), gods.get(1)));
@@ -110,6 +117,16 @@ class PreGodsGameTest {
 
         assertNotEquals(preGodsGame, preGodsGame.nextState());
         assertEquals(preGodsGame.getAvailableGods(), List.of());
+
+        assertThrows(IllegalArgumentException.class, () -> preGodsGame.chooseGod(god4));
+    }
+
+    /**
+     * Check that the active player in CHALLENGER_SELECT_GODS phase is the challenger
+     */
+    @Test
+    void checkCurrentPlayer() {
+        assertEquals(preGodsGame.getCurrentPlayer(), preGodsGame.getPlayers().get(1));
     }
 
 }

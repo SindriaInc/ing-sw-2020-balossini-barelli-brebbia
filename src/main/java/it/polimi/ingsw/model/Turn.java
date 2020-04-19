@@ -108,7 +108,7 @@ public class Turn {
 
         for (Map.Entry<Worker, Boolean> other : otherWorkers.entrySet()) {
             if (other.getValue()) {
-                sameWorkers.add(worker);
+                sameWorkers.add(other.getKey());
             }
         }
 

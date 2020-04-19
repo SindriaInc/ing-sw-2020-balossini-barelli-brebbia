@@ -53,10 +53,6 @@ public class PreWorkersGame extends AbstractGameState {
 
         Player player = getCurrentPlayer();
 
-        if (player.getWorkers().size() >= maxWorkers) {
-            throw new IllegalStateException("Current player already has the maximum number of workers");
-        }
-
         player.addWorker(worker);
     }
 
