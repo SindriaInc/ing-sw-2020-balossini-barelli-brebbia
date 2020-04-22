@@ -38,10 +38,13 @@ class TurnTest {
         turn.addMovement(cell);
         turn.addBlockPlaced(cell);
         turn.addDomePlaced(cell);
+        turn.addForce(turn.getOtherWorkers().get(0), cell);
 
         assertEquals(turn.getMoves(), Collections.singletonList(cell));
         assertEquals(turn.getBlocksPlaced(), Collections.singletonList(cell));
         assertEquals(turn.getDomesPlaced(), Collections.singletonList(cell));
+        assertEquals(1, turn.getForces().size());
+        assertEquals(turn.getOtherWorkers().get(0), turn.getForces().get(0).getTarget());
 
         List<Worker> workers = new ArrayList<>();
         workers.add(turn.getWorker());

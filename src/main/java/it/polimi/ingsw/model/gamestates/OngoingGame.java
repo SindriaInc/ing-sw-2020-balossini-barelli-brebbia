@@ -136,7 +136,13 @@ public class OngoingGame extends AbstractGameState {
         }
 
         if (hasCompletedMandatoryInteractions(turn)) {
-            playerIndex = (playerIndex + 1) % getPlayers().size();
+            if (!getCurrentPlayer().checkHasWon(turn)) {
+                playerIndex = (playerIndex + 1) % getPlayers().size();
+                return;
+            }
+
+            // The current player has won, remove every opponent
+            getOpponents(getCurrentPlayer()).forEach(super::removePlayer);
             return;
         }
 
@@ -145,17 +151,22 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
+    public Player getCurrentPlayer() {
+        return getPlayers().get(playerIndex);
+    }
+
+    @Override
     public AbstractGameState nextState() {
         if (getPlayers().size() == 1) {
-            return new EndGame(getBoard(), getPlayers());
+            return new EndGame(getBoard(), getPlayers().get(0));
         }
 
         return this;
     }
 
     @Override
-    public Player getCurrentPlayer() {
-        return getPlayers().get(playerIndex);
+    public boolean isEnded() {
+        return false;
     }
 
     private List<Cell> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
@@ -219,7 +230,7 @@ public class OngoingGame extends AbstractGameState {
         boolean moved = false;
         boolean built = false;
 
-        for (Turn.Action action : turn.getActions()) {
+        for (Turn.Action action : turn.getStandardActions()) {
             if (action.getType() == Turn.ActionType.MOVEMENT) {
                 moved = true;
             } else if (action.getType().isBuild() && moved) {

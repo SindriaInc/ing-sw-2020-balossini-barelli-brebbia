@@ -7,35 +7,45 @@ import it.polimi.ingsw.model.Worker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class EndGameTest {
 
     private EndGame endGame;
-    private List<Player> players;
+    private Player winner;
 
     @BeforeEach
     void setUp() {
         Board board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        players = List.of(new Player("A", 0));
-        players.get(0).addWorker(new Worker(board.getCellFromCoords(0, 0)));
-        players.get(0).addWorker(new Worker(board.getCellFromCoords(0, 1)));
+        winner = new Player("A", 0);
+        winner.addWorker(new Worker(board.getCellFromCoords(0, 0)));
+        winner.addWorker(new Worker(board.getCellFromCoords(0, 1)));
 
-        endGame = new EndGame(board, players);
+        endGame = new EndGame(board, winner);
     }
 
+    /**
+     * Check that the current player is the winner
+     */
     @Test
     void checkGetCurrentPlayer() {
-        // No player can play after the game ends
-        assertNull(endGame.getCurrentPlayer());
+        assertEquals(winner, endGame.getCurrentPlayer());
     }
 
+    /**
+     * Check that there is no next state
+     */
     @Test
     void checkNextState() {
-        // No state after the end state
         assertEquals(endGame, endGame.nextState());
+    }
+
+    /**
+     * Check that the game ends with this state
+     */
+    @Test
+    void checkIsEnded() {
+        assertTrue(endGame.isEnded());
     }
 
 }

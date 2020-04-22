@@ -4,7 +4,8 @@ import it.polimi.ingsw.model.gamestates.AbstractGameState;
 import it.polimi.ingsw.model.gamestates.PreGodsGame;
 import it.polimi.ingsw.model.gamestates.PreWorkersGame;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
 
@@ -34,43 +35,34 @@ public class Game {
     }
 
     /**
-     * Obtain the game Board
+     * Obtain a copy of the game Board
      * @return The Board
      *
      * <strong>This method has no side effect</strong>
      */
     public Board getBoard() {
-        return currentState.getBoard();
-    }
-
-    /**
-     * Obtain the list of every Player
-     * @return The list of players
-     *
-     * <strong>This method has no side effect</strong>
-     */
-    public List<Player> getPlayers() {
-        return currentState.getPlayers();
-    }
-
-    /**
-     * Get the list of the other players
-     * @param player The player
-     * @return The list of opponent players
-     *
-     * <strong>This method has no side effect</strong>
-     */
-    public List<Player> getOpponents(Player player) {
-        return currentState.getOpponents(player);
+        return copyOfBoard(currentState.getBoard());
     }
 
     /**
      * Obtain the current player that is able to interact with the game
+     * If Game#isEnded returns true, this method returns the winner
      * Calling this method repeatedly should not result in a different player unless other methods got called
      * @return The Player
      */
     public Player getCurrentPlayer() {
         return currentState.getCurrentPlayer();
+    }
+
+    /**
+     * Check if the game has ended, meaning that one of the player has won
+     * If this method returns true, Game#getCurrentPlayer returns the winner
+     * @return true if there is a winner
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public boolean isEnded() {
+        return currentState.isEnded();
     }
 
     /**
@@ -131,7 +123,7 @@ public class Game {
      * <strong>This method has no side effect</strong>
      */
     public List<Cell> getAvailableCells() {
-        return currentState.getAvailableCells();
+        return copyOfCells(currentState.getAvailableCells());
     }
 
     /**
@@ -150,7 +142,7 @@ public class Game {
      * <strong>This method has no side effect</strong>
      */
     public List<Cell> getAvailableMoves(Worker worker) {
-        return currentState.getAvailableMoves(worker);
+        return copyOfCells(currentState.getAvailableMoves(worker));
     }
 
     /**
@@ -170,7 +162,7 @@ public class Game {
      * <strong>This method has no side effect</strong>
      */
     public List<Cell> getAvailableBlockBuilds(Worker worker) {
-        return currentState.getAvailableBlockBuilds(worker);
+        return copyOfCells(currentState.getAvailableBlockBuilds(worker));
     }
 
     /**
@@ -190,7 +182,7 @@ public class Game {
      * <strong>This method has no side effect</strong>
      */
     public List<Cell> getAvailableDomeBuilds(Worker worker) {
-        return currentState.getAvailableDomeBuilds(worker);
+        return copyOfCells(currentState.getAvailableDomeBuilds(worker));
     }
 
     /**
@@ -211,7 +203,7 @@ public class Game {
      * <strong>This method has no side effect</strong>
      */
     public List<Cell> getAvailableForces(Worker worker, Worker target) {
-        return currentState.getAvailableForces(worker, target);
+        return copyOfCells(currentState.getAvailableForces(worker, target));
     }
 
     /**
@@ -243,8 +235,54 @@ public class Game {
         updateState();
     }
 
+    /**
+     * Check if the specified Player has lost
+     * @param player The Player
+     * @return true if the Player has lost
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public boolean checkHasLost(Player player) {
+        return currentState.checkHasLost(player);
+    }
+
+    protected Board getOriginalBoard() {
+        return currentState.getBoard();
+    }
+
     private void updateState() {
         currentState = currentState.nextState();
+    }
+
+    private Board copyOfBoard(Board original) {
+        Board copy = new Board(original.getRows(), original.getColumns());
+
+        for (Cell cell : copy.getCells()) {
+            applyCopy(cell, original.getCellFromCoords(cell.getX(), cell.getY()));
+        }
+
+        return copy;
+    }
+
+    private List<Cell> copyOfCells(List<Cell> originals) {
+        List<Cell> copy = new ArrayList<>();
+
+        for (Cell original : originals) {
+            copy.add(copyOfCell(original));
+        }
+
+        return copy;
+    }
+
+    private Cell copyOfCell(Cell original) {
+        Cell copy = new Cell(original.getX(), original.getY());
+        applyCopy(copy, original);
+        return copy;
+    }
+
+    private void applyCopy(Cell cell, Cell original) {
+        cell.setLevel(original.getLevel());
+        cell.setDoomed(original.isDoomed());
     }
 
 }

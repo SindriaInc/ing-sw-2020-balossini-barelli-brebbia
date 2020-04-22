@@ -2,7 +2,6 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
-import it.polimi.ingsw.model.gamestates.AbstractGameState;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,12 +17,30 @@ class GameTest {
     private static final String PLAYER_MIDDLE_NAME = "B";
     private static final String PLAYER_OLDEST_NAME = "C";
 
+    private Game game;
+    private List<Player> players;
+
+    /**
+     * Check that there is no access to the inner model
+     */
+    @Test
+    void checkGetBoard() {
+        constructSimpleGame();
+
+        Board board = game.getBoard();
+        board.getCellFromCoords(0, 0).setLevel(1);
+        board.getCellFromCoords(0, 0).setDoomed(true);
+
+        assertEquals(0, game.getBoard().getCellFromCoords(0, 0).getLevel());
+        assertFalse(game.getBoard().getCellFromCoords(0, 0).isDoomed());
+    }
+
     /**
      * Check that the simple game rule throws an exception for the God choice in a simple game
      */
     @Test
     void checkSimpleGame() {
-        Game game = constructSimpleGame();
+        constructSimpleGame();
         assertThrows(IllegalStateException.class, () -> game.selectGods(new ArrayList<>()));
     }
 
@@ -42,8 +59,6 @@ class GameTest {
         Player player = opponents.get(0);
         opponents.remove(player);
 
-        assertEquals(game.getPlayers(), players);
-        assertEquals(game.getOpponents(player), opponents);
         assertEquals(game.getCurrentPlayer(), players.get(0)); // In a simple game the first player is the youngest one
     }
 
@@ -52,14 +67,14 @@ class GameTest {
      */
     @Test
     void checkGodSelection() {
-        Game game = constructNormalGame();
+        constructNormalGame();
 
         List<God> gods = new ArrayList<>(game.getAvailableGods());
         gods.remove(4);
         gods.remove(3);
 
-        assertEquals(game.getSelectGodsCount(), game.getPlayers().size());
-        assertEquals(game.getSelectGodsCount(), game.getPlayers().size());
+        assertEquals(game.getSelectGodsCount(), players.size());
+        assertEquals(game.getSelectGodsCount(), players.size());
         assertTrue(game.checkCanSelectGods(gods));
         game.selectGods(gods);
 
@@ -78,7 +93,7 @@ class GameTest {
      */
     @Test
     void normalGameWithForce() {
-        Game game = constructNormalGame();
+        constructNormalGame();
 
         List<God> gods = new ArrayList<>(game.getAvailableGods());
         gods.remove(4);
@@ -94,7 +109,6 @@ class GameTest {
         Worker player2worker2 = new Worker(getCell(game, 2, 3));
         Worker player3worker1 = new Worker(getCell(game, 4, 3));
         Worker player3worker2 = new Worker(getCell(game, 2, 1));
-        Worker anotherWorker = new Worker(getCell(game, 4, 4));
 
         game.spawnWorker(player1worker1);
         game.spawnWorker(player1worker2);
@@ -114,7 +128,6 @@ class GameTest {
 
         assertTrue(equalsNoOrder(game.getAvailableForces(player3worker2, player2worker2), List.of(getCell(game, 2, 0))));
         game.forceWorker(player3worker2, player2worker2, getCell(game, 2, 0));
-        assertEquals(game.getCurrentPlayer(), game.getPlayers().get(2));
         game.moveWorker(player3worker2, getCell(game, 2, 2));
         game.buildBlock(player3worker2, getCell(game, 2, 1));
         game.endTurn();
@@ -130,7 +143,7 @@ class GameTest {
      */
     @Test
     void simpleGameWithStates() {
-        Game game = constructSimpleGame();
+        constructSimpleGame();
 
         Worker player1worker1 = new Worker(getCell(game, 1, 0));
         Worker player1worker2 = new Worker(getCell(game, 3, 3));
@@ -183,22 +196,24 @@ class GameTest {
         Player toRemove = game.getCurrentPlayer();
         assertTrue(game.checkCanEndTurn());
         game.endTurn();
-        assertFalse(game.getPlayers().contains(toRemove));
+        assertTrue(game.checkHasLost(toRemove));
+        assertTrue(game.isEnded());
     }
 
     private Cell getCell(Game game, int x, int y) {
-        return game.getBoard().getCellFromCoords(x, y);
+        return game.getOriginalBoard().getCellFromCoords(x, y);
     }
 
-    private Game constructSimpleGame() {
+    private void constructSimpleGame() {
         List<Player> players = new ArrayList<>();
         players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
         players.add(new Player(PLAYER_OLDEST_NAME, 2));
 
-        return new Game(players, null, true);
+        this.game = new Game(players, null, true);
+        this.players = players;
     }
 
-    private Game constructNormalGame() {
+    private void constructNormalGame() {
         List<Player> players = new ArrayList<>();
         players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
         players.add(new Player(PLAYER_MIDDLE_NAME, 2));
@@ -212,7 +227,8 @@ class GameTest {
         gods.add(new God("G5", 5, "", "", Map.of(NoWinOnPerimeter.class, true)));
         Deck deck = new Deck(gods);
 
-        return new Game(players, deck, false);
+        this.game = new Game(players, deck, false);
+        this.players = players;
     }
 
 }

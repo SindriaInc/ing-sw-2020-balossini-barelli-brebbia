@@ -107,13 +107,14 @@ public class DefaultAbilities implements IAbilities{
     }
 
     @Override
-    public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
+    public boolean checkCanForce(Turn turn, Worker target, Cell cell) {
         return false;
     }
 
     @Override
-    public void doForce(Turn turn, Worker worker, Cell cell) {
-        worker.force(cell);
+    public void doForce(Turn turn, Worker target, Cell cell) {
+        turn.addForce(target, cell);
+        target.force(cell);
     }
 
 }

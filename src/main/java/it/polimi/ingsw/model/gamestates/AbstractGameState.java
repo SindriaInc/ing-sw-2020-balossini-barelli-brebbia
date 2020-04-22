@@ -14,12 +14,14 @@ public abstract class AbstractGameState {
     /**
      * List of the players in the game
      * The order of the players is preserved
+     *
+     * When a player loses it gets removed from this list
      */
-    private final List<Player> players = new LinkedList<>();
+    private final List<Player> activePlayers = new LinkedList<>();
 
     public AbstractGameState(Board board, List<Player> players) {
         this.board = board;
-        this.players.addAll(players);
+        this.activePlayers.addAll(players);
     }
 
     public List<God> getAvailableGods() {
@@ -90,16 +92,20 @@ public abstract class AbstractGameState {
         throw new IllegalStateException();
     }
 
+    public boolean checkHasLost(Player player) {
+        return !activePlayers.contains(player);
+    }
+
     public Board getBoard() {
         return board;
     }
 
     public List<Player> getPlayers() {
-        return List.copyOf(players);
+        return List.copyOf(activePlayers);
     }
 
     public List<Player> getOpponents(Player player) {
-        List<Player> opponents = new ArrayList<>(players);
+        List<Player> opponents = new ArrayList<>(activePlayers);
         opponents.remove(player);
 
         return opponents;
@@ -109,7 +115,7 @@ public abstract class AbstractGameState {
      * Remove the player from the players list
      */
     final void removePlayer(Player player) {
-        this.players.remove(player);
+        this.activePlayers.remove(player);
     }
 
     /**
@@ -117,17 +123,18 @@ public abstract class AbstractGameState {
      * The list must contain each and every player originally present
      */
     final void sortPlayers(List<Player> players) {
-        if (players.size() != this.players.size() || !players.containsAll(this.players) || !this.players.containsAll(players)) {
+        if (players.size() != this.activePlayers.size() || !players.containsAll(this.activePlayers) || !this.activePlayers.containsAll(players)) {
             throw new IllegalArgumentException("The new player list is not a sort of the original list");
         }
 
-        this.players.clear();
-        this.players.addAll(players);
+        this.activePlayers.clear();
+        this.activePlayers.addAll(players);
     }
 
     /**
      * Obtain the current player that is able to interact with the game
      * Calling this method repeatedly should not result in a different player unless other methods got called
+     * If AbstractGameState#isEnded returns true, this method must return the winner
      * @return The Player
      */
     public abstract Player getCurrentPlayer();
@@ -138,5 +145,14 @@ public abstract class AbstractGameState {
      * @return The AbstractGameState
      */
     public abstract AbstractGameState nextState();
+
+    /**
+     * Check if the game has ended, meaning that one of the player has won
+     * If this method returns true, AbstractGameState#getCurrentPlayer must return the winner
+     * @return true if there is a winner
+     *
+     * <strong>This method must have no side effect</strong>
+     */
+    public abstract boolean isEnded();
 
 }

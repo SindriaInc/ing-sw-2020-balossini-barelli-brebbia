@@ -65,7 +65,7 @@ public class PreGodsGame extends AbstractGameState {
 
     @Override
     public List<God> getAvailableGods() {
-        return availableGods;
+        return List.copyOf(availableGods);
     }
 
     @Override
@@ -127,6 +127,22 @@ public class PreGodsGame extends AbstractGameState {
     }
 
     @Override
+    public Player getCurrentPlayer() {
+        if (phase == Phase.CHALLENGER_SELECT_GODS) {
+            return getPlayers().get(challengerIndex);
+        }
+
+        Player currentPlayer = getPlayers().get(playerIndex);
+
+        if (currentPlayer.getGod().isEmpty()) {
+            return currentPlayer;
+        }
+
+        playerIndex++;
+        return getPlayers().get(playerIndex);
+    }
+
+    @Override
     public AbstractGameState nextState() {
         if (phase == Phase.CHALLENGER_SELECT_GODS) {
             return this;
@@ -142,19 +158,8 @@ public class PreGodsGame extends AbstractGameState {
     }
 
     @Override
-    public Player getCurrentPlayer() {
-        if (phase == Phase.CHALLENGER_SELECT_GODS) {
-            return getPlayers().get(challengerIndex);
-        }
-
-        Player currentPlayer = getPlayers().get(playerIndex);
-
-        if (currentPlayer.getGod().isEmpty()) {
-            return currentPlayer;
-        }
-
-        playerIndex++;
-        return getPlayers().get(playerIndex);
+    public boolean isEnded() {
+        return false;
     }
 
 }

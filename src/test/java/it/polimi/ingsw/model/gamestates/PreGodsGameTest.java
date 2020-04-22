@@ -129,4 +129,12 @@ class PreGodsGameTest {
         assertEquals(preGodsGame.getCurrentPlayer(), preGodsGame.getPlayers().get(1));
     }
 
+    /**
+     * This state should never return true for isEnded
+     */
+    @Test
+    void checkNotEnded() {
+        assertFalse(preGodsGame.isEnded());
+    }
+
 }

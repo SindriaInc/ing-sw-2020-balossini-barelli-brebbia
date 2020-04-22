@@ -57,6 +57,18 @@ public class PreWorkersGame extends AbstractGameState {
     }
 
     @Override
+    public Player getCurrentPlayer() {
+        Player currentPlayer = getPlayers().get(playerIndex);
+
+        if (currentPlayer.getWorkers().size() < maxWorkers) {
+            return currentPlayer;
+        }
+
+        playerIndex++;
+        return getPlayers().get(playerIndex);
+    }
+
+    @Override
     public AbstractGameState nextState() {
         for (Player player : getPlayers()) {
             if (player.getWorkers().size() < maxWorkers) {
@@ -68,15 +80,8 @@ public class PreWorkersGame extends AbstractGameState {
     }
 
     @Override
-    public Player getCurrentPlayer() {
-        Player currentPlayer = getPlayers().get(playerIndex);
-
-        if (currentPlayer.getWorkers().size() < maxWorkers) {
-            return currentPlayer;
-        }
-
-        playerIndex++;
-        return getPlayers().get(playerIndex);
+    public boolean isEnded() {
+        return false;
     }
 
 }

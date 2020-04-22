@@ -53,8 +53,6 @@ class OngoingGameTest {
 
         assertEquals(0, ongoingGame.getAvailableMoves(worker).size());
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
-
-        Worker worker2 = players.get(0).getWorkers().get(0);
         assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
@@ -210,6 +208,22 @@ class OngoingGameTest {
     }
 
     /**
+     * Check that a player can win given the correct condition
+     */
+    @Test
+    void checkWin() {
+        board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
+        board.getCellFromCoords(0, 2).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
+
+        Worker worker = getWorker(0, 1);
+        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 1)); // Need to build before winning
+        ongoingGame.endTurn();
+
+        assertNotEquals(ongoingGame, ongoingGame.nextState());
+    }
+
+    /**
      * Check that, if trapped, a player loses
      */
     @Test
@@ -256,6 +270,14 @@ class OngoingGameTest {
         board.getCellFromCoords(0, 3).setLevel(3);
 
         assertFalse(ongoingGame.checkCanEndTurn());
+    }
+
+    /**
+     * This state should never return true for isEnded
+     */
+    @Test
+    void checkNotEnded() {
+        assertFalse(ongoingGame.isEnded());
     }
 
     private Worker getWorker(int player, int worker) {

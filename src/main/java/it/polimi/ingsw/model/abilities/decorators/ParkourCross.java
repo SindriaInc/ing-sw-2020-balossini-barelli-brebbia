@@ -5,15 +5,31 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
+import it.polimi.ingsw.model.abilities.ITriPredicate;
+import it.polimi.ingsw.model.abilities.predicates.MovePhase;
+
+import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_MOVES;
 
 public class ParkourCross extends AbilitiesDecorator {
 
+    private final ITriPredicate movePhase;
+
     public ParkourCross(IAbilities abilities) {
         super(abilities);
+
+        movePhase = new MovePhase(DEFAULT_MAX_MOVES);
     }
 
     @Override
     public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
+        if (!movePhase.check(turn, cell)) {
+            return super.checkCanForce(turn, worker, cell);
+        }
+
+        if (turn.getForces().size() > 0) {
+            return super.checkCanForce(turn, worker, cell);
+        }
+
         Cell forcedWorkerCell = worker.getCell();
         Cell workerCell = turn.getWorker().getCell();
 

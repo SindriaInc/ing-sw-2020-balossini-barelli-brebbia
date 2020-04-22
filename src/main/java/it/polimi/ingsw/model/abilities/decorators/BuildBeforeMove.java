@@ -49,11 +49,11 @@ public class BuildBeforeMove extends AbilitiesDecorator {
             return super.checkCanBuildBlock(turn, cell);
         }
 
-        if (turn.getActions().size() == 2 && turn.getActions().get(0).getType().isBuild() && turn.getActions().get(1).getType() == Turn.ActionType.MOVEMENT) {
+        if (turn.getStandardActions().size() == 2 && turn.getStandardActions().get(0).getType().isBuild() && turn.getStandardActions().get(1).getType() == Turn.ActionType.MOVEMENT) {
             return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildBlock(turn, cell);
         }
 
-        if (turn.getActions().size() == 0) {
+        if (turn.getStandardActions().size() == 0) {
             return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildBlock(turn, cell);
         }
 
@@ -70,11 +70,11 @@ public class BuildBeforeMove extends AbilitiesDecorator {
             return super.checkCanBuildDome(turn, cell);
         }
 
-        if (turn.getActions().size() == 2 && turn.getActions().get(0).getType().isBuild() && turn.getActions().get(1).getType() == Turn.ActionType.MOVEMENT) {
+        if (turn.getStandardActions().size() == 2 && turn.getStandardActions().get(0).getType().isBuild() && turn.getStandardActions().get(1).getType() == Turn.ActionType.MOVEMENT) {
             return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildDome(turn, cell);
         }
 
-        if (turn.getActions().size() == 0) {
+        if (turn.getStandardActions().size() == 0) {
             return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildDome(turn, cell);
         }
 

@@ -35,6 +35,11 @@ class AbstractGameStateTest {
                 return null;
             }
 
+            @Override
+            public boolean isEnded() {
+                return false;
+            }
+
         };
     }
 

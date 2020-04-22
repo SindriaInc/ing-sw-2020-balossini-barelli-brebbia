@@ -65,4 +65,12 @@ class PreWorkersGameTest {
         assertNotEquals(preWorkersGame, preWorkersGame.nextState());
     }
 
+    /**
+     * This state should never return true for isEnded
+     */
+    @Test
+    void checkNotEnded() {
+        assertFalse(preWorkersGame.isEnded());
+    }
+
 }

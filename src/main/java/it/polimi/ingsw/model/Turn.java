@@ -12,18 +12,25 @@ public class Turn {
 
     public enum ActionType {
 
-        MOVEMENT(false),
-        BLOCK(true),
-        DOME(true);
+        MOVEMENT(false, true),
+        BLOCK(true, true),
+        DOME(true, true),
+        FORCE(false, false);
 
         private final boolean build;
+        private final boolean standard;
 
-        ActionType(boolean build) {
+        ActionType(boolean build, boolean standard) {
             this.build = build;
+            this.standard = standard;
         }
 
         public boolean isBuild() {
             return build;
+        }
+
+        public boolean isStandard() {
+            return standard;
         }
 
     }
@@ -31,15 +38,21 @@ public class Turn {
     public static class Action {
 
         private final ActionType type;
+        private final Worker target;
         private final Cell cell;
 
-        public Action(ActionType type, Cell cell) {
+        public Action(ActionType type, Worker target, Cell cell) {
             this.type = type;
+            this.target = target;
             this.cell = cell;
         }
 
         public ActionType getType() {
             return type;
+        }
+
+        public Worker getTarget() {
+            return target;
         }
 
         public Cell getCell() {
@@ -78,6 +91,7 @@ public class Turn {
      * The list is guaranteed to be sorted by insertion order
      */
     private final List<Action> actions = new LinkedList<>();
+
 
     /**
      * List of workers that can not win on this turn
@@ -160,20 +174,32 @@ public class Turn {
                 .collect(Collectors.toList());
     }
 
-    public List<Action> getActions() {
-        return List.copyOf(actions);
+    public List<Action> getForces() {
+        return actions.stream()
+                .filter(action -> action.getType() == ActionType.FORCE)
+                .collect(Collectors.toList());
+    }
+
+    public List<Action> getStandardActions() {
+        return actions.stream()
+                .filter(action -> action.getType().isStandard())
+                .collect(Collectors.toList());
     }
 
     public void addMovement(Cell cell) {
-        actions.add(new Action(ActionType.MOVEMENT, cell));
+        actions.add(new Action(ActionType.MOVEMENT, null, cell));
     }
 
     public void addBlockPlaced(Cell cell) {
-        actions.add(new Action(ActionType.BLOCK, cell));
+        actions.add(new Action(ActionType.BLOCK, null, cell));
     }
 
     public void addDomePlaced(Cell cell) {
-        actions.add(new Action(ActionType.DOME, cell));
+        actions.add(new Action(ActionType.DOME, null, cell));
+    }
+
+    public void addForce(Worker target, Cell cell) {
+        actions.add(new Action(ActionType.FORCE, target, cell));
     }
 
     public void addBannedWinWorker(Worker worker) {

@@ -39,6 +39,15 @@ class ParkourCrossTest {
     }
 
     /**
+     * Check that it's not possible to force after moving
+     */
+    @Test
+    void checkNoCrossAfterMoving() {
+        abilities.doMove(turn, board.getCellFromCoords(1, 1)); // Stay in the same cell
+        assertFalse(abilities.checkCanForce(turn, worker4, board.getCellFromCoords(1, 2)));
+    }
+
+    /**
      * Check that the worker can't force other workers in non opposite cells
      */
     @Test
@@ -61,4 +70,14 @@ class ParkourCrossTest {
     void checkCanForceOpposite() {
         assertTrue(abilities.checkCanForce(turn, worker4, board.getCellFromCoords(1, 2)));
     }
+
+    /**
+     * Check that the worker can't force two times
+     */
+    @Test
+    void checkNoMoreThanOneOpposite() {
+        abilities.doForce(turn, worker4, board.getCellFromCoords(1, 2));
+        assertFalse(abilities.checkCanForce(turn, worker4, board.getCellFromCoords(1, 0)));
+    }
+
 }
