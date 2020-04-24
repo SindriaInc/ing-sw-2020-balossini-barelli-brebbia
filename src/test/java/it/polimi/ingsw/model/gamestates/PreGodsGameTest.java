@@ -20,7 +20,7 @@ class PreGodsGameTest {
 
     private PreGodsGame preGodsGame;
     private List<God> gods;
-    God god4;
+    private God god4;
     private int playerCount;
 
     @BeforeEach
@@ -63,7 +63,7 @@ class PreGodsGameTest {
      */
     @Test
     void checkGetSelectGodsCount() {
-        assertEquals(preGodsGame.getSelectGodsCount(), playerCount);
+        assertEquals(preGodsGame.getSelectGodsCount().intValue(), playerCount);
     }
 
     /**

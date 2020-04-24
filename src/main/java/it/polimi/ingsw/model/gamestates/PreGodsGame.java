@@ -1,5 +1,8 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.events.ChallengerSelectGodsEvent;
+import it.polimi.ingsw.common.events.PlayerChooseGodEvent;
+import it.polimi.ingsw.common.events.PlayerTurnStartEvent;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -61,6 +64,8 @@ public class PreGodsGame extends AbstractGameState {
         challengerIndex = sortedPlayers.indexOf(challenger);
 
         sortPlayers(sortedPlayers);
+
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
     }
 
     @Override
@@ -69,7 +74,7 @@ public class PreGodsGame extends AbstractGameState {
     }
 
     @Override
-    public int getSelectGodsCount() {
+    public Integer getSelectGodsCount() {
         return getPlayers().size();
     }
 
@@ -87,29 +92,36 @@ public class PreGodsGame extends AbstractGameState {
     }
 
     @Override
-    public void selectGods(List<God> gods) {
+    public Game.ModelResponse selectGods(List<God> gods) {
         if (phase != Phase.CHALLENGER_SELECT_GODS) {
-            throw new IllegalStateException("Unable to select gods in this phase");
+            // Unable to select gods in this phase
+            return Game.ModelResponse.INVALID_STATE;
         }
 
         if (!checkCanSelectGods(gods)) {
-            throw new IllegalArgumentException("Invalid god list");
+            // Invalid god list
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
         availableGods.clear();
         availableGods.addAll(gods);
 
+        getChallengerSelectGodsEventObservable().notifyObservers(new ChallengerSelectGodsEvent(List.copyOf(availableGods)));
+
         phase = Phase.PLAYER_SELECT_GOD;
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
-    public void chooseGod(God god) {
+    public Game.ModelResponse chooseGod(God god) {
         if (phase != Phase.PLAYER_SELECT_GOD) {
-            throw new IllegalStateException("Unable to select gods in this phase");
+            // Unable to choose a god in this phase
+            return Game.ModelResponse.INVALID_STATE;
         }
 
         if (!getAvailableGods().contains(god)) {
-            throw new IllegalArgumentException("Unavailable god selected");
+            // Unavailable god selected
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
         Player player = getCurrentPlayer();
@@ -124,6 +136,9 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         availableGods.remove(god);
+
+        getPlayerChooseGodEventObservable().notifyObservers(new PlayerChooseGodEvent(player));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.Observer;
+import it.polimi.ingsw.common.events.*;
 import it.polimi.ingsw.model.gamestates.AbstractGameState;
 import it.polimi.ingsw.model.gamestates.PreGodsGame;
 import it.polimi.ingsw.model.gamestates.PreWorkersGame;
@@ -8,6 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
+
+    public enum ModelResponse {
+
+        ALLOW,
+        INVALID_PARAMS,
+        INVALID_STATE
+
+    }
 
     public static final int BOARD_ROWS = 5;
     public static final int BOARD_COLUMNS = 5;
@@ -32,6 +42,86 @@ public class Game {
         } else {
             currentState = new PreGodsGame(board, players, MAX_WORKERS, deck.getGods());
         }
+    }
+
+    /**
+     * Register the observer for ChallengerSelectGodsEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerChallengerSelectGodsEventObserver(Observer<ChallengerSelectGodsEvent> observer) {
+        currentState.registerChallengerSelectGodsEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for PlayerChooseGodEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
+        currentState.registerPlayerChooseGodEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for PlayerLoseEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerPlayerLoseEventObserver(Observer<PlayerLoseEvent> observer) {
+        currentState.registerPlayerLoseEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for PlayerTurnStartEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerPlayerTurnStartEventObserver(Observer<PlayerTurnStartEvent> observer) {
+        currentState.registerPlayerTurnStartEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for PlayerWinListener in the related observable
+     * @param observer The Observer
+     */
+    public void registerPlayerWinListenerObserver(Observer<PlayerWinListener> observer) {
+        currentState.registerPlayerWinListenerObserver(observer);
+    }
+
+    /**
+     * Register the observer for WorkerBuildBlockEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
+        currentState.registerWorkerBuildBlockEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for WorkerBuildDomeEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
+        currentState.registerWorkerBuildDomeEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for WorkerForceEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
+        currentState.registerWorkerForceEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for WorkerMoveEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
+        currentState.registerWorkerMoveEventObserver(observer);
+    }
+
+    /**
+     * Register the observer for WorkerSpawnEvent in the related observable
+     * @param observer The Observer
+     */
+    public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
+        currentState.registerWorkerSpawnEventObserver(observer);
     }
 
     /**
@@ -101,19 +191,23 @@ public class Game {
     /**
      * Select the god cards to be used in the current game
      * @param gods The list of the chosen god cards
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void selectGods(List<God> gods) {
-        currentState.selectGods(gods);
+    public ModelResponse selectGods(List<God> gods) {
+        ModelResponse response = currentState.selectGods(gods);
         updateState();
+        return response;
     }
 
     /**
      * Select the god card, between the available gods, to be used by the current player
      * @param god The god card, must be still available
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void chooseGod(God god) {
-        currentState.chooseGod(god);
+    public ModelResponse chooseGod(God god) {
+        ModelResponse response = currentState.chooseGod(god);
         updateState();
+        return response;
     }
 
     /**
@@ -129,10 +223,12 @@ public class Game {
     /**
      * Spawns the worker, adding it to the current Player
      * @param worker The Worker
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void spawnWorker(Worker worker) {
-        currentState.spawnWorker(worker);
+    public ModelResponse spawnWorker(Worker worker) {
+        ModelResponse response = currentState.spawnWorker(worker);
         updateState();
+        return response;
     }
 
     /**
@@ -149,10 +245,12 @@ public class Game {
      * Move a worker to another cell
      * @param worker The worker to move
      * @param destination The destination of the worker
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void moveWorker(Worker worker, Cell destination) {
-        currentState.moveWorker(worker, destination);
+    public ModelResponse moveWorker(Worker worker, Cell destination) {
+        ModelResponse response = currentState.moveWorker(worker, destination);
         updateState();
+        return response;
     }
 
     /**
@@ -169,10 +267,12 @@ public class Game {
      * Build a block in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void buildBlock(Worker worker, Cell destination) {
-        currentState.buildBlock(worker, destination);
+    public ModelResponse buildBlock(Worker worker, Cell destination) {
+        ModelResponse response = currentState.buildBlock(worker, destination);
         updateState();
+        return response;
     }
 
     /**
@@ -189,10 +289,12 @@ public class Game {
      * Build a dome in the destination cell
      * @param worker The worker who is building
      * @param destination The destination cell
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void buildDome(Worker worker, Cell destination) {
-        currentState.buildDome(worker, destination);
+    public ModelResponse buildDome(Worker worker, Cell destination) {
+        ModelResponse response = currentState.buildDome(worker, destination);
         updateState();
+        return response;
     }
 
     /**
@@ -211,10 +313,12 @@ public class Game {
      * @param worker The worker to use
      * @param target The worker to be forced
      * @param destination The destination of the target
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void forceWorker(Worker worker, Worker target, Cell destination) {
-        currentState.forceWorker(worker, target, destination);
+    public ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
+        ModelResponse response = currentState.forceWorker(worker, target, destination);
         updateState();
+        return response;
     }
 
     /**
@@ -229,10 +333,12 @@ public class Game {
 
     /**
      * Ends the current turn
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
      */
-    public void endTurn() {
-        currentState.endTurn();
+    public ModelResponse endTurn() {
+        ModelResponse response = currentState.endTurn();
         updateState();
+        return response;
     }
 
     /**

@@ -1,8 +1,13 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.Observable;
+import it.polimi.ingsw.common.Observer;
+import it.polimi.ingsw.common.events.*;
 import it.polimi.ingsw.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractGameState {
 
@@ -19,96 +24,226 @@ public abstract class AbstractGameState {
      */
     private final List<Player> activePlayers = new LinkedList<>();
 
+    /**
+     * Observer for ChallengerSelectGodsEvent
+     */
+    private final Observable<ChallengerSelectGodsEvent> challengerSelectGodsEventObservable = new Observable<>();
+
+    /**
+     * Observer for PlayerChooseGodEvent
+     */
+    private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
+
+    /**
+     * Observer for PlayerLoseEvent
+     */
+    private final Observable<PlayerLoseEvent> playerLoseEventObservable = new Observable<>();
+
+    /**
+     * Observer for PlayerTurnStartEvent
+     */
+    private final Observable<PlayerTurnStartEvent> playerTurnStartEventObservable = new Observable<>();
+
+    /**
+     * Observer for PlayerWinListener
+     */
+    private final Observable<PlayerWinListener> playerWinListenerObservable = new Observable<>();
+
+    /**
+     * Observer for WorkerBuildBlockEvent
+     */
+    private final Observable<WorkerBuildBlockEvent> workerBuildBlockEventObservable = new Observable<>();
+
+    /**
+     * Observer for WorkerBuildDomeEvent
+     */
+    private final Observable<WorkerBuildDomeEvent> workerBuildDomeEventObservable = new Observable<>();
+
+    /**
+     * Observer for WorkerForceEvent
+     */
+    private final Observable<WorkerForceEvent> workerForceEventObservable = new Observable<>();
+
+    /**
+     * Observer for WorkerMoveEvent
+     */
+    private final Observable<WorkerMoveEvent> workerMoveEventObservable = new Observable<>();
+
+    /**
+     * Observer for WorkerSpawnEvent
+     */
+    private final Observable<WorkerSpawnEvent> workerSpawnEventObservable = new Observable<>();
+
     public AbstractGameState(Board board, List<Player> players) {
         this.board = board;
         this.activePlayers.addAll(players);
     }
 
     public List<God> getAvailableGods() {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public int getSelectGodsCount() {
-        throw new IllegalStateException();
+    public Integer getSelectGodsCount() {
+        return null;
     }
 
     public boolean checkCanSelectGods(List<God> gods) {
-        throw new IllegalStateException();
+        return false;
     }
 
-    public void selectGods(List<God> gods) {
-        throw new IllegalStateException();
+    public Game.ModelResponse selectGods(List<God> gods) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
-    public void chooseGod(God god) {
-        throw new IllegalStateException();
+    public Game.ModelResponse chooseGod(God god) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public List<Cell> getAvailableCells() {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public void spawnWorker(Worker worker) {
-        throw new IllegalStateException();
+    public Game.ModelResponse spawnWorker(Worker worker) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public List<Cell> getAvailableMoves(Worker worker) {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public void moveWorker(Worker worker, Cell destination) {
-        throw new IllegalStateException();
+    public Game.ModelResponse moveWorker(Worker worker, Cell destination) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public List<Cell> getAvailableBlockBuilds(Worker worker) {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public void buildBlock(Worker worker, Cell destination) {
-        throw new IllegalStateException();
+    public Game.ModelResponse buildBlock(Worker worker, Cell destination) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public List<Cell> getAvailableDomeBuilds(Worker worker) {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public void buildDome(Worker worker, Cell destination) {
-        throw new IllegalStateException();
+    public Game.ModelResponse buildDome(Worker worker, Cell destination) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public List<Cell> getAvailableForces(Worker worker, Worker target) {
-        throw new IllegalStateException();
+        return null;
     }
 
-    public void forceWorker(Worker worker, Worker target, Cell destination) {
-        throw new IllegalStateException();
+    public Game.ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
     public boolean checkCanEndTurn() {
-        throw new IllegalStateException();
+        return false;
     }
 
-    public void endTurn() {
-        throw new IllegalStateException();
+    public Game.ModelResponse endTurn() {
+        return Game.ModelResponse.INVALID_STATE;
     }
 
-    public boolean checkHasLost(Player player) {
+    public final boolean checkHasLost(Player player) {
         return !activePlayers.contains(player);
     }
 
-    public Board getBoard() {
+    public final Board getBoard() {
         return board;
     }
 
-    public List<Player> getPlayers() {
+    public final List<Player> getPlayers() {
         return List.copyOf(activePlayers);
     }
 
-    public List<Player> getOpponents(Player player) {
+    public final List<Player> getOpponents(Player player) {
         List<Player> opponents = new ArrayList<>(activePlayers);
         opponents.remove(player);
 
         return opponents;
+    }
+
+    public void registerChallengerSelectGodsEventObserver(Observer<ChallengerSelectGodsEvent> observer) {
+        challengerSelectGodsEventObservable.register(observer);
+    }
+
+    public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
+        playerChooseGodEventObservable.register(observer);
+    }
+
+    public void registerPlayerLoseEventObserver(Observer<PlayerLoseEvent> observer) {
+        playerLoseEventObservable.register(observer);
+    }
+
+    public void registerPlayerTurnStartEventObserver(Observer<PlayerTurnStartEvent> observer) {
+        playerTurnStartEventObservable.register(observer);
+    }
+
+    public void registerPlayerWinListenerObserver(Observer<PlayerWinListener> observer) {
+        playerWinListenerObservable.register(observer);
+    }
+
+    public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
+        workerBuildBlockEventObservable.register(observer);
+    }
+
+    public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
+        workerBuildDomeEventObservable.register(observer);
+    }
+
+    public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
+        workerForceEventObservable.register(observer);
+    }
+
+    public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
+        workerMoveEventObservable.register(observer);
+    }
+
+    public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
+        workerSpawnEventObservable.register(observer);
+    }
+
+    final Observable<ChallengerSelectGodsEvent> getChallengerSelectGodsEventObservable() {
+        return challengerSelectGodsEventObservable;
+    }
+
+    final Observable<PlayerChooseGodEvent> getPlayerChooseGodEventObservable() {
+        return playerChooseGodEventObservable;
+    }
+
+    final Observable<PlayerLoseEvent> getPlayerLoseEventObservable() {
+        return playerLoseEventObservable;
+    }
+
+    final Observable<PlayerTurnStartEvent> getPlayerTurnStartEventObservable() {
+        return playerTurnStartEventObservable;
+    }
+
+    final Observable<PlayerWinListener> getPlayerWinListenerObservable() {
+        return playerWinListenerObservable;
+    }
+
+    final Observable<WorkerBuildBlockEvent> getWorkerBuildBlockEventObservable() {
+        return workerBuildBlockEventObservable;
+    }
+
+    final Observable<WorkerBuildDomeEvent> getWorkerBuildDomeEventObservable() {
+        return workerBuildDomeEventObservable;
+    }
+
+    final Observable<WorkerForceEvent> getWorkerForceEventObservable() {
+        return workerForceEventObservable;
+    }
+
+    final Observable<WorkerMoveEvent> getWorkerMoveEventObservable() {
+        return workerMoveEventObservable;
+    }
+
+    final Observable<WorkerSpawnEvent> getWorkerSpawnEventObservable() {
+        return workerSpawnEventObservable;
     }
 
     /**

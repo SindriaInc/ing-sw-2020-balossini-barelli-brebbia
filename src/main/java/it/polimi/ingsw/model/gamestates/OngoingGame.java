@@ -1,11 +1,9 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.events.*;
 import it.polimi.ingsw.model.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 public class OngoingGame extends AbstractGameState {
@@ -23,6 +21,8 @@ public class OngoingGame extends AbstractGameState {
 
     public OngoingGame(Board board, List<Player> players) {
         super(board, players);
+
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
     }
 
     @Override
@@ -31,17 +31,24 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
-    public void moveWorker(Worker worker, Cell destination) {
+    public Game.ModelResponse moveWorker(Worker worker, Cell destination) {
         if (!getAvailableMoves(worker).contains(destination)) {
-            throw new IllegalArgumentException("Invalid destination");
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        Turn turn = getOrGenerateTurn(worker);
+        Optional<Turn> turn = getOrGenerateTurn(worker);
+
+        if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
         Player player = getCurrentPlayer();
+        player.doMove(turn.get(), destination);
 
-        player.doMove(turn, destination);
+        this.turn = turn.get();
 
-        this.turn = turn;
+        getWorkerMoveEventObservable().notifyObservers(new WorkerMoveEvent(worker, destination));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -50,17 +57,24 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
-    public void buildBlock(Worker worker, Cell destination) {
+    public Game.ModelResponse buildBlock(Worker worker, Cell destination) {
         if (!getAvailableBlockBuilds(worker).contains(destination)) {
-            throw new IllegalArgumentException("Invalid destination");
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        Turn turn = getOrGenerateTurn(worker);
+        Optional<Turn> turn = getOrGenerateTurn(worker);
+
+        if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
         Player player = getCurrentPlayer();
+        player.doBuildBlock(turn.get(), destination);
 
-        player.doBuildBlock(turn, destination);
+        this.turn = turn.get();
 
-        this.turn = turn;
+        getWorkerBuildBlockEventObservable().notifyObservers(new WorkerBuildBlockEvent(worker, destination));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -69,17 +83,24 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
-    public void buildDome(Worker worker, Cell destination) {
+    public Game.ModelResponse buildDome(Worker worker, Cell destination) {
         if (!getAvailableDomeBuilds(worker).contains(destination)) {
-            throw new IllegalArgumentException("Invalid destination");
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        Turn turn = getOrGenerateTurn(worker);
+        Optional<Turn> turn = getOrGenerateTurn(worker);
+
+        if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
         Player player = getCurrentPlayer();
+        player.doBuildDome(turn.get(), destination);
 
-        player.doBuildDome(turn, destination);
+        this.turn = turn.get();
 
-        this.turn = turn;
+        getWorkerBuildDomeEventObservable().notifyObservers(new WorkerBuildDomeEvent(worker, destination));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -88,17 +109,24 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
-    public void forceWorker(Worker worker, Worker target, Cell destination) {
+    public Game.ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
         if (!getAvailableForces(worker, target).contains(destination)) {
-            throw new IllegalArgumentException("Invalid destination");
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        Turn turn = getOrGenerateTurn(worker);
+        Optional<Turn> turn = getOrGenerateTurn(worker);
+
+        if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
         Player player = getCurrentPlayer();
+        player.doForce(turn.get(), target, destination);
 
-        player.doForce(turn, target, destination);
+        this.turn = turn.get();
 
-        this.turn = turn;
+        getWorkerForceEventObservable().notifyObservers(new WorkerForceEvent(worker, target, destination));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -121,33 +149,39 @@ public class OngoingGame extends AbstractGameState {
     }
 
     @Override
-    public void endTurn() {
+    public Game.ModelResponse endTurn() {
         if (!checkCanEndTurn()) {
-            throw new IllegalStateException("Unable to end the turn now");
+            return Game.ModelResponse.INVALID_STATE;
         }
 
+        Player endingPlayer = getCurrentPlayer();
         Turn turn = this.turn;
         this.turn = null;
 
         if (turn == null) {
             // The player had to end the turn without doing anything
             doLose();
-            return;
+            getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer));
+            return Game.ModelResponse.ALLOW;
         }
 
         if (hasCompletedMandatoryInteractions(turn)) {
-            if (!getCurrentPlayer().checkHasWon(turn)) {
+            if (!endingPlayer.checkHasWon(turn)) {
                 playerIndex = (playerIndex + 1) % getPlayers().size();
-                return;
+
+                getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
+                return Game.ModelResponse.ALLOW;
             }
 
             // The current player has won, remove every opponent
-            getOpponents(getCurrentPlayer()).forEach(super::removePlayer);
-            return;
+            getOpponents(endingPlayer).forEach(super::removePlayer);
+            return Game.ModelResponse.ALLOW;
         }
 
         // The player had to end the turn without being able to either move or build after moving
         doLose();
+        getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -171,14 +205,21 @@ public class OngoingGame extends AbstractGameState {
 
     private List<Cell> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
         if (!getCurrentPlayer().getWorkers().contains(worker)) {
-            throw new IllegalArgumentException("Can't use another player's workers");
+            // Can't use another player's workers
+            return null;
         }
 
-        Turn turn = getOrGenerateTurn(worker);
+        Optional<Turn> turn = getOrGenerateTurn(worker);
+
+        if (turn.isEmpty()) {
+            // Can't use more than one worker per turn
+            return null;
+        }
+
         List<Cell> cells = new ArrayList<>();
 
         getBoard().getCells().parallelStream().forEach(cell -> {
-            if (filter.test(turn, cell)) {
+            if (filter.test(turn.get(), cell)) {
                 cells.add(cell);
             }
         });
@@ -186,16 +227,17 @@ public class OngoingGame extends AbstractGameState {
         return cells;
     }
 
-    private Turn getOrGenerateTurn(Worker worker) {
+    private Optional<Turn> getOrGenerateTurn(Worker worker) {
         if (turn != null) {
             if (!turn.getWorker().equals(worker)) {
-                throw new IllegalArgumentException("Can't use more than one worker per turn");
+                // Can't use more than one worker per turn
+                return Optional.empty();
             }
 
-            return turn;
+            return Optional.of(turn);
         }
 
-        return generateTurn(worker);
+        return Optional.of(generateTurn(worker));
     }
 
     private Turn generateTurn(Worker worker) {

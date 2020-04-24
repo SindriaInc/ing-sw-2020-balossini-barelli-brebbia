@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.events.PlayerTurnStartEvent;
+import it.polimi.ingsw.common.events.WorkerSpawnEvent;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -30,6 +32,8 @@ public class PreWorkersGame extends AbstractGameState {
             sortedPlayers.sort(Comparator.comparingInt(Player::getAge));
             sortPlayers(sortedPlayers);
         }
+
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
     }
 
     @Override
@@ -46,14 +50,17 @@ public class PreWorkersGame extends AbstractGameState {
     }
 
     @Override
-    public void spawnWorker(Worker worker) {
+    public Game.ModelResponse spawnWorker(Worker worker) {
         if (!getAvailableCells().contains(worker.getCell())) {
-            throw new IllegalArgumentException("Invalid cell selected");
+            // Invalid cell selected
+            return Game.ModelResponse.INVALID_PARAMS;
         }
 
         Player player = getCurrentPlayer();
-
         player.addWorker(worker);
+
+        getWorkerSpawnEventObservable().notifyObservers(new WorkerSpawnEvent(worker));
+        return Game.ModelResponse.ALLOW;
     }
 
     @Override
@@ -65,7 +72,10 @@ public class PreWorkersGame extends AbstractGameState {
         }
 
         playerIndex++;
-        return getPlayers().get(playerIndex);
+        currentPlayer = getPlayers().get(playerIndex);
+
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(currentPlayer));
+        return currentPlayer;
     }
 
     @Override
