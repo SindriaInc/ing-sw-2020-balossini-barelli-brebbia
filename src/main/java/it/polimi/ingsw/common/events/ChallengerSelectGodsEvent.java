@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.God;
 
 import java.util.List;
 
+/**
+ * Event for the god selection by the challenger
+ */
 public class ChallengerSelectGodsEvent {
 
     private final List<God> gods;

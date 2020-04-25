@@ -41,7 +41,7 @@ class GameTest {
     @Test
     void checkSimpleGame() {
         constructSimpleGame();
-        assertThrows(IllegalStateException.class, () -> game.selectGods(new ArrayList<>()));
+        assertEquals(Game.ModelResponse.INVALID_STATE, game.selectGods(new ArrayList<>()));
     }
 
     /**
@@ -84,7 +84,7 @@ class GameTest {
         game.chooseGod(gods.get(2));
 
         // Check that we are in the next state
-        assertThrows(IllegalStateException.class, game::getAvailableGods);
+        assertNull(game.getAvailableGods());
         assertTrue(game.getAvailableCells().size() > 0);
     }
 
@@ -160,21 +160,21 @@ class GameTest {
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
         game.spawnWorker(player2worker1);
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
-        assertThrows(IllegalArgumentException.class, () -> game.spawnWorker(unusedWorker));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS,game.spawnWorker(unusedWorker));
         game.spawnWorker(player2worker2);
 
         assertTrue(game.getAvailableMoves(player1worker1).contains(getCell(game, 2, 0)));
         game.moveWorker(player1worker1, getCell(game, 2, 0));
-        assertThrows(IllegalStateException.class, game::endTurn);
-        assertThrows(IllegalArgumentException.class, () -> game.buildDome(player1worker1,getCell(game, 3, 0)));
+        assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.buildDome(player1worker1,getCell(game, 3, 0)));
         assertTrue(game.getAvailableBlockBuilds(player1worker1).contains(getCell(game, 3, 0)));
         game.buildBlock(player1worker1, getCell(game, 3, 0));
         game.endTurn();
 
         getCell(game, 3, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertThrows(IllegalArgumentException.class, () -> game.moveWorker(player2worker2,getCell(game, 2, 0)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(player2worker2,getCell(game, 2, 0)));
         game.moveWorker(player2worker1, getCell(game, 4, 3));
-        assertThrows(IllegalStateException.class, game::endTurn);
+        assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
         assertTrue(game.getAvailableDomeBuilds(player2worker1).contains(getCell(game, 3, 2)));
         game.buildDome(player2worker1, getCell(game, 3, 2));
         game.endTurn();

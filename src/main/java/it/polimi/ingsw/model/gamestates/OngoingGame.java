@@ -206,14 +206,14 @@ public class OngoingGame extends AbstractGameState {
     private List<Cell> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
         if (!getCurrentPlayer().getWorkers().contains(worker)) {
             // Can't use another player's workers
-            return null;
+            return List.of();
         }
 
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
             // Can't use more than one worker per turn
-            return null;
+            return List.of();
         }
 
         List<Cell> cells = new ArrayList<>();

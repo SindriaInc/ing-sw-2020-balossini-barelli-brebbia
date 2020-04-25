@@ -3,6 +3,9 @@ package it.polimi.ingsw.common.events;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Worker;
 
+/**
+ * Event for a worker force move
+ */
 public class WorkerForceEvent extends AbstractWorkerInteractEvent {
 
     private final Worker target;

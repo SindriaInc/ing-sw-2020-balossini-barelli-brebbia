@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.gamestates;
 
 import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.model.TestConstants;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,23 +46,23 @@ class AbstractGameStateTest {
 
     @Test
     void testDefaults() {
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableGods());
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getSelectGodsCount());
-        assertThrows(IllegalStateException.class, () -> abstractGameState.checkCanSelectGods(List.of()));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.selectGods(List.of()));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.chooseGod(null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableCells());
-        assertThrows(IllegalStateException.class, () -> abstractGameState.spawnWorker(null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableMoves(null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.moveWorker(null, null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableBlockBuilds(null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.buildBlock(null, null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableDomeBuilds(null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.buildDome(null, null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.getAvailableForces(null, null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.forceWorker(null, null, null));
-        assertThrows(IllegalStateException.class, () -> abstractGameState.checkCanEndTurn());
-        assertThrows(IllegalStateException.class, () -> abstractGameState.endTurn());
+        assertNull(abstractGameState.getAvailableGods());
+        assertNull(abstractGameState.getSelectGodsCount());
+        assertFalse(abstractGameState.checkCanSelectGods(List.of()));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.selectGods(List.of()));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.chooseGod(null));
+        assertNull(abstractGameState.getAvailableCells());
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.spawnWorker(null));
+        assertNull(abstractGameState.getAvailableMoves(null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.moveWorker(null, null));
+        assertNull(abstractGameState.getAvailableBlockBuilds(null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildBlock(null, null));
+        assertNull(abstractGameState.getAvailableDomeBuilds(null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildDome(null, null));
+        assertNull(abstractGameState.getAvailableForces(null, null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.forceWorker(null, null, null));
+        assertFalse(abstractGameState.checkCanEndTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.endTurn());
     }
 
     @Test

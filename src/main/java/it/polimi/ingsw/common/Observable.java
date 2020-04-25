@@ -7,10 +7,16 @@ public class Observable<T> {
 
     private final List<Observer<T>> observers = new ArrayList<>();
 
+    /**
+     * Registers an observer
+     */
     public void register(Observer<T> observer) {
         observers.add(observer);
     }
 
+    /**
+     * Notifies all observers in the observers list
+     */
     public void notifyObservers(T object) {
         for (Observer<T> observer : observers) {
             observer.onEvent(object);

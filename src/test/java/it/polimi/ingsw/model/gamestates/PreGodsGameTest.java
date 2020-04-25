@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.TestConstants;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.decorators.AdditionalMove;
 import it.polimi.ingsw.model.abilities.decorators.BuildBeforeMove;
 import it.polimi.ingsw.model.abilities.decorators.BuildBelow;
@@ -86,7 +83,7 @@ class PreGodsGameTest {
     void checkSelectGods() {
         assertEquals(preGodsGame, preGodsGame.nextState());
 
-        assertThrows(IllegalArgumentException.class, () -> preGodsGame.selectGods(List.of()));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS,preGodsGame.selectGods(List.of()));
 
         preGodsGame.selectGods(List.of(gods.get(0), gods.get(1)));
 
@@ -94,7 +91,7 @@ class PreGodsGameTest {
         assertEquals(preGodsGame.getPlayers().get(0), preGodsGame.getCurrentPlayer());
         assertEquals(preGodsGame.getAvailableGods(), List.of(gods.get(0), gods.get(1)));
 
-        assertThrows(IllegalStateException.class, () -> preGodsGame.selectGods(List.of()));
+        assertEquals(Game.ModelResponse.INVALID_STATE, preGodsGame.selectGods(List.of()));
     }
 
     /**
@@ -103,7 +100,7 @@ class PreGodsGameTest {
      */
     @Test
     void checkChooseGod() {
-        assertThrows(IllegalStateException.class, () -> preGodsGame.chooseGod(gods.get(0)));
+        assertEquals(Game.ModelResponse.INVALID_STATE, preGodsGame.chooseGod(gods.get(0)));
 
         preGodsGame.selectGods(List.of(gods.get(0), gods.get(1)));
 
@@ -118,7 +115,7 @@ class PreGodsGameTest {
         assertNotEquals(preGodsGame, preGodsGame.nextState());
         assertEquals(preGodsGame.getAvailableGods(), List.of());
 
-        assertThrows(IllegalArgumentException.class, () -> preGodsGame.chooseGod(god4));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, preGodsGame.chooseGod(god4));
     }
 
     /**

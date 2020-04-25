@@ -45,14 +45,14 @@ class PreWorkersGameTest {
      */
     @Test
     void checkSpawnWorker() {
-        assertThrows(IllegalArgumentException.class, () -> preWorkersGame.spawnWorker(new Worker(new Cell(-1, -1))));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Worker(new Cell(-1, -1))));
 
         preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 0)));
 
         assertEquals(preWorkersGame, preWorkersGame.nextState());
         assertEquals(preWorkersGame.getCurrentPlayer(), players.get(0));
 
-        assertThrows(IllegalArgumentException.class, () -> preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 0))));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 0))));
 
         preWorkersGame.spawnWorker(new Worker(board.getCellFromCoords(0, 1)));
 

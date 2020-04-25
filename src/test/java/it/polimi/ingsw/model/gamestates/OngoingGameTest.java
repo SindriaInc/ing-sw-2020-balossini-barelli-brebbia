@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.TestConstants;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +34,7 @@ class OngoingGameTest {
     void checkGetAvailableMoves() {
         assertEquals(0, ongoingGame.getAvailableMoves(getWorker(0, 0)).size());
         assertEquals(2, ongoingGame.getAvailableMoves(getWorker(0, 1)).size());
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.getAvailableMoves(getWorker(1, 0)));
+        assertEquals(0,ongoingGame.getAvailableMoves(getWorker(1, 0)).size());
     }
 
     /**
@@ -46,14 +43,14 @@ class OngoingGameTest {
      */
     @Test
     void checkMoveSingleWorker() {
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)));
 
         Worker worker = getWorker(0, 1);
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
         assertEquals(0, ongoingGame.getAvailableMoves(worker).size());
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -92,18 +89,18 @@ class OngoingGameTest {
 
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 2)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 2)));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 2)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 2)));
 
         ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -123,18 +120,18 @@ class OngoingGameTest {
         board.getCellFromCoords(0, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(0, 2)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(0, 2)));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(0, 2)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(0, 2)));
 
         ongoingGame.buildDome(worker, board.getCellFromCoords(0, 3));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
 
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS,  ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -152,7 +149,7 @@ class OngoingGameTest {
      */
     @Test
     void checkDoForce() {
-        assertThrows(IllegalArgumentException.class, () -> ongoingGame.forceWorker(getWorker(0, 0), getWorker(1, 0), board.getCellFromCoords(2, 0)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(getWorker(0, 0), getWorker(1, 0), board.getCellFromCoords(2, 0)));
     }
 
     /**
@@ -182,11 +179,11 @@ class OngoingGameTest {
     void checkEndTurn() {
         Worker worker = getWorker(0, 1);
 
-        assertThrows(IllegalStateException.class, () -> ongoingGame.endTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
-        assertThrows(IllegalStateException.class, () -> ongoingGame.endTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
 
@@ -194,11 +191,11 @@ class OngoingGameTest {
 
         Worker worker2 = getWorker(1, 0);
 
-        assertThrows(IllegalStateException.class, () -> ongoingGame.endTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.moveWorker(worker2, board.getCellFromCoords(2, 0));
 
-        assertThrows(IllegalStateException.class, () -> ongoingGame.endTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.buildBlock(worker2, board.getCellFromCoords(2, 1));
 
