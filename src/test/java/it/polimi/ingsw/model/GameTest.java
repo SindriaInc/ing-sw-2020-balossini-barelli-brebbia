@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.Observer;
+import it.polimi.ingsw.common.events.ChallengerSelectGodsEvent;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
 import org.junit.jupiter.api.Test;
@@ -128,6 +130,7 @@ class GameTest {
 
         assertTrue(equalsNoOrder(game.getAvailableForces(player3worker2, player2worker2), List.of(getCell(game, 2, 0))));
         game.forceWorker(player3worker2, player2worker2, getCell(game, 2, 0));
+        assertEquals(game.forceWorker(player3worker1, player2worker2, getCell(game, 2, 2)), Game.ModelResponse.INVALID_PARAMS);
         game.moveWorker(player3worker2, getCell(game, 2, 2));
         game.buildBlock(player3worker2, getCell(game, 2, 1));
         game.endTurn();
@@ -198,6 +201,24 @@ class GameTest {
         game.endTurn();
         assertTrue(game.checkHasLost(toRemove));
         assertTrue(game.isEnded());
+    }
+
+    /**
+     * Call event observers
+     */
+    @Test
+    void checkEventObserver () {
+        constructNormalGame();
+        game.registerChallengerSelectGodsEventObserver( (event) -> {});
+        game.registerPlayerChooseGodEventObserver( (event) -> {});
+        game.registerPlayerLoseEventObserver( (event) -> {});
+        game.registerPlayerTurnStartEventObserver( (event) -> {});
+        game.registerPlayerWinListenerObserver( (event) -> {});
+        game.registerWorkerBuildBlockEventObserver( (event) -> {});
+        game.registerWorkerBuildDomeEventObserver( (event) -> {});
+        game.registerWorkerForceEventObserver( (event) -> {});
+        game.registerWorkerMoveEventObserver( (event) -> {});
+        game.registerWorkerSpawnEventObserver( (event) -> {});
     }
 
     private Cell getCell(Game game, int x, int y) {

@@ -48,6 +48,10 @@ class OngoingGameTest {
         Worker worker = getWorker(0, 1);
         ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
 
+        assertEquals(ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)),
+                Game.ModelResponse.INVALID_PARAMS);
+        assertEquals(ongoingGame.getAvailableMoves(getWorker(0, 0)).size(), 0);
+
         assertEquals(0, ongoingGame.getAvailableMoves(worker).size());
         assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
         assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
@@ -95,6 +99,9 @@ class OngoingGameTest {
 
         ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
 
+        assertEquals(ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 1)),
+                     Game.ModelResponse.INVALID_PARAMS);
+
         assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
@@ -125,6 +132,9 @@ class OngoingGameTest {
         assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(0, 2)));
 
         ongoingGame.buildDome(worker, board.getCellFromCoords(0, 3));
+
+        assertEquals(ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(1, 3)),
+                     Game.ModelResponse.INVALID_PARAMS);
 
         assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
 

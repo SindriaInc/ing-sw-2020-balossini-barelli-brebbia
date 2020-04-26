@@ -32,13 +32,13 @@ public class OngoingGame extends AbstractGameState {
 
     @Override
     public Game.ModelResponse moveWorker(Worker worker, Cell destination) {
-        if (!getAvailableMoves(worker).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
-        }
-
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        if (!getAvailableMoves(worker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
@@ -58,13 +58,13 @@ public class OngoingGame extends AbstractGameState {
 
     @Override
     public Game.ModelResponse buildBlock(Worker worker, Cell destination) {
-        if (!getAvailableBlockBuilds(worker).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
-        }
-
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        if (!getAvailableBlockBuilds(worker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
@@ -84,13 +84,13 @@ public class OngoingGame extends AbstractGameState {
 
     @Override
     public Game.ModelResponse buildDome(Worker worker, Cell destination) {
-        if (!getAvailableDomeBuilds(worker).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
-        }
-
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        if (!getAvailableDomeBuilds(worker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
@@ -110,13 +110,13 @@ public class OngoingGame extends AbstractGameState {
 
     @Override
     public Game.ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
-        if (!getAvailableForces(worker, target).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
-        }
-
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        if (!getAvailableForces(worker, target).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
@@ -204,15 +204,15 @@ public class OngoingGame extends AbstractGameState {
     }
 
     private List<Cell> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
-        if (!getCurrentPlayer().getWorkers().contains(worker)) {
-            // Can't use another player's workers
-            return List.of();
-        }
-
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
             // Can't use more than one worker per turn
+            return List.of();
+        }
+
+        if (!getCurrentPlayer().getWorkers().contains(worker)) {
+            // Can't use another player's workers
             return List.of();
         }
 
