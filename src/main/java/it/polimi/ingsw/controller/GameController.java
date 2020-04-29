@@ -1,13 +1,17 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.common.ActionEventListener;
-import it.polimi.ingsw.common.ActionEventResponse;
+import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.ViewEventListener;
+import it.polimi.ingsw.common.ViewEventResponse;
 import it.polimi.ingsw.model.*;
 
 import java.util.List;
 
-public class GameController implements ActionEventListener {
+public class GameController implements ViewEventListener {
 
+    /**
+     * The model of the game
+     */
     private final Game game;
 
     public GameController(Game game) {
@@ -15,79 +19,79 @@ public class GameController implements ActionEventListener {
     }
 
     @Override
-    public ActionEventResponse onSelectGods(Player player, List<God> gods) {
+    public ViewEventResponse onSelectGods(String player, List<String> gods) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.selectGods(gods));
+        return ViewEventResponse.of(game.selectGods(gods));
     }
 
     @Override
-    public ActionEventResponse onChooseGod(Player player, God god) {
+    public ViewEventResponse onChooseGod(String player, String god) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.chooseGod(god));
+        return ViewEventResponse.of(game.chooseGod(god));
     }
 
     @Override
-    public ActionEventResponse onSpawnWorker(Player player, Worker worker) {
+    public ViewEventResponse onSpawnWorker(String player, Coordinates position) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.spawnWorker(worker));
+        return ViewEventResponse.of(game.spawnWorker(position));
     }
 
     @Override
-    public ActionEventResponse onMoveWorker(Player player, Worker worker, Cell destination) {
+    public ViewEventResponse onMoveWorker(String player, int worker, Coordinates destination) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.moveWorker(worker, destination));
+        return ViewEventResponse.of(game.moveWorker(worker, destination));
     }
 
     @Override
-    public ActionEventResponse onBuildBlock(Player player, Worker worker, Cell destination) {
+    public ViewEventResponse onBuildBlock(String player, int worker, Coordinates destination) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.buildBlock(worker, destination));
+        return ViewEventResponse.of(game.buildBlock(worker, destination));
     }
 
     @Override
-    public ActionEventResponse onBuildDome(Player player, Worker worker, Cell destination) {
+    public ViewEventResponse onBuildDome(String player, int worker, Coordinates destination) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.buildDome(worker, destination));
+        return ViewEventResponse.of(game.buildDome(worker, destination));
     }
 
     @Override
-    public ActionEventResponse onForceWorker(Player player, Worker worker, Worker target, Cell destination) {
+    public ViewEventResponse onForceWorker(String player, int worker, int target, Coordinates destination) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.forceWorker(worker, target, destination));
+        return ViewEventResponse.of(game.forceWorker(worker, target, destination));
     }
 
     @Override
-    public ActionEventResponse onEndTurn(Player player) {
+    public ViewEventResponse onEndTurn(String player) {
         if (!checkPlayer(player)) {
-            return ActionEventResponse.INVALID_PLAYER;
+            return ViewEventResponse.INVALID_PLAYER;
         }
 
-        return ActionEventResponse.of(game.endTurn());
+        return ViewEventResponse.of(game.endTurn());
     }
 
-    private boolean checkPlayer(Player player) {
-        return game.getCurrentPlayer().equals(player);
+    private boolean checkPlayer(String player) {
+        return game.getCurrentPlayer().getName().equals(player);
     }
 
 }

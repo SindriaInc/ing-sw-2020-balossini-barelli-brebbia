@@ -1,15 +1,18 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.ModelEventProvider;
 import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.Observer;
 import it.polimi.ingsw.common.events.*;
+import it.polimi.ingsw.common.events.requests.*;
 import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractGameState {
+public abstract class AbstractGameState implements ModelEventProvider {
 
     /**
      * The Board of this game
@@ -25,6 +28,46 @@ public abstract class AbstractGameState {
     private final List<Player> activePlayers = new LinkedList<>();
 
     /**
+     * Observer for RequestChallengerSelectGodsEvent
+     */
+    private final Observable<RequestChallengerSelectGodsEvent> requestChallengerSelectGodsEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestPlayerChooseGodEvent
+     */
+    private final Observable<RequestPlayerChooseGodEvent> requestPlayerChooseGodEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestPlayerEndTurnEvent
+     */
+    private final Observable<RequestPlayerEndTurnEvent> requestPlayerEndTurnEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestWorkerBuildBlockEvent
+     */
+    private final Observable<RequestWorkerBuildBlockEvent> requestWorkerBuildBlockEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestWorkerBuildDomeEvent
+     */
+    private final Observable<RequestWorkerBuildDomeEvent> requestWorkerBuildDomeEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestWorkerForceEvent
+     */
+    private final Observable<RequestWorkerForceEvent> requestWorkerForceEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestWorkerMoveEvent
+     */
+    private final Observable<RequestWorkerMoveEvent> requestWorkerMoveEventObservable = new Observable<>();
+
+    /**
+     * Observer for RequestWorkerSpawnEvent
+     */
+    private final Observable<RequestWorkerSpawnEvent> requestWorkerSpawnEventObservable = new Observable<>();
+
+    /**
      * Observer for ChallengerSelectGodsEvent
      */
     private final Observable<ChallengerSelectGodsEvent> challengerSelectGodsEventObservable = new Observable<>();
@@ -33,6 +76,11 @@ public abstract class AbstractGameState {
      * Observer for PlayerChooseGodEvent
      */
     private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
+
+    /**
+     * Observer for PlayerEndTurnEvent
+     */
+    private final Observable<PlayerEndTurnEvent> playerEndTurnEventObservable = new Observable<>();
 
     /**
      * Observer for PlayerLoseEvent
@@ -45,9 +93,9 @@ public abstract class AbstractGameState {
     private final Observable<PlayerTurnStartEvent> playerTurnStartEventObservable = new Observable<>();
 
     /**
-     * Observer for PlayerWinListener
+     * Observer for PlayerWinEvent
      */
-    private final Observable<PlayerWinListener> playerWinListenerObservable = new Observable<>();
+    private final Observable<PlayerWinEvent> playerWinEventObservable = new Observable<>();
 
     /**
      * Observer for WorkerBuildBlockEvent
@@ -79,68 +127,32 @@ public abstract class AbstractGameState {
         this.activePlayers.addAll(players);
     }
 
-    public List<God> getAvailableGods() {
-        return null;
-    }
-
-    public Integer getSelectGodsCount() {
-        return null;
-    }
-
-    public boolean checkCanSelectGods(List<God> gods) {
-        return false;
-    }
-
-    public Game.ModelResponse selectGods(List<God> gods) {
+    public Game.ModelResponse selectGods(List<String> gods) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse chooseGod(God god) {
+    public Game.ModelResponse chooseGod(String god) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public List<Cell> getAvailableCells() {
-        return null;
-    }
-
-    public Game.ModelResponse spawnWorker(Worker worker) {
+    public Game.ModelResponse spawnWorker(Coordinates position) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public List<Cell> getAvailableMoves(Worker worker) {
-        return null;
-    }
-
-    public Game.ModelResponse moveWorker(Worker worker, Cell destination) {
+    public Game.ModelResponse moveWorker(int worker, Coordinates destination) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public List<Cell> getAvailableBlockBuilds(Worker worker) {
-        return null;
-    }
-
-    public Game.ModelResponse buildBlock(Worker worker, Cell destination) {
+    public Game.ModelResponse buildBlock(int worker, Coordinates destination) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public List<Cell> getAvailableDomeBuilds(Worker worker) {
-        return null;
-    }
-
-    public Game.ModelResponse buildDome(Worker worker, Cell destination) {
+    public Game.ModelResponse buildDome(int worker, Coordinates destination) {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public List<Cell> getAvailableForces(Worker worker, Worker target) {
-        return null;
-    }
-
-    public Game.ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
+    public Game.ModelResponse forceWorker(int worker, int target, Coordinates destination) {
         return Game.ModelResponse.INVALID_STATE;
-    }
-
-    public boolean checkCanEndTurn() {
-        return false;
     }
 
     public Game.ModelResponse endTurn() {
@@ -166,44 +178,131 @@ public abstract class AbstractGameState {
         return opponents;
     }
 
+    @Override
+    public void registerRequestChallengerSelectGodsEventObserver(Observer<RequestChallengerSelectGodsEvent> observer) {
+        requestChallengerSelectGodsEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestPlayerChooseGodEventObserver(Observer<RequestPlayerChooseGodEvent> observer) {
+        requestPlayerChooseGodEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestPlayerEndTurnEventObserver(Observer<RequestPlayerEndTurnEvent> observer) {
+        requestPlayerEndTurnEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestWorkerBuildBlockEventObserver(Observer<RequestWorkerBuildBlockEvent> observer) {
+        requestWorkerBuildBlockEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestWorkerBuildDomeEventObserver(Observer<RequestWorkerBuildDomeEvent> observer) {
+        requestWorkerBuildDomeEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestWorkerForceEventObserver(Observer<RequestWorkerForceEvent> observer) {
+        requestWorkerForceEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestWorkerMoveEventObserver(Observer<RequestWorkerMoveEvent> observer) {
+        requestWorkerMoveEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerRequestWorkerSpawnEventObserver(Observer<RequestWorkerSpawnEvent> observer) {
+        requestWorkerSpawnEventObservable.register(observer);
+    }
+
+    @Override
     public void registerChallengerSelectGodsEventObserver(Observer<ChallengerSelectGodsEvent> observer) {
         challengerSelectGodsEventObservable.register(observer);
     }
 
+    @Override
     public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
         playerChooseGodEventObservable.register(observer);
     }
 
+    @Override
+    public void registerPlayerEndTurnEventObserver(Observer<PlayerEndTurnEvent> observer) {
+        playerEndTurnEventObservable.register(observer);
+    }
+
+    @Override
     public void registerPlayerLoseEventObserver(Observer<PlayerLoseEvent> observer) {
         playerLoseEventObservable.register(observer);
     }
 
+    @Override
     public void registerPlayerTurnStartEventObserver(Observer<PlayerTurnStartEvent> observer) {
         playerTurnStartEventObservable.register(observer);
     }
 
-    public void registerPlayerWinListenerObserver(Observer<PlayerWinListener> observer) {
-        playerWinListenerObservable.register(observer);
+    @Override
+    public void registerPlayerWinEventObserver(Observer<PlayerWinEvent> observer) {
+        playerWinEventObservable.register(observer);
     }
 
+    @Override
     public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
         workerBuildBlockEventObservable.register(observer);
     }
 
+    @Override
     public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
         workerBuildDomeEventObservable.register(observer);
     }
 
+    @Override
     public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
         workerForceEventObservable.register(observer);
     }
 
+    @Override
     public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
         workerMoveEventObservable.register(observer);
     }
 
+    @Override
     public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
         workerSpawnEventObservable.register(observer);
+    }
+
+    final Observable<RequestChallengerSelectGodsEvent> getRequestChallengerSelectGodsEventObservable() {
+        return requestChallengerSelectGodsEventObservable;
+    }
+
+    final Observable<RequestPlayerChooseGodEvent> getRequestPlayerChooseGodEventObservable() {
+        return requestPlayerChooseGodEventObservable;
+    }
+
+    final Observable<RequestPlayerEndTurnEvent> getRequestPlayerEndTurnEventObservable() {
+        return requestPlayerEndTurnEventObservable;
+    }
+
+    final Observable<RequestWorkerBuildBlockEvent> getRequestWorkerBuildBlockEventObservable() {
+        return requestWorkerBuildBlockEventObservable;
+    }
+
+    final Observable<RequestWorkerBuildDomeEvent> getRequestWorkerBuildDomeEventObservable() {
+        return requestWorkerBuildDomeEventObservable;
+    }
+
+    final Observable<RequestWorkerForceEvent> getRequestWorkerForceEventObservable() {
+        return requestWorkerForceEventObservable;
+    }
+
+    final Observable<RequestWorkerMoveEvent> getRequestWorkerMoveEventObservable() {
+        return requestWorkerMoveEventObservable;
+    }
+
+    final Observable<RequestWorkerSpawnEvent> getRequestWorkerSpawnEventObservable() {
+        return requestWorkerSpawnEventObservable;
     }
 
     final Observable<ChallengerSelectGodsEvent> getChallengerSelectGodsEventObservable() {
@@ -214,6 +313,10 @@ public abstract class AbstractGameState {
         return playerChooseGodEventObservable;
     }
 
+    final Observable<PlayerEndTurnEvent> getPlayerEndTurnEventObservable() {
+        return playerEndTurnEventObservable;
+    }
+
     final Observable<PlayerLoseEvent> getPlayerLoseEventObservable() {
         return playerLoseEventObservable;
     }
@@ -222,8 +325,8 @@ public abstract class AbstractGameState {
         return playerTurnStartEventObservable;
     }
 
-    final Observable<PlayerWinListener> getPlayerWinListenerObservable() {
-        return playerWinListenerObservable;
+    final Observable<PlayerWinEvent> getPlayerWinEventObservable() {
+        return playerWinEventObservable;
     }
 
     final Observable<WorkerBuildBlockEvent> getWorkerBuildBlockEventObservable() {
@@ -269,7 +372,7 @@ public abstract class AbstractGameState {
     /**
      * Obtain the current player that is able to interact with the game
      * Calling this method repeatedly should not result in a different player unless other methods got called
-     * If AbstractGameState#isEnded returns true, this method must return the winner
+     * If the game has ended, this method must return the winner
      * @return The Player
      */
     public abstract Player getCurrentPlayer();
@@ -280,14 +383,5 @@ public abstract class AbstractGameState {
      * @return The AbstractGameState
      */
     public abstract AbstractGameState nextState();
-
-    /**
-     * Check if the game has ended, meaning that one of the player has won
-     * If this method returns true, AbstractGameState#getCurrentPlayer must return the winner
-     * @return true if there is a winner
-     *
-     * <strong>This method must have no side effect</strong>
-     */
-    public abstract boolean isEnded();
 
 }

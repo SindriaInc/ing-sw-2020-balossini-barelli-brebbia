@@ -1,23 +1,22 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.common.Coordinates;
 
 /**
  * Abstract class for events which concern the worker interactions
  */
 public abstract class AbstractWorkerInteractEvent extends AbstractWorkerEvent {
 
-    private final Cell cell;
+    private final Coordinates destination;
 
-    public AbstractWorkerInteractEvent(Worker worker, Cell cell) {
+    public AbstractWorkerInteractEvent(int worker, Coordinates destination) {
         super(worker);
 
-        this.cell = cell;
+        this.destination = destination;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Coordinates getDestination() {
+        return destination;
     }
 
 }

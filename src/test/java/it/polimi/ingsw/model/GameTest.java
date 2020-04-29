@@ -213,7 +213,7 @@ class GameTest {
         game.registerPlayerChooseGodEventObserver( (event) -> {});
         game.registerPlayerLoseEventObserver( (event) -> {});
         game.registerPlayerTurnStartEventObserver( (event) -> {});
-        game.registerPlayerWinListenerObserver( (event) -> {});
+        game.registerPlayerWinEventObserver( (event) -> {});
         game.registerWorkerBuildBlockEventObserver( (event) -> {});
         game.registerWorkerBuildDomeEventObserver( (event) -> {});
         game.registerWorkerForceEventObserver( (event) -> {});

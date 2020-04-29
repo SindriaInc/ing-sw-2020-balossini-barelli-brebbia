@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.Coordinates;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -40,6 +42,16 @@ public class Board {
 
     public int getColumns() {
         return columns;
+    }
+
+    /**
+     * Obtain Cell object from given coordinates
+     * @param coordinates The coordinates
+     * @return The Cell
+     * @throws IllegalArgumentException If x or y are out of bounds
+     */
+    public Cell getCell(Coordinates coordinates) throws IllegalArgumentException {
+        return getCellFromCoords(coordinates.getX(), coordinates.getY());
     }
 
     /**

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.Coordinates;
 import it.polimi.ingsw.common.events.*;
+import it.polimi.ingsw.common.events.requests.*;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -22,28 +24,40 @@ public class OngoingGame extends AbstractGameState {
     public OngoingGame(Board board, List<Player> players) {
         super(board, players);
 
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
+        Player player = getCurrentPlayer();
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(player.getName()));
+        generateRequests(player);
     }
 
-    @Override
-    public List<Cell> getAvailableMoves(Worker worker) {
+    /**
+     * Get the available moves for a worker
+     * @param worker The worker to move
+     */
+    private List<Coordinates> getAvailableMoves(Worker worker) {
         return getAvailable(worker, (turn, cell) -> getCurrentPlayer().checkCanMove(turn, cell));
     }
 
     @Override
-    public Game.ModelResponse moveWorker(Worker worker, Cell destination) {
-        Optional<Turn> turn = getOrGenerateTurn(worker);
+    public Game.ModelResponse moveWorker(int worker, Coordinates destination) {
+        Worker modelWorker = getWorkerById(worker);
+
+        if (modelWorker == null) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        if (!getAvailableMoves(worker).contains(destination)) {
+        if (!getAvailableMoves(modelWorker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
+        Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
-        player.doMove(turn.get(), destination);
+        player.doMove(turn.get(), cell);
 
         this.turn = turn.get();
 
@@ -51,25 +65,35 @@ public class OngoingGame extends AbstractGameState {
         return Game.ModelResponse.ALLOW;
     }
 
-    @Override
-    public List<Cell> getAvailableBlockBuilds(Worker worker) {
+    /**
+     * Get the available builds for a worker
+     * @param worker The worker building the block
+     */
+    private List<Coordinates> getAvailableBlockBuilds(Worker worker) {
         return getAvailable(worker, (turn, cell) -> getCurrentPlayer().checkCanBuildBlock(turn, cell));
     }
 
     @Override
-    public Game.ModelResponse buildBlock(Worker worker, Cell destination) {
-        Optional<Turn> turn = getOrGenerateTurn(worker);
+    public Game.ModelResponse buildBlock(int worker, Coordinates destination) {
+        Worker modelWorker = getWorkerById(worker);
+
+        if (modelWorker == null) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        if (!getAvailableBlockBuilds(worker).contains(destination)) {
+        if (!getAvailableBlockBuilds(modelWorker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
+        Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
-        player.doBuildBlock(turn.get(), destination);
+        player.doBuildBlock(turn.get(), cell);
 
         this.turn = turn.get();
 
@@ -77,25 +101,35 @@ public class OngoingGame extends AbstractGameState {
         return Game.ModelResponse.ALLOW;
     }
 
-    @Override
-    public List<Cell> getAvailableDomeBuilds(Worker worker) {
+    /**
+     * Get the available dome builds for a worker
+     * @param worker The worker building the block
+     */
+    private List<Coordinates> getAvailableDomeBuilds(Worker worker) {
         return getAvailable(worker, (turn, cell) -> getCurrentPlayer().checkCanBuildDome(turn, cell));
     }
 
     @Override
-    public Game.ModelResponse buildDome(Worker worker, Cell destination) {
-        Optional<Turn> turn = getOrGenerateTurn(worker);
+    public Game.ModelResponse buildDome(int worker, Coordinates destination) {
+        Worker modelWorker = getWorkerById(worker);
+
+        if (modelWorker == null) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        if (!getAvailableDomeBuilds(worker).contains(destination)) {
+        if (!getAvailableDomeBuilds(modelWorker).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
+        Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
-        player.doBuildDome(turn.get(), destination);
+        player.doBuildDome(turn.get(), cell);
 
         this.turn = turn.get();
 
@@ -103,25 +137,37 @@ public class OngoingGame extends AbstractGameState {
         return Game.ModelResponse.ALLOW;
     }
 
-    @Override
-    public List<Cell> getAvailableForces(Worker worker, Worker target) {
+    /**
+     * Get the available force moves for the worker targeting an opponent worker
+     * @param worker The worker to use
+     * @param target The worker to be forced
+     */
+    private List<Coordinates> getAvailableForces(Worker worker, Worker target) {
         return getAvailable(worker, (turn, cell) -> getCurrentPlayer().checkCanForce(turn, target, cell));
     }
 
     @Override
-    public Game.ModelResponse forceWorker(Worker worker, Worker target, Cell destination) {
-        Optional<Turn> turn = getOrGenerateTurn(worker);
+    public Game.ModelResponse forceWorker(int worker, int target, Coordinates destination) {
+        Worker modelWorker = getWorkerById(worker);
+        Worker modelTarget = getWorkerById(target);
+
+        if (modelWorker == null) {
+            return Game.ModelResponse.INVALID_PARAMS;
+        }
+
+        Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        if (!getAvailableForces(worker, target).contains(destination)) {
+        if (!getAvailableForces(modelWorker, modelTarget).contains(destination)) {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
+        Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
-        player.doForce(turn.get(), target, destination);
+        player.doForce(turn.get(), modelTarget, cell);
 
         this.turn = turn.get();
 
@@ -129,8 +175,11 @@ public class OngoingGame extends AbstractGameState {
         return Game.ModelResponse.ALLOW;
     }
 
-    @Override
-    public boolean checkCanEndTurn() {
+    /**
+     * Check if the current player can end the turn
+     * @return true if the turn can be ended
+     */
+    private boolean checkCanEndTurn() {
         if (this.turn == null) {
             for (Worker worker : getCurrentPlayer().getWorkers()) {
                 if (hasOptions(worker)) {
@@ -161,7 +210,7 @@ public class OngoingGame extends AbstractGameState {
         if (turn == null) {
             // The player had to end the turn without doing anything
             doLose();
-            getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer));
+            getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer.getName()));
             return Game.ModelResponse.ALLOW;
         }
 
@@ -169,7 +218,7 @@ public class OngoingGame extends AbstractGameState {
             if (!endingPlayer.checkHasWon(turn)) {
                 playerIndex = (playerIndex + 1) % getPlayers().size();
 
-                getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
+                getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer().getName()));
                 return Game.ModelResponse.ALLOW;
             }
 
@@ -180,7 +229,7 @@ public class OngoingGame extends AbstractGameState {
 
         // The player had to end the turn without being able to either move or build after moving
         doLose();
-        getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer));
+        getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer.getName()));
         return Game.ModelResponse.ALLOW;
     }
 
@@ -195,15 +244,69 @@ public class OngoingGame extends AbstractGameState {
             return new EndGame(getBoard(), getPlayers().get(0));
         }
 
+        generateRequests(getCurrentPlayer());
         return this;
     }
 
-    @Override
-    public boolean isEnded() {
-        return false;
+    private void generateRequests(Player player) {
+        if (turn != null) {
+            generateRequests(player, turn.getWorker());
+            return;
+        }
+
+        for (Worker worker : player.getWorkers()) {
+            generateRequests(player, worker);
+        }
     }
 
-    private List<Cell> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
+    private void generateRequests(Player player, Worker worker) {
+        // Generate the request for block builds if available
+        List<Coordinates> availableBlockBuilds = getAvailableBlockBuilds(worker);
+
+        if (availableBlockBuilds.size() > 0) {
+            getRequestWorkerBuildBlockEventObservable().notifyObservers(new RequestWorkerBuildBlockEvent(worker.getId(), availableBlockBuilds));
+        }
+
+        // Generate the request for dome builds if available
+        List<Coordinates> availableDomeBuilds = getAvailableDomeBuilds(worker);
+
+        if (availableDomeBuilds.size() > 0) {
+            getRequestWorkerBuildDomeEventObservable().notifyObservers(new RequestWorkerBuildDomeEvent(worker.getId(), availableDomeBuilds));
+        }
+
+        // Generate the request for dome builds if available
+        List<Coordinates> availableMoves = getAvailableMoves(worker);
+
+        if (availableMoves.size() > 0) {
+            getRequestWorkerMoveEventObservable().notifyObservers(new RequestWorkerMoveEvent(worker.getId(), availableMoves));
+        }
+
+        // Generate the request for forces if available
+        List<Worker> otherWorkers = new ArrayList<>();
+        for (Player other : getOpponents(player)) {
+            otherWorkers.addAll(other.getWorkers());
+        }
+
+        Map<Integer, List<Coordinates>> availableTargetDestinations = new HashMap<>();
+        for (Worker other : otherWorkers) {
+            List<Coordinates> availableForces = getAvailableForces(worker, other);
+
+            if (availableForces.size() > 0) {
+                availableTargetDestinations.put(other.getId(), availableForces);
+            }
+        }
+
+        if (availableTargetDestinations.size() > 0) {
+            getRequestWorkerForceEventObservable().notifyObservers(new RequestWorkerForceEvent(worker.getId(), availableTargetDestinations));
+        }
+
+        // Generate the request for end turn if available
+        // This request also signals the client that no other request will be sent
+        boolean canBeEnded = checkCanEndTurn();
+        getRequestPlayerEndTurnEventObservable().notifyObservers(new RequestPlayerEndTurnEvent(canBeEnded));
+    }
+
+    private List<Coordinates> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {
         Optional<Turn> turn = getOrGenerateTurn(worker);
 
         if (turn.isEmpty()) {
@@ -224,7 +327,7 @@ public class OngoingGame extends AbstractGameState {
             }
         });
 
-        return cells;
+        return toCoordinatesList(cells);
     }
 
     private Optional<Turn> getOrGenerateTurn(Worker worker) {
@@ -288,6 +391,26 @@ public class OngoingGame extends AbstractGameState {
         removePlayer(player);
 
         playerIndex = playerIndex % getPlayers().size();
+    }
+
+    private List<Coordinates> toCoordinatesList(List<Cell> cells) {
+        List<Coordinates> coordinates = new ArrayList<>();
+
+        for (Cell cell : cells) {
+            coordinates.add(new Coordinates(cell.getX(), cell.getY()));
+        }
+
+        return coordinates;
+    }
+
+    private Worker getWorkerById(int id) {
+        for (Worker worker : getCurrentPlayer().getWorkers()) {
+            if (worker.getId() == id) {
+                return worker;
+            }
+        }
+
+        return null;
     }
 
 }

@@ -1,14 +1,23 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Worker;
-
 /**
  * Event for a worker spawn
+ *
+ * View -> Model
+ * Model -> View
  */
 public class WorkerSpawnEvent extends AbstractWorkerEvent {
 
-    public WorkerSpawnEvent(Worker worker) {
-        super(worker);
+    private final String owner;
+
+    public WorkerSpawnEvent(int id, String owner) {
+        super(id);
+
+        this.owner = owner;
+    }
+
+    public String getOwner() {
+        return owner;
     }
 
 }

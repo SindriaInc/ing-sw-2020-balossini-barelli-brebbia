@@ -1,22 +1,24 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Cell;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.common.Coordinates;
 
 /**
  * Event for a worker force move
+ *
+ * View -> Model
+ * Model -> View
  */
 public class WorkerForceEvent extends AbstractWorkerInteractEvent {
 
-    private final Worker target;
+    private final int target;
 
-    public WorkerForceEvent(Worker worker, Worker target, Cell cell) {
-        super(worker, cell);
+    public WorkerForceEvent(int worker, int target, Coordinates destination) {
+        super(worker, destination);
 
         this.target = target;
     }
 
-    public Worker getTarget() {
+    public int getTarget() {
         return target;
     }
 

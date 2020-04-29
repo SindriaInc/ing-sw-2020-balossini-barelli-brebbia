@@ -19,6 +19,11 @@ public class Worker {
     }
 
     /**
+     * The worker's id
+     */
+    private final int id;
+
+    /**
      * The worker's current position
      */
     private Cell cell;
@@ -29,8 +34,13 @@ public class Worker {
      */
     private Movement lastMovement;
 
-    public Worker(Cell cell) {
+    public Worker(int id, Cell cell) {
+        this.id = id;
         this.cell = cell;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Cell getCell() {

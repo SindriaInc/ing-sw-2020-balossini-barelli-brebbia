@@ -3,6 +3,8 @@ package it.polimi.ingsw.model.gamestates;
 import it.polimi.ingsw.common.events.ChallengerSelectGodsEvent;
 import it.polimi.ingsw.common.events.PlayerChooseGodEvent;
 import it.polimi.ingsw.common.events.PlayerTurnStartEvent;
+import it.polimi.ingsw.common.events.requests.RequestChallengerSelectGodsEvent;
+import it.polimi.ingsw.common.events.requests.RequestPlayerChooseGodEvent;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -65,34 +67,12 @@ public class PreGodsGame extends AbstractGameState {
 
         sortPlayers(sortedPlayers);
 
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer()));
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer().getName()));
+        getRequestChallengerSelectGodsEventObservable().notifyObservers(new RequestChallengerSelectGodsEvent(getAvailableGods(), getSelectGodsCount()));
     }
 
     @Override
-    public List<God> getAvailableGods() {
-        return List.copyOf(availableGods);
-    }
-
-    @Override
-    public Integer getSelectGodsCount() {
-        return getPlayers().size();
-    }
-
-    @Override
-    public boolean checkCanSelectGods(List<God> gods) {
-        if (new HashSet<>(gods).size() != gods.size()) {
-            return false; // No duplicates
-        }
-
-        if (!availableGods.containsAll(gods)) {
-            return false;
-        }
-
-        return gods.size() == getSelectGodsCount();
-    }
-
-    @Override
-    public Game.ModelResponse selectGods(List<God> gods) {
+    public Game.ModelResponse selectGods(List<String> gods) {
         if (phase != Phase.CHALLENGER_SELECT_GODS) {
             // Unable to select gods in this phase
             return Game.ModelResponse.INVALID_STATE;
@@ -103,41 +83,54 @@ public class PreGodsGame extends AbstractGameState {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-        availableGods.clear();
-        availableGods.addAll(gods);
+        List<God> modelGods = new ArrayList<>();
+        for (String god : gods) {
+            modelGods.add(getGodByName(god));
+        }
 
-        getChallengerSelectGodsEventObservable().notifyObservers(new ChallengerSelectGodsEvent(List.copyOf(availableGods)));
+        availableGods.clear();
+        availableGods.addAll(modelGods);
+
+        getChallengerSelectGodsEventObservable().notifyObservers(new ChallengerSelectGodsEvent(List.copyOf(gods)));
 
         phase = Phase.PLAYER_SELECT_GOD;
+
+        // Notify the first player to choose a god
+        Player player = getCurrentPlayer();
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(player.getName()));
+        getRequestPlayerChooseGodEventObservable().notifyObservers(new RequestPlayerChooseGodEvent(getAvailableGods()));
+
         return Game.ModelResponse.ALLOW;
     }
 
     @Override
-    public Game.ModelResponse chooseGod(God god) {
+    public Game.ModelResponse chooseGod(String god) {
         if (phase != Phase.PLAYER_SELECT_GOD) {
             // Unable to choose a god in this phase
             return Game.ModelResponse.INVALID_STATE;
         }
 
-        if (!getAvailableGods().contains(god)) {
+        God modelGod = getGodByName(god);
+
+        if (modelGod == null) {
             // Unavailable god selected
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
         Player player = getCurrentPlayer();
-        player.applyGod(god);
+        player.applyGod(modelGod);
 
         for (Player other : getPlayers()) {
             if (other.equals(player)) {
                 continue;
             }
 
-            other.applyOpponentGod(god, player);
+            other.applyOpponentGod(modelGod, player);
         }
 
-        availableGods.remove(god);
+        availableGods.remove(modelGod);
 
-        getPlayerChooseGodEventObservable().notifyObservers(new PlayerChooseGodEvent(player));
+        getPlayerChooseGodEventObservable().notifyObservers(new PlayerChooseGodEvent(player.getName()));
         return Game.ModelResponse.ALLOW;
     }
 
@@ -154,6 +147,8 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         playerIndex++;
+        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(currentPlayer.getName()));
+        getRequestPlayerChooseGodEventObservable().notifyObservers(new RequestPlayerChooseGodEvent(getAvailableGods()));
         return getPlayers().get(playerIndex);
     }
 
@@ -172,9 +167,59 @@ public class PreGodsGame extends AbstractGameState {
         return new PreWorkersGame(getBoard(), getPlayers(), maxWorkers, true);
     }
 
-    @Override
-    public boolean isEnded() {
-        return false;
+    /**
+     * Get the list of available gods
+     * If the selection has not been made the list will contain every god configured
+     * Otherwise, the list will contain only the remaining gods that can be picked by the current player
+     *
+     * @return The List of gods
+     */
+    private List<String> getAvailableGods() {
+        return toStringList(availableGods);
+    }
+
+    /**
+     * Get the number of cards to be selected
+     */
+    private int getSelectGodsCount() {
+        return getPlayers().size();
+    }
+
+    /**
+     * Check if the gods provided can be selected
+     * @param gods The list of the chosen god cards
+     * @return true if the selection is valid
+     */
+    private boolean checkCanSelectGods(List<String> gods) {
+        if (new HashSet<>(gods).size() != gods.size()) {
+            return false; // No duplicates
+        }
+
+        if (!toStringList(availableGods).containsAll(gods)) {
+            return false;
+        }
+
+        return gods.size() == getSelectGodsCount();
+    }
+
+    private List<String> toStringList(List<God> gods) {
+        List<String> list = new ArrayList<>();
+
+        for (God god : gods) {
+            list.add(god.getName());
+        }
+
+        return list;
+    }
+
+    private God getGodByName(String god) {
+        for (God modelGod : availableGods) {
+            if (modelGod.getName().equals(god)) {
+                return modelGod;
+            }
+        }
+
+        return null;
     }
 
 }

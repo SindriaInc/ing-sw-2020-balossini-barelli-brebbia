@@ -2,7 +2,7 @@ package it.polimi.ingsw.common;
 
 import it.polimi.ingsw.model.Game;
 
-public enum ActionEventResponse {
+public enum ViewEventResponse {
 
     /**
      * The action is allowed
@@ -24,8 +24,8 @@ public enum ActionEventResponse {
      */
     INVALID_STATE;
 
-    public static ActionEventResponse of(Game.ModelResponse response) {
-        return ActionEventResponse.valueOf(response.name());
+    public static ViewEventResponse of(Game.ModelResponse response) {
+        return ViewEventResponse.valueOf(response.name());
     }
 
 }

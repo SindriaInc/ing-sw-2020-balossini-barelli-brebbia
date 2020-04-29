@@ -1,13 +1,13 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Player;
-
 /**
  * Event for a player defeat
+ *
+ * Model -> View
  */
 public class PlayerLoseEvent extends AbstractPlayerEvent {
 
-    public PlayerLoseEvent(Player player) {
+    public PlayerLoseEvent(String player) {
         super(player);
     }
 

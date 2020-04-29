@@ -1,20 +1,18 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Worker;
-
 /**
  * Abstract class for events which concern the worker
  */
 public abstract class AbstractWorkerEvent {
 
-    private final Worker worker;
+    private final int id;
 
-    public AbstractWorkerEvent(Worker worker) {
-        this.worker = worker;
+    public AbstractWorkerEvent(int id) {
+        this.id = id;
     }
 
-    public Worker getWorker() {
-        return worker;
+    public int getId() {
+        return id;
     }
 
 }

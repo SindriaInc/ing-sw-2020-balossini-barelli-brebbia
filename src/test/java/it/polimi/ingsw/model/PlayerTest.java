@@ -32,7 +32,7 @@ class PlayerTest {
     @Test
     void testAddWorker() {
         Cell cell = new Cell(0, 0);
-        Worker worker = new Worker(cell);
+        Worker worker = new Worker(0, cell);
         player.addWorker(worker);
 
         assertThrows(IllegalArgumentException.class, () -> player.addWorker(worker));
@@ -46,8 +46,8 @@ class PlayerTest {
         Cell cell1 = new Cell(0, 0);
         Cell cell2 = new Cell(0, 3);
         Cell cell3 = new Cell(0, 1);
-        Worker worker = new Worker(cell1);
-        Worker enemyWorker = new Worker(cell2);
+        Worker worker = new Worker(0, cell1);
+        Worker enemyWorker = new Worker(1, cell2);
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(enemyWorker, false);
         Turn turn = new Turn(worker, otherWorkers, (cell) -> Arrays.asList(cell, cell1), cell -> false);

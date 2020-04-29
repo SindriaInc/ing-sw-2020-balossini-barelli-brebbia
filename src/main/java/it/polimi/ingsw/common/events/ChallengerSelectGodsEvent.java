@@ -1,21 +1,22 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.God;
-
 import java.util.List;
 
 /**
  * Event for the god selection by the challenger
+ *
+ * View -> Model
+ * Model -> View
  */
 public class ChallengerSelectGodsEvent {
 
-    private final List<God> gods;
+    private final List<String> gods;
 
-    public ChallengerSelectGodsEvent(List<God> gods) {
+    public ChallengerSelectGodsEvent(List<String> gods) {
         this.gods = gods;
     }
 
-    public List<God> getGods() {
+    public List<String> getGods() {
         return gods;
     }
 

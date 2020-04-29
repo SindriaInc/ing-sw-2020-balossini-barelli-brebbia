@@ -19,6 +19,11 @@ public class God {
     private final int id;
 
     /**
+     * The god's title
+     */
+    private final String title;
+
+    /**
      * The god's card description
      */
     private final String description;
@@ -33,9 +38,10 @@ public class God {
      */
     private final Map<Class<? extends AbilitiesDecorator>, Boolean> effects;
 
-    public God(String name, int id, String description, String type, Map<Class<? extends AbilitiesDecorator>, Boolean> effects) {
+    public God(String name, int id, String title, String description, String type, Map<Class<? extends AbilitiesDecorator>, Boolean> effects) {
         this.name = name;
         this.id = id;
+        this.title = title;
         this.description = description;
         this.type = type;
 
@@ -48,6 +54,10 @@ public class God {
 
     public int getId() {
         return id;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {

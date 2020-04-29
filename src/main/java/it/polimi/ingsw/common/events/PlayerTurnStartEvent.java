@@ -1,13 +1,13 @@
 package it.polimi.ingsw.common.events;
 
-import it.polimi.ingsw.model.Player;
-
 /**
  * Event for the turn start
+ *
+ * Model -> View
  */
 public class PlayerTurnStartEvent extends AbstractPlayerEvent {
 
-    public PlayerTurnStartEvent(Player player) {
+    public PlayerTurnStartEvent(String player) {
         super(player);
     }
 
