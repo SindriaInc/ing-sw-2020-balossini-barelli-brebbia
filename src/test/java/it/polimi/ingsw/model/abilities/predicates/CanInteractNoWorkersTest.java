@@ -28,10 +28,10 @@ class CanInteractNoWorkersTest {
         cell2 = new Cell(0, 1);
         cell3 = new Cell(1, 1);
         cell4 = new Cell(3, 0);
-        worker = new Worker(cell1);
+        worker = new Worker(0, cell1);
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
-        otherWorkers.put(new Worker(cell3), false);
+        otherWorkers.put(new Worker(1, cell3), false);
 
         turn = new Turn(worker, otherWorkers, (cell) -> {
             if (cell.equals(cell1)) {

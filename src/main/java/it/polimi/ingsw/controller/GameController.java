@@ -1,97 +1,141 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.common.ViewEventListener;
-import it.polimi.ingsw.common.ViewEventResponse;
-import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.common.IViewEventProvider;
+import it.polimi.ingsw.common.event.*;
+import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
+import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
+import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
+import it.polimi.ingsw.model.Deck;
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.server.IServer;
+import it.polimi.ingsw.view.VirtualView;
 
 import java.util.List;
 
-public class GameController implements ViewEventListener {
+public class GameController {
+
+    /**
+     * The response event provider
+     */
+    private final ResponseEventProvider responseEventProvider;
 
     /**
      * The model of the game
      */
-    private final Game game;
+    private Game game;
 
-    public GameController(Game game) {
-        this.game = game;
+    /**
+     * The virtual view
+     */
+    private VirtualView virtualView;
+
+    public GameController(IServer server) {
+        responseEventProvider = new ResponseEventProvider();
+
+        virtualView = new VirtualView(server, responseEventProvider);
+
+        IViewEventProvider provider = virtualView.getViewEventProvider();
+        provider.registerPlayerChallengerSelectGodsEventObserver(this::onChallengerSelectGods);
+        provider.registerPlayerChooseGodEventObserver(this::onPlayerChooseGod);
+        provider.registerWorkerSpawnEventObserver(this::onWorkerSpawn);
+        provider.registerWorkerMoveEventObserver(this::onWorkerMove);
+        provider.registerWorkerBuildBlockEventObserver(this::onWorkerBuildBlock);
+        provider.registerWorkerBuildDomeEventObserver(this::onWorkerBuildDome);
+        provider.registerWorkerForceEventObserver(this::onWorkerForce);
+        provider.registerPlayerEndTurnEventObserver(this::onPlayerEndTurn);
     }
 
-    @Override
-    public ViewEventResponse onSelectGods(String player, List<String> gods) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    public void selectGame(List<Player> players, Deck deck, boolean simpleGame) {
+        this.game = new Game();
+        virtualView.selectModelEventProvider(game.getModelEventProvider());
+        game.init(players, deck, simpleGame);
+    }
+
+    private void onChallengerSelectGods(PlayerChallengerSelectGodsEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.selectGods(gods));
+        dispatchResponseFromModel(event.getPlayer(), game.selectGods(event.getGods()));
     }
 
-    @Override
-    public ViewEventResponse onChooseGod(String player, String god) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onPlayerChooseGod(PlayerChooseGodEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.chooseGod(god));
+        dispatchResponseFromModel(event.getPlayer(), game.chooseGod(event.getGod()));
     }
 
-    @Override
-    public ViewEventResponse onSpawnWorker(String player, Coordinates position) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onWorkerSpawn(WorkerSpawnEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.spawnWorker(position));
+        dispatchResponseFromModel(event.getPlayer(), game.spawnWorker(event.getPosition()));
     }
 
-    @Override
-    public ViewEventResponse onMoveWorker(String player, int worker, Coordinates destination) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onWorkerMove(WorkerMoveEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.moveWorker(worker, destination));
+        dispatchResponseFromModel(event.getPlayer(), game.moveWorker(event.getId(), event.getDestination()));
     }
 
-    @Override
-    public ViewEventResponse onBuildBlock(String player, int worker, Coordinates destination) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onWorkerBuildBlock(WorkerBuildBlockEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.buildBlock(worker, destination));
+        dispatchResponseFromModel(event.getPlayer(), game.buildBlock(event.getId(), event.getDestination()));
     }
 
-    @Override
-    public ViewEventResponse onBuildDome(String player, int worker, Coordinates destination) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onWorkerBuildDome(WorkerBuildDomeEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.buildDome(worker, destination));
+        dispatchResponseFromModel(event.getPlayer(), game.buildBlock(event.getId(), event.getDestination()));
     }
 
-    @Override
-    public ViewEventResponse onForceWorker(String player, int worker, int target, Coordinates destination) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onWorkerForce(WorkerForceEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.forceWorker(worker, target, destination));
+        dispatchResponseFromModel(event.getPlayer(), game.forceWorker(event.getId(), event.getTarget(), event.getDestination()));
     }
 
-    @Override
-    public ViewEventResponse onEndTurn(String player) {
-        if (!checkPlayer(player)) {
-            return ViewEventResponse.INVALID_PLAYER;
+    private void onPlayerEndTurn(PlayerEndTurnEvent event) {
+        if (!checkOrDispatchResponse(event.getPlayer())) {
+            return;
         }
 
-        return ViewEventResponse.of(game.endTurn());
+        dispatchResponseFromModel(event.getPlayer(), game.endTurn());
     }
 
-    private boolean checkPlayer(String player) {
-        return game.getCurrentPlayer().getName().equals(player);
+    private boolean checkOrDispatchResponse(String player) {
+        if (game.getCurrentPlayer().getName().equals(player)) {
+            return true;
+        }
+
+        responseEventProvider.getResponseInvalidPlayerEventObservable().notifyObservers(
+                new ResponseInvalidPlayerEvent(player)
+        );
+        return false;
+    }
+
+    private void dispatchResponseFromModel(String player, Game.ModelResponse response) {
+        switch (response) {
+            case INVALID_PARAMS -> responseEventProvider.getResponseInvalidParametersEventObservable().notifyObservers(
+                    new ResponseInvalidParametersEvent(player)
+            );
+            case INVALID_STATE -> responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
+                    new ResponseInvalidStateEvent(player)
+            );
+        }
     }
 
 }

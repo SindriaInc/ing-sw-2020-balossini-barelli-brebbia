@@ -24,9 +24,9 @@ class BlockMoveHigherWorkerTest {
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        Worker worker1 = new Worker(board.getCellFromCoords(0, 0));
-        Worker worker2 = new Worker(board.getCellFromCoords(1, 0));
-        enemyWorker = new Worker(board.getCellFromCoords(2, 2));
+        Worker worker1 = new Worker(0, board.getCellFromCoords(0, 0));
+        Worker worker2 = new Worker(1, board.getCellFromCoords(1, 0));
+        enemyWorker = new Worker(2, board.getCellFromCoords(2, 2));
 
         worker2.getCell().setLevel(1);
 

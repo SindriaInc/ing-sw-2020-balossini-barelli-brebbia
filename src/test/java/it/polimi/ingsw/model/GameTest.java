@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.common.Observer;
-import it.polimi.ingsw.common.events.ChallengerSelectGodsEvent;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
 import org.junit.jupiter.api.Test;

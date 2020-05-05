@@ -1,17 +1,15 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.common.ModelEventProvider;
-import it.polimi.ingsw.common.Observer;
-import it.polimi.ingsw.common.events.*;
-import it.polimi.ingsw.common.events.requests.*;
+import it.polimi.ingsw.common.IModelEventProvider;
 import it.polimi.ingsw.model.gamestates.AbstractGameState;
 import it.polimi.ingsw.model.gamestates.PreGodsGame;
+import it.polimi.ingsw.model.gamestates.PreInitGame;
 import it.polimi.ingsw.model.gamestates.PreWorkersGame;
 
 import java.util.List;
 
-public class Game implements ModelEventProvider {
+public class Game {
 
     public enum ModelResponse {
 
@@ -32,152 +30,35 @@ public class Game implements ModelEventProvider {
 
     /**
      * Instantiates the Game
+     * The game will have only have the ModelEventProvider, Game#init needs to be called to start the game
+     */
+    public Game() {
+        ModelEventProvider provider = new ModelEventProvider();
+
+        currentState = new PreInitGame(provider);
+    }
+
+    /**
+     * Initialize the game, defining the initial state
      * @param players The list of players
      * @param deck The deck, containing the list of Gods
      * @param simpleGame True for a simple game, skipping god selection
      */
-    public Game(List<Player> players, Deck deck, boolean simpleGame) {
+    public void init(List<Player> players, Deck deck, boolean simpleGame) {
         Board board = new Board(BOARD_ROWS, BOARD_COLUMNS);
 
         if (simpleGame) {
-            currentState = new PreWorkersGame(board, players, MAX_WORKERS);
+            currentState = new PreWorkersGame(currentState.getModelEventProvider(), board, players, MAX_WORKERS);
         } else {
-            currentState = new PreGodsGame(board, players, MAX_WORKERS, deck.getGods());
+            currentState = new PreGodsGame(currentState.getModelEventProvider(), board, players, MAX_WORKERS, deck.getGods());
         }
     }
 
     /**
-     * @see ModelEventProvider#registerRequestChallengerSelectGodsEventObserver(Observer)
+     * Obtain the IModelEventProvider, to be used to register model event observers
      */
-    @Override
-    public void registerRequestChallengerSelectGodsEventObserver(Observer<RequestChallengerSelectGodsEvent> observer) {
-        currentState.registerRequestChallengerSelectGodsEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestPlayerChooseGodEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestPlayerChooseGodEventObserver(Observer<RequestPlayerChooseGodEvent> observer) {
-        currentState.registerRequestPlayerChooseGodEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestPlayerEndTurnEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestPlayerEndTurnEventObserver(Observer<RequestPlayerEndTurnEvent> observer) {
-        currentState.registerRequestPlayerEndTurnEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestWorkerBuildBlockEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestWorkerBuildBlockEventObserver(Observer<RequestWorkerBuildBlockEvent> observer) {
-        currentState.registerRequestWorkerBuildBlockEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestWorkerBuildDomeEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestWorkerBuildDomeEventObserver(Observer<RequestWorkerBuildDomeEvent> observer) {
-        currentState.registerRequestWorkerBuildDomeEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestWorkerForceEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestWorkerForceEventObserver(Observer<RequestWorkerForceEvent> observer) {
-        currentState.registerRequestWorkerForceEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestWorkerMoveEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestWorkerMoveEventObserver(Observer<RequestWorkerMoveEvent> observer) {
-        currentState.registerRequestWorkerMoveEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerRequestWorkerSpawnEventObserver(Observer)
-     */
-    @Override
-    public void registerRequestWorkerSpawnEventObserver(Observer<RequestWorkerSpawnEvent> observer) {
-        currentState.registerRequestWorkerSpawnEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerChallengerSelectGodsEventObserver(Observer)
-     */
-    public void registerChallengerSelectGodsEventObserver(Observer<ChallengerSelectGodsEvent> observer) {
-        currentState.registerChallengerSelectGodsEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerPlayerChooseGodEventObserver(Observer)
-     */
-    public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
-        currentState.registerPlayerChooseGodEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerPlayerLoseEventObserver(Observer)
-     */
-    public void registerPlayerLoseEventObserver(Observer<PlayerLoseEvent> observer) {
-        currentState.registerPlayerLoseEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerPlayerTurnStartEventObserver(Observer)
-     */
-    public void registerPlayerTurnStartEventObserver(Observer<PlayerTurnStartEvent> observer) {
-        currentState.registerPlayerTurnStartEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerPlayerWinEventObserver(Observer)
-     */
-    public void registerPlayerWinEventObserver(Observer<PlayerWinEvent> observer) {
-        currentState.registerPlayerWinEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerWorkerBuildBlockEventObserver(Observer)
-     */
-    public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
-        currentState.registerWorkerBuildBlockEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerWorkerBuildDomeEventObserver(Observer)
-     */
-    public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
-        currentState.registerWorkerBuildDomeEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerWorkerForceEventObserver(Observer)
-     */
-    public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
-        currentState.registerWorkerForceEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerWorkerMoveEventObserver(Observer)
-     */
-    public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
-        currentState.registerWorkerMoveEventObserver(observer);
-    }
-
-    /**
-     * @see ModelEventProvider#registerWorkerSpawnEventObserver(Observer)
-     */
-    public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
-        currentState.registerWorkerSpawnEventObserver(observer);
+    public IModelEventProvider getModelEventProvider() {
+        return currentState.getModelEventProvider();
     }
 
     /**

@@ -16,6 +16,7 @@ class GodTest {
 
     private final static String DEFAULT_NAME = "A";
     private final static int DEFAULT_ID = 1;
+    private final static String DEFAULT_TITLE = "Title";
     private final static String DEFAULT_DESCRIPTION = "Standard";
     private final static String DEFAULT_TYPE = "Letter";
 
@@ -23,13 +24,14 @@ class GodTest {
 
     @BeforeEach
     void setUp() {
-        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of());
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of());
     }
 
     @Test
     void testGetters() {
         assertEquals(god.getName(), DEFAULT_NAME);
         assertEquals(god.getId(), DEFAULT_ID);
+        assertEquals(god.getTitle(), DEFAULT_TITLE);
         assertEquals(god.getDescription(), DEFAULT_DESCRIPTION);
         assertEquals(god.getType(), DEFAULT_TYPE);
     }
@@ -44,7 +46,7 @@ class GodTest {
 
     @Test
     void testApplyAbilities() {
-        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(AdditionalBuildOnDifferentCell.class, false));
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(AdditionalBuildOnDifferentCell.class, false));
 
         IAbilities abilities = new DefaultAbilities();
         abilities = god.applyAbilities(abilities);
@@ -60,7 +62,7 @@ class GodTest {
 
     @Test
     void testApplyOpponentAbilities() {
-        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(BlockOnPlayerMoveUp.class, true));
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(BlockOnPlayerMoveUp.class, true));
 
         IAbilities abilities = new DefaultAbilities();
         Player player = new Player(TestConstants.PLAYER_NAME, TestConstants.PLAYER_AGE);
@@ -77,7 +79,7 @@ class GodTest {
 
     @Test
     void testInvalidEffect() {
-        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(
+        god = new God(DEFAULT_NAME, DEFAULT_ID, DEFAULT_TITLE, DEFAULT_DESCRIPTION, DEFAULT_TYPE, Map.of(
                 BlockOnPlayerMoveUp.class, false,
                 AdditionalBuildOnSameCell.class, true
         ));

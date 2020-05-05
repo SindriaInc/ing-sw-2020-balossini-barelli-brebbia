@@ -22,8 +22,8 @@ class BuildBeforeMoveTest {
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        Worker worker1 = new Worker(board.getCellFromCoords(3, 3));
-        Worker worker2 = new Worker(board.getCellFromCoords(4, 4));
+        Worker worker1 = new Worker(0, board.getCellFromCoords(3, 3));
+        Worker worker2 = new Worker(1, board.getCellFromCoords(4, 4));
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(worker2, false);

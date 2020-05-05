@@ -27,7 +27,7 @@ class CellLevelDifferenceTest {
         cell2 = new Cell(0, 1);
         cell3 = new Cell(0, 1);
 
-        turn = new Turn(new Worker(cell1), new HashMap<>(), (cell) -> List.of(), cell -> false);
+        turn = new Turn(new Worker(0, cell1), new HashMap<>(), (cell) -> List.of(), cell -> false);
         cellLevelDifference = new CellLevelDifference(MAX_UP);
     }
 

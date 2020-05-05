@@ -22,8 +22,8 @@ class AdditionalBuildOnSameCellTest {
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        Worker worker1 = new Worker(board.getCellFromCoords(0, 0));
-        Worker worker2 = new Worker(board.getCellFromCoords(1, 1));
+        Worker worker1 = new Worker(0, board.getCellFromCoords(0, 0));
+        Worker worker2 = new Worker(1, board.getCellFromCoords(1, 1));
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(worker1, false);

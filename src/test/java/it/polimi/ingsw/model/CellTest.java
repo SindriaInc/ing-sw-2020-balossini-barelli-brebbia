@@ -30,14 +30,14 @@ class CellTest {
         assertEquals(cell.toString(), "{x: 0, y: 0, doomed: false}");
 
         Cell cell2 = new Cell(0, 0);
-        String s = "NotACell";
+        String string = "NotACell";
         // equals
-        assertTrue(cell.equals(cell2));
-        assertFalse(cell.equals(s));
+        assertEquals(cell, cell2);
+        assertNotEquals(cell, string);
 
-        cell2=cell;
+        cell2 = cell;
 
-        assertTrue(cell.equals(cell2));
+        assertEquals(cell, cell2);
 
         // hashCode
         assertEquals(cell.hashCode(), Objects.hash(cell.getX(), cell.getY()));

@@ -23,7 +23,7 @@ class MaxLevelTest {
     @BeforeEach
     void setUp() {
         cell = new Cell(0, 0);
-        turn = new Turn(new Worker(cell), new HashMap<>(), (cell) -> List.of(), cell -> false);
+        turn = new Turn(new Worker(0, cell), new HashMap<>(), (cell) -> List.of(), cell -> false);
         maxLevel = new MaxLevel(BUILD_MAX_LEVEL);
     }
 

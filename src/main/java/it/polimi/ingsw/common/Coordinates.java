@@ -25,4 +25,16 @@ public class Coordinates {
         return y;
     }
 
+    @Override
+    public String toString() {
+        return x + "," + y;
+    }
+
+    public static Coordinates parse(String string) {
+        String[] raw = string.split(",");
+        int x = Integer.parseInt(raw[0]);
+        int y = Integer.parseInt(raw[1]);
+        return new Coordinates(x, y);
+    }
+
 }

@@ -15,7 +15,7 @@ class WorkerTest {
     void setUp() {
         cell1 = new Cell(0, 0);
         cell2 = new Cell(0, 1);
-        worker = new Worker(cell1);
+        worker = new Worker(0, cell1);
     }
 
     @Test

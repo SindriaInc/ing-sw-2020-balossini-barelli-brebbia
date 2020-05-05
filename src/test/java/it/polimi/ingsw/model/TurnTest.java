@@ -18,9 +18,9 @@ class TurnTest {
         Cell cell2 = new Cell(0, 1);
         Cell cell3 = new Cell(3, 3);
         cell = new Cell(1, 0);
-        Worker worker1 = new Worker(cell1);
-        Worker worker2 = new Worker(cell2);
-        Worker worker3 = new Worker(cell3);
+        Worker worker1 = new Worker(0, cell1);
+        Worker worker2 = new Worker(1, cell2);
+        Worker worker3 = new Worker(2, cell3);
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
         otherWorkers.put(worker2, false);

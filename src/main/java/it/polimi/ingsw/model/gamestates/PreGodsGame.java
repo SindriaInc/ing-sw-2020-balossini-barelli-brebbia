@@ -1,10 +1,10 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.common.events.ChallengerSelectGodsEvent;
-import it.polimi.ingsw.common.events.PlayerChooseGodEvent;
-import it.polimi.ingsw.common.events.PlayerTurnStartEvent;
-import it.polimi.ingsw.common.events.requests.RequestChallengerSelectGodsEvent;
-import it.polimi.ingsw.common.events.requests.RequestPlayerChooseGodEvent;
+import it.polimi.ingsw.common.event.PlayerChallengerSelectGodsEvent;
+import it.polimi.ingsw.common.event.PlayerChooseGodEvent;
+import it.polimi.ingsw.common.event.PlayerTurnStartEvent;
+import it.polimi.ingsw.common.event.request.RequestPlayerChallengerSelectGodsEvent;
+import it.polimi.ingsw.common.event.request.RequestPlayerChooseGodEvent;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -44,8 +44,8 @@ public class PreGodsGame extends AbstractGameState {
      */
     private Phase phase;
 
-    public PreGodsGame(Board board, List<Player> players, int maxWorkers, List<God> gods) {
-        super(board, players);
+    public PreGodsGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers, List<God> gods) {
+        super(provider, board, players);
 
         this.availableGods.addAll(gods);
         this.maxWorkers = maxWorkers;
@@ -67,8 +67,12 @@ public class PreGodsGame extends AbstractGameState {
 
         sortPlayers(sortedPlayers);
 
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer().getName()));
-        getRequestChallengerSelectGodsEventObservable().notifyObservers(new RequestChallengerSelectGodsEvent(getAvailableGods(), getSelectGodsCount()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(getCurrentPlayer().getName())
+        );
+        getModelEventProvider().getPlayerRequestChallengerSelectGodsEventObservable().notifyObservers(
+                new RequestPlayerChallengerSelectGodsEvent(getCurrentPlayer().getName(), getAvailableGods(), getSelectGodsCount())
+        );
     }
 
     @Override
@@ -91,14 +95,20 @@ public class PreGodsGame extends AbstractGameState {
         availableGods.clear();
         availableGods.addAll(modelGods);
 
-        getChallengerSelectGodsEventObservable().notifyObservers(new ChallengerSelectGodsEvent(List.copyOf(gods)));
+        getModelEventProvider().getChallengerSelectGodsEventObservable().notifyObservers(
+                new PlayerChallengerSelectGodsEvent(getCurrentPlayer().getName(), List.copyOf(gods))
+        );
 
         phase = Phase.PLAYER_SELECT_GOD;
 
         // Notify the first player to choose a god
         Player player = getCurrentPlayer();
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(player.getName()));
-        getRequestPlayerChooseGodEventObservable().notifyObservers(new RequestPlayerChooseGodEvent(getAvailableGods()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(player.getName())
+        );
+        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
+                new RequestPlayerChooseGodEvent(player.getName(), getAvailableGods())
+        );
 
         return Game.ModelResponse.ALLOW;
     }
@@ -130,7 +140,9 @@ public class PreGodsGame extends AbstractGameState {
 
         availableGods.remove(modelGod);
 
-        getPlayerChooseGodEventObservable().notifyObservers(new PlayerChooseGodEvent(player.getName()));
+        getModelEventProvider().getPlayerChooseGodEventObservable().notifyObservers(
+                new PlayerChooseGodEvent(player.getName(), god)
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -147,8 +159,12 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         playerIndex++;
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(currentPlayer.getName()));
-        getRequestPlayerChooseGodEventObservable().notifyObservers(new RequestPlayerChooseGodEvent(getAvailableGods()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(currentPlayer.getName())
+        );
+        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
+                new RequestPlayerChooseGodEvent(currentPlayer.getName(), getAvailableGods())
+        );
         return getPlayers().get(playerIndex);
     }
 
@@ -164,7 +180,7 @@ public class PreGodsGame extends AbstractGameState {
             }
         }
 
-        return new PreWorkersGame(getBoard(), getPlayers(), maxWorkers, true);
+        return new PreWorkersGame(getModelEventProvider(), getBoard(), getPlayers(), maxWorkers, true);
     }
 
     /**

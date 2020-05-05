@@ -7,7 +7,7 @@ public class Worker {
     private static class Movement {
 
         private final int previousLevel;
-        private Cell next;
+        private final Cell next;
         private final int nextLevel;
 
         Movement(Cell previous, int previousLevel, Cell next, int nextLevel) {

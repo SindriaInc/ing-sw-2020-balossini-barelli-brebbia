@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.gamestates;
 
 import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.common.events.*;
-import it.polimi.ingsw.common.events.requests.*;
+import it.polimi.ingsw.common.event.*;
+import it.polimi.ingsw.common.event.request.*;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -21,11 +21,13 @@ public class OngoingGame extends AbstractGameState {
      */
     private Turn turn;
 
-    public OngoingGame(Board board, List<Player> players) {
-        super(board, players);
+    public OngoingGame(ModelEventProvider provider, Board board, List<Player> players) {
+        super(provider, board, players);
 
         Player player = getCurrentPlayer();
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(player.getName()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(player.getName())
+        );
         generateRequests(player);
     }
 
@@ -61,7 +63,9 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getWorkerMoveEventObservable().notifyObservers(new WorkerMoveEvent(worker, destination));
+        getModelEventProvider().getWorkerMoveEventObservable().notifyObservers(
+                new WorkerMoveEvent(player.getName(), worker, destination)
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -97,7 +101,9 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getWorkerBuildBlockEventObservable().notifyObservers(new WorkerBuildBlockEvent(worker, destination));
+        getModelEventProvider().getWorkerBuildBlockEventObservable().notifyObservers(
+                new WorkerBuildBlockEvent(player.getName(), worker, destination)
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -133,7 +139,9 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getWorkerBuildDomeEventObservable().notifyObservers(new WorkerBuildDomeEvent(worker, destination));
+        getModelEventProvider().getWorkerBuildDomeEventObservable().notifyObservers(
+                new WorkerBuildDomeEvent(player.getName(), worker, destination)
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -171,7 +179,9 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getWorkerForceEventObservable().notifyObservers(new WorkerForceEvent(worker, target, destination));
+        getModelEventProvider().getWorkerForceEventObservable().notifyObservers(
+                new WorkerForceEvent(player.getName(), worker, target, destination)
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -210,7 +220,9 @@ public class OngoingGame extends AbstractGameState {
         if (turn == null) {
             // The player had to end the turn without doing anything
             doLose();
-            getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer.getName()));
+            getModelEventProvider().getPlayerLoseEventObservable().notifyObservers(
+                    new PlayerLoseEvent(endingPlayer.getName())
+            );
             return Game.ModelResponse.ALLOW;
         }
 
@@ -218,7 +230,9 @@ public class OngoingGame extends AbstractGameState {
             if (!endingPlayer.checkHasWon(turn)) {
                 playerIndex = (playerIndex + 1) % getPlayers().size();
 
-                getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer().getName()));
+                getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                        new PlayerTurnStartEvent(getCurrentPlayer().getName())
+                );
                 return Game.ModelResponse.ALLOW;
             }
 
@@ -229,7 +243,9 @@ public class OngoingGame extends AbstractGameState {
 
         // The player had to end the turn without being able to either move or build after moving
         doLose();
-        getPlayerLoseEventObservable().notifyObservers(new PlayerLoseEvent(endingPlayer.getName()));
+        getModelEventProvider().getPlayerLoseEventObservable().notifyObservers(
+                new PlayerLoseEvent(endingPlayer.getName())
+        );
         return Game.ModelResponse.ALLOW;
     }
 
@@ -241,7 +257,7 @@ public class OngoingGame extends AbstractGameState {
     @Override
     public AbstractGameState nextState() {
         if (getPlayers().size() == 1) {
-            return new EndGame(getBoard(), getPlayers().get(0));
+            return new EndGame(getModelEventProvider(), getBoard(), getPlayers().get(0));
         }
 
         generateRequests(getCurrentPlayer());
@@ -264,21 +280,27 @@ public class OngoingGame extends AbstractGameState {
         List<Coordinates> availableBlockBuilds = getAvailableBlockBuilds(worker);
 
         if (availableBlockBuilds.size() > 0) {
-            getRequestWorkerBuildBlockEventObservable().notifyObservers(new RequestWorkerBuildBlockEvent(worker.getId(), availableBlockBuilds));
+            getModelEventProvider().getRequestWorkerBuildBlockEventObservable().notifyObservers(
+                    new RequestWorkerBuildBlockEvent(player.getName(), worker.getId(), availableBlockBuilds)
+            );
         }
 
         // Generate the request for dome builds if available
         List<Coordinates> availableDomeBuilds = getAvailableDomeBuilds(worker);
 
         if (availableDomeBuilds.size() > 0) {
-            getRequestWorkerBuildDomeEventObservable().notifyObservers(new RequestWorkerBuildDomeEvent(worker.getId(), availableDomeBuilds));
+            getModelEventProvider().getRequestWorkerBuildDomeEventObservable().notifyObservers(
+                    new RequestWorkerBuildDomeEvent(player.getName(), worker.getId(), availableDomeBuilds)
+            );
         }
 
         // Generate the request for dome builds if available
         List<Coordinates> availableMoves = getAvailableMoves(worker);
 
         if (availableMoves.size() > 0) {
-            getRequestWorkerMoveEventObservable().notifyObservers(new RequestWorkerMoveEvent(worker.getId(), availableMoves));
+            getModelEventProvider().getRequestWorkerMoveEventObservable().notifyObservers(
+                    new RequestWorkerMoveEvent(player.getName(), worker.getId(), availableMoves)
+            );
         }
 
         // Generate the request for forces if available
@@ -297,13 +319,17 @@ public class OngoingGame extends AbstractGameState {
         }
 
         if (availableTargetDestinations.size() > 0) {
-            getRequestWorkerForceEventObservable().notifyObservers(new RequestWorkerForceEvent(worker.getId(), availableTargetDestinations));
+            getModelEventProvider().getRequestWorkerForceEventObservable().notifyObservers(
+                    new RequestWorkerForceEvent(player.getName(), worker.getId(), availableTargetDestinations)
+            );
         }
 
         // Generate the request for end turn if available
         // This request also signals the client that no other request will be sent
         boolean canBeEnded = checkCanEndTurn();
-        getRequestPlayerEndTurnEventObservable().notifyObservers(new RequestPlayerEndTurnEvent(canBeEnded));
+        getModelEventProvider().getRequestPlayerEndTurnEventObservable().notifyObservers(
+                new RequestPlayerEndTurnEvent(player.getName(), canBeEnded)
+        );
     }
 
     private List<Coordinates> getAvailable(Worker worker, BiPredicate<Turn, Cell> filter) {

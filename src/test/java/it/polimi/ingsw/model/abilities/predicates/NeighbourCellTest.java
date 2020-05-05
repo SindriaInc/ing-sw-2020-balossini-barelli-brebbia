@@ -25,7 +25,7 @@ class NeighbourCellTest {
         cell1 = new Cell(0, 0);
         cell2 = new Cell(0, 1);
         cell3 = new Cell(2, 0);
-        worker = new Worker(cell1);
+        worker = new Worker(0, cell1);
 
         turn = new Turn(worker, new HashMap<>(), (cell) -> {
             if (cell.equals(cell1)) {

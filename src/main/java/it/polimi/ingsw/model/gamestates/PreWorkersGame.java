@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model.gamestates;
 
 import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.common.events.PlayerTurnStartEvent;
-import it.polimi.ingsw.common.events.WorkerSpawnEvent;
-import it.polimi.ingsw.common.events.requests.RequestWorkerSpawnEvent;
+import it.polimi.ingsw.common.event.PlayerTurnStartEvent;
+import it.polimi.ingsw.common.event.WorkerSpawnEvent;
+import it.polimi.ingsw.common.event.request.RequestWorkerSpawnEvent;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -26,12 +26,12 @@ public class PreWorkersGame extends AbstractGameState {
      */
     private int nextWorkerId;
 
-    public PreWorkersGame(Board board, List<Player> players, int maxWorkers) {
-        this(board, players, maxWorkers, false);
+    public PreWorkersGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers) {
+        this(provider, board, players, maxWorkers, false);
     }
 
-    public PreWorkersGame(Board board, List<Player> players, int maxWorkers, boolean alreadySorted) {
-        super(board, players);
+    public PreWorkersGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers, boolean alreadySorted) {
+        super(provider, board, players);
 
         this.maxWorkers = maxWorkers;
 
@@ -41,8 +41,12 @@ public class PreWorkersGame extends AbstractGameState {
             sortPlayers(sortedPlayers);
         }
 
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(getCurrentPlayer().getName()));
-        getRequestWorkerSpawnEventObservable().notifyObservers(new RequestWorkerSpawnEvent(getAvailablePositions()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(getCurrentPlayer().getName())
+        );
+        getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
+                new RequestWorkerSpawnEvent(getCurrentPlayer().getName(), getAvailablePositions())
+        );
     }
 
     @Override
@@ -60,12 +64,16 @@ public class PreWorkersGame extends AbstractGameState {
         Player player = getCurrentPlayer();
         player.addWorker(worker);
 
-        getWorkerSpawnEventObservable().notifyObservers(new WorkerSpawnEvent(worker.getId(), player.getName()));
+        getModelEventProvider().getWorkerSpawnEventObservable().notifyObservers(
+                new WorkerSpawnEvent(player.getName(), worker.getId(), toCoordinates(cell))
+        );
 
         Player next = getCurrentPlayer();
         if (next.equals(player)) {
             // Notify the current player that a new worker can be placed
-            getRequestWorkerSpawnEventObservable().notifyObservers(new RequestWorkerSpawnEvent(getAvailablePositions()));
+            getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
+                    new RequestWorkerSpawnEvent(player.getName(), getAvailablePositions())
+            );
         }
 
         return Game.ModelResponse.ALLOW;
@@ -82,8 +90,12 @@ public class PreWorkersGame extends AbstractGameState {
         playerIndex++;
         currentPlayer = getPlayers().get(playerIndex);
 
-        getPlayerTurnStartEventObservable().notifyObservers(new PlayerTurnStartEvent(currentPlayer.getName()));
-        getRequestWorkerSpawnEventObservable().notifyObservers(new RequestWorkerSpawnEvent(getAvailablePositions()));
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(currentPlayer.getName())
+        );
+        getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
+                new RequestWorkerSpawnEvent(currentPlayer.getName(), getAvailablePositions())
+        );
         return currentPlayer;
     }
 
@@ -95,7 +107,7 @@ public class PreWorkersGame extends AbstractGameState {
             }
         }
 
-        return new OngoingGame(getBoard(), getPlayers());
+        return new OngoingGame(getModelEventProvider(), getBoard(), getPlayers());
     }
 
     /**
@@ -118,10 +130,14 @@ public class PreWorkersGame extends AbstractGameState {
         List<Coordinates> coordinates = new ArrayList<>();
 
         for (Cell cell : cells) {
-            coordinates.add(new Coordinates(cell.getX(), cell.getY()));
+            coordinates.add(toCoordinates(cell));
         }
 
         return coordinates;
+    }
+
+    private Coordinates toCoordinates(Cell cell) {
+        return new Coordinates(cell.getX(), cell.getY());
     }
 
 }

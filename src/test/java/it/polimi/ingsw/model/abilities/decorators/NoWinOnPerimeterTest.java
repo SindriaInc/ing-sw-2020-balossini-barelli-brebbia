@@ -24,7 +24,7 @@ class NoWinOnPerimeterTest {
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        Worker worker = new Worker(board.getCellFromCoords(0, 0));
+        Worker worker = new Worker(0, board.getCellFromCoords(0, 0));
 
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
 

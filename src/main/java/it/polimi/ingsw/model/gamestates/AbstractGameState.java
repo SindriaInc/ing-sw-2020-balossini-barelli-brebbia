@@ -1,18 +1,21 @@
 package it.polimi.ingsw.model.gamestates;
 
 import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.common.ModelEventProvider;
-import it.polimi.ingsw.common.Observable;
-import it.polimi.ingsw.common.Observer;
-import it.polimi.ingsw.common.events.*;
-import it.polimi.ingsw.common.events.requests.*;
-import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.model.Game;
+import it.polimi.ingsw.model.ModelEventProvider;
+import it.polimi.ingsw.model.Player;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractGameState implements ModelEventProvider {
+public abstract class AbstractGameState {
+
+    /**
+     * The ModelEventProvider, used to register and notify observables
+     */
+    private final ModelEventProvider modelEventProvider;
 
     /**
      * The Board of this game
@@ -27,102 +30,8 @@ public abstract class AbstractGameState implements ModelEventProvider {
      */
     private final List<Player> activePlayers = new LinkedList<>();
 
-    /**
-     * Observer for RequestChallengerSelectGodsEvent
-     */
-    private final Observable<RequestChallengerSelectGodsEvent> requestChallengerSelectGodsEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestPlayerChooseGodEvent
-     */
-    private final Observable<RequestPlayerChooseGodEvent> requestPlayerChooseGodEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestPlayerEndTurnEvent
-     */
-    private final Observable<RequestPlayerEndTurnEvent> requestPlayerEndTurnEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestWorkerBuildBlockEvent
-     */
-    private final Observable<RequestWorkerBuildBlockEvent> requestWorkerBuildBlockEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestWorkerBuildDomeEvent
-     */
-    private final Observable<RequestWorkerBuildDomeEvent> requestWorkerBuildDomeEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestWorkerForceEvent
-     */
-    private final Observable<RequestWorkerForceEvent> requestWorkerForceEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestWorkerMoveEvent
-     */
-    private final Observable<RequestWorkerMoveEvent> requestWorkerMoveEventObservable = new Observable<>();
-
-    /**
-     * Observer for RequestWorkerSpawnEvent
-     */
-    private final Observable<RequestWorkerSpawnEvent> requestWorkerSpawnEventObservable = new Observable<>();
-
-    /**
-     * Observer for ChallengerSelectGodsEvent
-     */
-    private final Observable<ChallengerSelectGodsEvent> challengerSelectGodsEventObservable = new Observable<>();
-
-    /**
-     * Observer for PlayerChooseGodEvent
-     */
-    private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
-
-    /**
-     * Observer for PlayerEndTurnEvent
-     */
-    private final Observable<PlayerEndTurnEvent> playerEndTurnEventObservable = new Observable<>();
-
-    /**
-     * Observer for PlayerLoseEvent
-     */
-    private final Observable<PlayerLoseEvent> playerLoseEventObservable = new Observable<>();
-
-    /**
-     * Observer for PlayerTurnStartEvent
-     */
-    private final Observable<PlayerTurnStartEvent> playerTurnStartEventObservable = new Observable<>();
-
-    /**
-     * Observer for PlayerWinEvent
-     */
-    private final Observable<PlayerWinEvent> playerWinEventObservable = new Observable<>();
-
-    /**
-     * Observer for WorkerBuildBlockEvent
-     */
-    private final Observable<WorkerBuildBlockEvent> workerBuildBlockEventObservable = new Observable<>();
-
-    /**
-     * Observer for WorkerBuildDomeEvent
-     */
-    private final Observable<WorkerBuildDomeEvent> workerBuildDomeEventObservable = new Observable<>();
-
-    /**
-     * Observer for WorkerForceEvent
-     */
-    private final Observable<WorkerForceEvent> workerForceEventObservable = new Observable<>();
-
-    /**
-     * Observer for WorkerMoveEvent
-     */
-    private final Observable<WorkerMoveEvent> workerMoveEventObservable = new Observable<>();
-
-    /**
-     * Observer for WorkerSpawnEvent
-     */
-    private final Observable<WorkerSpawnEvent> workerSpawnEventObservable = new Observable<>();
-
-    public AbstractGameState(Board board, List<Player> players) {
+    public AbstractGameState(ModelEventProvider provider, Board board, List<Player> players) {
+        this.modelEventProvider = provider;
         this.board = board;
         this.activePlayers.addAll(players);
     }
@@ -163,6 +72,10 @@ public abstract class AbstractGameState implements ModelEventProvider {
         return !activePlayers.contains(player);
     }
 
+    public final ModelEventProvider getModelEventProvider() {
+        return modelEventProvider;
+    }
+
     public final Board getBoard() {
         return board;
     }
@@ -176,177 +89,6 @@ public abstract class AbstractGameState implements ModelEventProvider {
         opponents.remove(player);
 
         return opponents;
-    }
-
-    @Override
-    public void registerRequestChallengerSelectGodsEventObserver(Observer<RequestChallengerSelectGodsEvent> observer) {
-        requestChallengerSelectGodsEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestPlayerChooseGodEventObserver(Observer<RequestPlayerChooseGodEvent> observer) {
-        requestPlayerChooseGodEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestPlayerEndTurnEventObserver(Observer<RequestPlayerEndTurnEvent> observer) {
-        requestPlayerEndTurnEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestWorkerBuildBlockEventObserver(Observer<RequestWorkerBuildBlockEvent> observer) {
-        requestWorkerBuildBlockEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestWorkerBuildDomeEventObserver(Observer<RequestWorkerBuildDomeEvent> observer) {
-        requestWorkerBuildDomeEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestWorkerForceEventObserver(Observer<RequestWorkerForceEvent> observer) {
-        requestWorkerForceEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestWorkerMoveEventObserver(Observer<RequestWorkerMoveEvent> observer) {
-        requestWorkerMoveEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerRequestWorkerSpawnEventObserver(Observer<RequestWorkerSpawnEvent> observer) {
-        requestWorkerSpawnEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerChallengerSelectGodsEventObserver(Observer<ChallengerSelectGodsEvent> observer) {
-        challengerSelectGodsEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
-        playerChooseGodEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerPlayerEndTurnEventObserver(Observer<PlayerEndTurnEvent> observer) {
-        playerEndTurnEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerPlayerLoseEventObserver(Observer<PlayerLoseEvent> observer) {
-        playerLoseEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerPlayerTurnStartEventObserver(Observer<PlayerTurnStartEvent> observer) {
-        playerTurnStartEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerPlayerWinEventObserver(Observer<PlayerWinEvent> observer) {
-        playerWinEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
-        workerBuildBlockEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
-        workerBuildDomeEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
-        workerForceEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
-        workerMoveEventObservable.register(observer);
-    }
-
-    @Override
-    public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
-        workerSpawnEventObservable.register(observer);
-    }
-
-    final Observable<RequestChallengerSelectGodsEvent> getRequestChallengerSelectGodsEventObservable() {
-        return requestChallengerSelectGodsEventObservable;
-    }
-
-    final Observable<RequestPlayerChooseGodEvent> getRequestPlayerChooseGodEventObservable() {
-        return requestPlayerChooseGodEventObservable;
-    }
-
-    final Observable<RequestPlayerEndTurnEvent> getRequestPlayerEndTurnEventObservable() {
-        return requestPlayerEndTurnEventObservable;
-    }
-
-    final Observable<RequestWorkerBuildBlockEvent> getRequestWorkerBuildBlockEventObservable() {
-        return requestWorkerBuildBlockEventObservable;
-    }
-
-    final Observable<RequestWorkerBuildDomeEvent> getRequestWorkerBuildDomeEventObservable() {
-        return requestWorkerBuildDomeEventObservable;
-    }
-
-    final Observable<RequestWorkerForceEvent> getRequestWorkerForceEventObservable() {
-        return requestWorkerForceEventObservable;
-    }
-
-    final Observable<RequestWorkerMoveEvent> getRequestWorkerMoveEventObservable() {
-        return requestWorkerMoveEventObservable;
-    }
-
-    final Observable<RequestWorkerSpawnEvent> getRequestWorkerSpawnEventObservable() {
-        return requestWorkerSpawnEventObservable;
-    }
-
-    final Observable<ChallengerSelectGodsEvent> getChallengerSelectGodsEventObservable() {
-        return challengerSelectGodsEventObservable;
-    }
-
-    final Observable<PlayerChooseGodEvent> getPlayerChooseGodEventObservable() {
-        return playerChooseGodEventObservable;
-    }
-
-    final Observable<PlayerEndTurnEvent> getPlayerEndTurnEventObservable() {
-        return playerEndTurnEventObservable;
-    }
-
-    final Observable<PlayerLoseEvent> getPlayerLoseEventObservable() {
-        return playerLoseEventObservable;
-    }
-
-    final Observable<PlayerTurnStartEvent> getPlayerTurnStartEventObservable() {
-        return playerTurnStartEventObservable;
-    }
-
-    final Observable<PlayerWinEvent> getPlayerWinEventObservable() {
-        return playerWinEventObservable;
-    }
-
-    final Observable<WorkerBuildBlockEvent> getWorkerBuildBlockEventObservable() {
-        return workerBuildBlockEventObservable;
-    }
-
-    final Observable<WorkerBuildDomeEvent> getWorkerBuildDomeEventObservable() {
-        return workerBuildDomeEventObservable;
-    }
-
-    final Observable<WorkerForceEvent> getWorkerForceEventObservable() {
-        return workerForceEventObservable;
-    }
-
-    final Observable<WorkerMoveEvent> getWorkerMoveEventObservable() {
-        return workerMoveEventObservable;
-    }
-
-    final Observable<WorkerSpawnEvent> getWorkerSpawnEventObservable() {
-        return workerSpawnEventObservable;
     }
 
     /**
