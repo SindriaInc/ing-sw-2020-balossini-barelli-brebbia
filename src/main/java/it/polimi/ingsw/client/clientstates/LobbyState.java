@@ -1,8 +1,8 @@
 package it.polimi.ingsw.client.clientstates;
 
 
+import it.polimi.ingsw.client.FactoryPattern;
 import it.polimi.ingsw.client.clientstates.lobbystates.AbstractLobbyState;
-import it.polimi.ingsw.client.clientstates.lobbystates.ChooseLobby;
 
 public class LobbyState extends AbstractClientState {
 
@@ -22,12 +22,12 @@ public class LobbyState extends AbstractClientState {
      */
     private boolean newLobbyGameType;
 
-    public LobbyState() {
-        this.currentLobbyState = new ChooseLobby();
+    public LobbyState(FactoryPattern factoryPattern) {
+        this.currentLobbyState = factoryPattern.chooseLobby();
     }
 
     @Override
-    public AbstractClientState nextClientState() {
+    public AbstractClientState nextClientState(FactoryPattern factoryPattern) {
         if (currentLobbyState != null)
             return this;
         else
@@ -38,15 +38,15 @@ public class LobbyState extends AbstractClientState {
         return newLobbyPlayerNumber;
     }
 
-    public void setNewLobbyPlayerNumber(int newLobbyPlayerNumber) {
-        this.newLobbyPlayerNumber = currentLobbyState.readPlayerNumber();
-    }
-
     public boolean isNewLobbyGameType() {
         return newLobbyGameType;
     }
 
-    public void setNewLobbyGameType(boolean newLobbyGameType) {
-        this.newLobbyGameType = currentLobbyState.readGameType();
+    @Override
+    public DataTypes.LobbyData readLobbyData() {
+        DataTypes.LobbyData lobbyData = currentLobbyState.readLobbyData();
+        currentLobbyState = currentLobbyState.nextLobbyState();
+        return  lobbyData;
     }
+
 }

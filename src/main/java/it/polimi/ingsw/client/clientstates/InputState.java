@@ -1,45 +1,47 @@
 package it.polimi.ingsw.client.clientstates;
 
+import it.polimi.ingsw.client.FactoryPattern;
 import it.polimi.ingsw.client.clientstates.inputstates.AbstractInputState;
-import it.polimi.ingsw.client.clientstates.inputstates.GetGamerData;
 
 public class InputState extends AbstractClientState {
+
 
     /**
      * The current state of input phase, implementing the available interactions
      */
     private AbstractInputState currentInputState;
 
-    public InputState() {
-        this.currentInputState = new GetGamerData();
+    public InputState(FactoryPattern factoryPattern) {
+        this.currentInputState = factoryPattern.getGamerData();
     }
 
     @Override
-    public String readName() {
-        return currentInputState.readName();
+    public DataTypes.GamerData readGamerData() {
+        DataTypes.GamerData gamerData = currentInputState.readGamerData();
+        currentInputState = currentInputState.nextInputState();
+        return  gamerData;
     }
 
     @Override
-    public int readAge() {
-        return currentInputState.readAge();
+    public DataTypes.ConnectionData readConnectionData() {
+        DataTypes.ConnectionData connectionData = currentInputState.readConnectionData();
+        currentInputState = currentInputState.nextInputState();
+        return connectionData;
     }
 
     @Override
-    public String readIP() {
-        return currentInputState.readIP();
-    }
-
-    @Override
-    public int readPort() {
-        return currentInputState.readPort();
-    }
-
-    @Override
-    public AbstractClientState nextClientState() {
+    public AbstractClientState nextClientState(FactoryPattern factoryPattern) {
         if (currentInputState != null)
             return this;
         else
             return new ConnectionState();
+    }
+
+    /**
+     * Updates the current state
+     */
+    private void updateInputState() {
+        currentInputState = currentInputState.nextInputState();
     }
 
 }

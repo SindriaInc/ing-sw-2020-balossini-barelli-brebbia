@@ -1,60 +1,47 @@
 package it.polimi.ingsw.client.clientstates;
 
+import it.polimi.ingsw.client.FactoryPattern;
+
 public abstract class AbstractClientState {
 
     /**
-     * Read player's name
-     * @return The name
+     * Read gamer's data
+     * @return The gamers data
      */
-    public String readName() {
+    public DataTypes.GamerData readGamerData() {
         return null;
     }
 
     /**
-     * Read the player's age
-     * @return The age
+     * Read the connection data
+     * @return The connection data
      */
-    public int readAge() {
-        return 0;
-    }
-
-    /**
-     * Read the server's IP
-     * @return The address
-     */
-    public String readIP() {
+    public DataTypes.ConnectionData readConnectionData() {
         return null;
     }
 
     /**
-     * Read the server's port
-     * @return The port number
+     * Starts a socket connection with server
+     * @param ip The ip address
+     * @param port The port
      */
-    public int readPort() {
-        return 0;
-    }
+    public void connectToServer(String ip, int port) {}
 
     /**
-     * Read the new game type
-     * @return The game type
+     * Read new lobby data
+     * @return The new lobby data
      */
-    public boolean readGameType () {
-        return false;
+    public DataTypes.LobbyData readLobbyData () {
+        return null;
     }
 
-    /**
-     * Read the number of players
-     * @return The number
-     */
-    public int readPlayerNumber () {
-        return 0;
-    }
+
 
     /**
      * Obtain the next state of the client
      * Calling this method repeatedly should not result in a different state unless other methods got called
      * @return The AbstractClientState
      */
-    public abstract AbstractClientState nextClientState();
+    public abstract AbstractClientState nextClientState(FactoryPattern factoryPattern);
 
 }

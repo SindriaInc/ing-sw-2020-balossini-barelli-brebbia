@@ -1,17 +1,14 @@
 package it.polimi.ingsw.client.clientstates.lobbystates;
 
 import it.polimi.ingsw.client.clientstates.AbstractClientState;
+import it.polimi.ingsw.client.clientstates.DataTypes;
 
 import java.util.Scanner;
 
 public abstract class AbstractLobbyState {
 
-    public boolean readGameType() {
-        return false;
-    }
-
-    public int readPlayerNumber() {
-        return 0;
+    public DataTypes.LobbyData readLobbyData() {
+        return null;
     }
 
     /**

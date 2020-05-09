@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.clientstates;
 
-import it.polimi.ingsw.client.clientstates.lobbystates.ChooseLobby;
+import it.polimi.ingsw.client.FactoryPattern;
 
 public class GameState extends AbstractClientState {
 
@@ -14,7 +14,7 @@ public class GameState extends AbstractClientState {
     }
 
     @Override
-    public AbstractClientState nextClientState() {
+    public AbstractClientState nextClientState(FactoryPattern factoryPattern) {
         return null;
     }
 }

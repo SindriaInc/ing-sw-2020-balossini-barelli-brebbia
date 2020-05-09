@@ -1,13 +1,14 @@
 package it.polimi.ingsw.client.clientstates.lobbystates;
 
+import it.polimi.ingsw.client.clientstates.DataTypes;
+
 import java.util.Scanner;
 
-public class GetNewLobbyGameType extends AbstractLobbyState {
+public class GetNewLobbyDataGui extends GetNewLobbyData {
 
     @Override
-    public boolean readGameType() {
-        Scanner type = new Scanner(System.in);
-        return type.nextBoolean();
+    public DataTypes.LobbyData readLobbyData() {
+        return super.readLobbyData();
     }
 
     @Override

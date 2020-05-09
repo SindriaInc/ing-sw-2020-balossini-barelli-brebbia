@@ -1,23 +1,15 @@
 package it.polimi.ingsw.client.clientstates.inputstates;
 
-import it.polimi.ingsw.client.clientstates.AbstractClientState;
+import it.polimi.ingsw.client.clientstates.DataTypes;
 
 public abstract class AbstractInputState {
 
-    public String readName() {
+    public DataTypes.GamerData readGamerData() {
         return null;
     }
 
-    public int readAge() {
-        return 0;
-    }
-
-    public String readIP() {
+    public DataTypes.ConnectionData readConnectionData() {
         return null;
-    }
-
-    public int readPort() {
-        return 0;
     }
 
     /**

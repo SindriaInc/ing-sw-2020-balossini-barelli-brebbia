@@ -2,6 +2,7 @@ package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.clientstates.AbstractClientState;
 import it.polimi.ingsw.client.clientstates.InputState;
+import it.polimi.ingsw.client.clientstates.DataTypes;
 
 public class Client {
 
@@ -30,8 +31,14 @@ public class Client {
      */
     private int serverPort;
 
-    public Client(Boolean isGui) {
-        this.currentClientState = new InputState();
+    /**
+     * The factory pattern
+     */
+    private FactoryPattern factory;
+
+    public Client(FactoryPattern factoryPattern) {
+        this.factory = factoryPattern;
+        this.currentClientState = new InputState(factoryPattern);
     }
 
     public String getName() {
@@ -50,20 +57,20 @@ public class Client {
         return serverPort;
     }
 
-    public void setName() {
-        this.name = currentClientState.readName();
+    public void setNameAndAge() {
+        DataTypes.GamerData gamerData = currentClientState.readGamerData();
+        this.name = gamerData.getName();
+        this.age = gamerData.getAge();
     }
 
-    public void setAge() {
-        this.age = currentClientState.readAge();
+    public void setServerData() {
+        DataTypes.ConnectionData connectionData = currentClientState.readConnectionData();
+        this.serverIP = connectionData.getIp();
+        this.serverPort = connectionData.getPort();
     }
 
-    public void setServerIP() {
-        this.serverIP = currentClientState.readIP();
-    }
-
-    public void setServerPort () {
-        this.serverPort = currentClientState.readPort();
+    public void updateClientState() {
+        currentClientState = currentClientState.nextClientState(factory);
     }
 
 }
