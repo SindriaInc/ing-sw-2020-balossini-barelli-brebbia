@@ -68,10 +68,6 @@ public abstract class AbstractGameState {
         return Game.ModelResponse.INVALID_STATE;
     }
 
-    public final boolean checkHasLost(Player player) {
-        return !activePlayers.contains(player);
-    }
-
     public final ModelEventProvider getModelEventProvider() {
         return modelEventProvider;
     }

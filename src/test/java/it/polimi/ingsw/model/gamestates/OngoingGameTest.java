@@ -1,40 +1,45 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.Coordinates;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class OngoingGameTest {
 
     private OngoingGame ongoingGame;
     private Board board;
     private List<Player> players;
+    private ModelEventProvider modelEventProvider;
+
+    private int requestEndTurnCount;
+    private int requestBuildBlockCount;
+    private int requestBuildDomeCount;
+    private int requestForceCount;
+    private int requestMoveCount;
+    private int loseCount;
+    private int turnStartCount;
+    private int buildBlockCount;
+    private int buildDomeCount;
+    private int forceCount;
+    private int moveCount;
 
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
-        players = List.of(new Player("A", 0), new Player("B", 1));
-        players.get(0).addWorker(new Worker(board.getCellFromCoords(0, 0)));
-        players.get(0).addWorker(new Worker(board.getCellFromCoords(0, 1)));
-        players.get(1).addWorker(new Worker(board.getCellFromCoords(1, 0)));
-        players.get(1).addWorker(new Worker(board.getCellFromCoords(1, 1)));
-
-        ongoingGame = new OngoingGame(board, players);
-    }
-
-    /**
-     * Check the available cell to move the worker
-     */
-    @Test
-    void checkGetAvailableMoves() {
-        assertEquals(0, ongoingGame.getAvailableMoves(getWorker(0, 0)).size());
-        assertEquals(2, ongoingGame.getAvailableMoves(getWorker(0, 1)).size());
-        assertEquals(0,ongoingGame.getAvailableMoves(getWorker(1, 0)).size());
+        players = new ArrayList<>(List.of(new Player("A", 0), new Player("B", 1)));
+        players.get(0).addWorker(new Worker(0, board.getCellFromCoords(0, 0)));
+        players.get(0).addWorker(new Worker(1, board.getCellFromCoords(0, 1)));
+        players.get(1).addWorker(new Worker(2, board.getCellFromCoords(1, 0)));
+        players.get(1).addWorker(new Worker(3, board.getCellFromCoords(1, 1)));
+        modelEventProvider = new ModelEventProvider();
     }
 
     /**
@@ -43,44 +48,45 @@ class OngoingGameTest {
      */
     @Test
     void checkMoveSingleWorker() {
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)));
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
 
-        Worker worker = getWorker(0, 1);
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        modelEventProvider.registerRequestWorkerMoveEventObserver(event -> {
+            if (requestMoveCount == 0) {
+                assertEquals(event.getWorker(), 1);
+                assertEquals(event.getAvailableDestinations().size(), 2);
+            }
+            requestMoveCount++;
+        });
 
-        assertEquals(ongoingGame.moveWorker(getWorker(0, 0), board.getCellFromCoords(0, 1)),
-                Game.ModelResponse.INVALID_PARAMS);
-        assertEquals(ongoingGame.getAvailableMoves(getWorker(0, 0)).size(), 0);
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(requestMoveCount, 1);
+        assertEquals(turnStartCount, 1);
 
-        assertEquals(0, ongoingGame.getAvailableMoves(worker).size());
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 3)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 1)));
+        modelEventProvider.registerWorkerMoveEventObserver(event -> {
+            if (moveCount == 0) {
+                assertEquals(event.getId(), 1);
+                assertEquals(event.getDestination(), new Coordinates(0, 2));
+            }
+            moveCount++;
+        });
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(-1, new Coordinates(0, 2)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
+        assertEquals(moveCount, 0);
+        assertEquals(Game.ModelResponse.ALLOW, ongoingGame.moveWorker(1, new Coordinates(0, 2)));
+        assertEquals(requestMoveCount, 1);
+        assertEquals(moveCount, 1);
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 1)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
+        assertEquals(requestMoveCount, 1);
+        assertEquals(moveCount, 1);
+        assertEquals(turnStartCount, 1);
     }
 
-    /**
-     * Check that a player can't build before moving with default abilities
-     */
-    @Test
-    void checkGetAvailableBlockAndDomeBuilds() {
-        assertEquals(0, ongoingGame.getAvailableBlockBuilds(getWorker(0, 0)).size());
-        assertEquals(0, ongoingGame.getAvailableBlockBuilds(getWorker(0, 1)).size());
-        assertEquals(0, ongoingGame.getAvailableDomeBuilds(getWorker(0, 0)).size());
-        assertEquals(0, ongoingGame.getAvailableDomeBuilds(getWorker(0, 1)).size());
-
-        Worker worker = getWorker(0, 1);
-
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
-
-        assertEquals(4, ongoingGame.getAvailableBlockBuilds(worker).size());
-        assertEquals(0, ongoingGame.getAvailableDomeBuilds(worker).size());
-
-        board.getCellFromCoords(1, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-
-        assertEquals(3, ongoingGame.getAvailableBlockBuilds(worker).size());
-        assertEquals(1, ongoingGame.getAvailableDomeBuilds(worker).size());
-    }
 
     /**
      * Check that a player can't build with another worker, can't build on a cell not contained in the list of available cells,
@@ -89,27 +95,53 @@ class OngoingGameTest {
      */
     @Test
     void checkBuildBlock() {
-        Worker worker = getWorker(0, 1);
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
 
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        modelEventProvider.registerRequestWorkerBuildBlockEventObserver(event -> {
+            if (requestBuildBlockCount == 0) {
+                assertEquals(event.getWorker(), 1);
+                assertEquals(event.getAvailableDestinations().size(), 4);
+            }
+            requestBuildBlockCount++;
+        });
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 2)));
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(requestBuildBlockCount, 0);
+        assertEquals(turnStartCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 2)));
+        modelEventProvider.registerWorkerBuildBlockEventObserver(event -> {
+            if (buildBlockCount == 0) {
+                assertEquals(event.getId(), 1);
+                assertEquals(event.getDestination(), new Coordinates(0, 3));
+            }
+            buildBlockCount++;
+        });
 
-        ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
-        assertEquals(ongoingGame.buildBlock(getWorker(0, 0), board.getCellFromCoords(0, 1)),
-                     Game.ModelResponse.INVALID_PARAMS);
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(0, 2)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 2)));
+
+        assertEquals(buildBlockCount, 0);
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(-1, new Coordinates(0, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 3)));
+        ongoingGame.buildBlock(1, new Coordinates(0, 3));
+        assertEquals(buildBlockCount, 1);
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 1)));
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
+        assertEquals(buildBlockCount, 1);
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestBuildBlockCount, 1);
     }
 
     /**
@@ -119,39 +151,59 @@ class OngoingGameTest {
      */
     @Test
     void checkBuildDome() {
-        Worker worker = getWorker(0, 1);
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
 
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        modelEventProvider.registerRequestWorkerBuildDomeEventObserver(event -> {
+            if (requestBuildDomeCount == 0) {
+                assertEquals(event.getWorker(), 1);
+                assertEquals(event.getAvailableDestinations().size(), 2);
+            }
+            requestBuildDomeCount++;
+        });
 
+        board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL - 1);
         board.getCellFromCoords(0, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         board.getCellFromCoords(0, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(0, 2)));
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(requestBuildDomeCount, 0);
+        assertEquals(turnStartCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(0, 2)));
+        modelEventProvider.registerWorkerBuildDomeEventObserver(event -> {
+            if (buildDomeCount == 0) {
+                assertEquals(event.getId(), 1);
+                assertEquals(event.getDestination(), new Coordinates(0, 3));
+            }
+            buildDomeCount++;
+        });
 
-        ongoingGame.buildDome(worker, board.getCellFromCoords(0, 3));
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
+        assertEquals(requestBuildDomeCount, 1);
 
-        assertEquals(ongoingGame.buildDome(getWorker(0, 0), board.getCellFromCoords(1, 3)),
-                     Game.ModelResponse.INVALID_PARAMS);
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(0, 2)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(0, 2)));
+
+        assertEquals(buildDomeCount, 0);
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(-1, new Coordinates(0, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(2, new Coordinates(0, 3)));
+        ongoingGame.buildDome(1, new Coordinates(0, 3));
+        assertEquals(buildDomeCount, 1);
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(1, 3)));
+
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS,  ongoingGame.moveWorker(worker, board.getCellFromCoords(1, 3)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS,  ongoingGame.moveWorker(1, new Coordinates(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
-    }
-
-    /**
-     * Check that, with default abilities, can't be offered to a player to force
-     */
-    @Test
-    void checkGetAvailableForces() {
-        assertEquals(0, ongoingGame.getAvailableForces(getWorker(0, 0), getWorker(1, 0)).size());
+        assertEquals(turnStartCount,1);
+        assertEquals(requestBuildDomeCount, 1);
+        assertEquals(buildDomeCount, 1);
     }
 
     /**
@@ -159,7 +211,21 @@ class OngoingGameTest {
      */
     @Test
     void checkDoForce() {
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(getWorker(0, 0), getWorker(1, 0), board.getCellFromCoords(2, 0)));
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+
+        modelEventProvider.registerRequestWorkerForceEventObserver(event -> requestForceCount++);
+
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(requestForceCount, 0);
+        assertEquals(turnStartCount, 1);
+
+        modelEventProvider.registerWorkerForceEventObserver(event -> forceCount++);
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, 2, new Coordinates(2, 0)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, -1, new Coordinates(2, 0)));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(-1, 2, new Coordinates(2, 0)));
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestForceCount, 0);
+        assertEquals(forceCount, 0);
     }
 
     /**
@@ -167,17 +233,66 @@ class OngoingGameTest {
      */
     @Test
     void checkCanEndTurnAfterMovingAndBuilding() {
-        Worker worker = getWorker(0, 1);
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
 
-        assertFalse(ongoingGame.checkCanEndTurn());
+        modelEventProvider.registerRequestPlayerEndTurnEventObserver(event -> {
+            if (event.getCanBeEnded()) {
+                requestEndTurnCount++;
+            }
+        });
 
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
 
-        assertFalse(ongoingGame.checkCanEndTurn());
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 0);
 
-        ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
-        assertTrue(ongoingGame.checkCanEndTurn());
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 0);
+
+        ongoingGame.buildBlock(1, new Coordinates(0, 3));
+
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 1);
+
+        assertEquals(ongoingGame, ongoingGame.nextState());
+    }
+
+    /**
+     * Check that a player can end his turn only after moving and building
+     * The board is setup such that the build must be a dome
+     */
+    @Test
+    void checkCanEndTurnAfterMovingAndBuildingDome() {
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+
+        modelEventProvider.registerRequestPlayerEndTurnEventObserver(event -> {
+            if (event.getCanBeEnded()) {
+                requestEndTurnCount++;
+            }
+        });
+
+        board.getCellFromCoords(0, 1).setLevel(3);
+        board.getCellFromCoords(0, 2).setLevel(3);
+        board.getCellFromCoords(0, 3).setLevel(3);
+        board.getCellFromCoords(1, 3).setLevel(3);
+        board.getCellFromCoords(1, 2).setLevel(3);
+
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 0);
+
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
+
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 0);
+
+        ongoingGame.buildDome(1, new Coordinates(0, 3));
+
+        assertEquals(turnStartCount, 1);
+        assertEquals(requestEndTurnCount, 1);
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -187,29 +302,43 @@ class OngoingGameTest {
      */
     @Test
     void checkEndTurn() {
-        Worker worker = getWorker(0, 1);
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+
+        modelEventProvider.registerRequestPlayerEndTurnEventObserver(event -> {
+            if (event.getCanBeEnded()) {
+                requestEndTurnCount++;
+            }
+        });
+
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
 
         assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
         assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
-        ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 3));
+        ongoingGame.buildBlock(1, new Coordinates(0, 3));
 
         ongoingGame.endTurn();
-
-        Worker worker2 = getWorker(1, 0);
-
-        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
-
-        ongoingGame.moveWorker(worker2, board.getCellFromCoords(2, 0));
+        assertEquals(turnStartCount, 2);
+        assertEquals(requestEndTurnCount, 1);
 
         assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
-        ongoingGame.buildBlock(worker2, board.getCellFromCoords(2, 1));
+        ongoingGame.moveWorker(2, new Coordinates(2, 0));
+        assertEquals(turnStartCount, 2);
+        assertEquals(requestEndTurnCount, 1);
+
+        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
+
+        ongoingGame.buildBlock(2, new Coordinates(2, 1));
+        assertEquals(turnStartCount, 2);
+        assertEquals(requestEndTurnCount, 2);
 
         ongoingGame.endTurn();
+        assertEquals(turnStartCount, 3);
+        assertEquals(requestEndTurnCount, 2);
 
         assertEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -219,15 +348,22 @@ class OngoingGameTest {
      */
     @Test
     void checkWin() {
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+
         board.getCellFromCoords(0, 1).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL - 1);
         board.getCellFromCoords(0, 2).setLevel(DefaultAbilities.DEFAULT_WIN_LEVEL);
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(turnStartCount, 1);
 
-        Worker worker = getWorker(0, 1);
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
-        ongoingGame.buildBlock(worker, board.getCellFromCoords(0, 1)); // Need to build before winning
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
+        assertEquals(turnStartCount, 1);
+
+        ongoingGame.buildBlock(1, new Coordinates(0, 1)); // Need to build before winning
+
         ongoingGame.endTurn();
 
         assertNotEquals(ongoingGame, ongoingGame.nextState());
+        assertEquals(turnStartCount, 1);
     }
 
     /**
@@ -235,10 +371,16 @@ class OngoingGameTest {
      */
     @Test
     void checkLose() {
+        modelEventProvider.registerPlayerLoseEventObserver(event -> loseCount++);
+
         board.getCellFromCoords(0, 2).setLevel(2);
         board.getCellFromCoords(1, 2).setLevel(2);
 
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        assertEquals(loseCount, 0);
+
         ongoingGame.endTurn();
+        assertEquals(loseCount, 1);
 
         assertNotEquals(ongoingGame, ongoingGame.nextState());
     }
@@ -248,17 +390,26 @@ class OngoingGameTest {
      */
     @Test
     void checkLoseNoBuild() {
-        Worker worker = getWorker(0, 1);
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+        modelEventProvider.registerPlayerLoseEventObserver(event -> loseCount++);
+
+        // Add a third player so that we can test what happens when a player loses but the other doesn't win
+        players.add(new Player("C", 10));
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
         board.getCellFromCoords(0, 1).setDoomed(true);
         board.getCellFromCoords(1, 2).setDoomed(true);
         board.getCellFromCoords(1, 3).setDoomed(true);
         board.getCellFromCoords(0, 3).setDoomed(true);
 
-        assertTrue(ongoingGame.checkCanEndTurn());
-        ongoingGame.endTurn();
 
-        assertNotEquals(ongoingGame, ongoingGame.nextState());
+        assertEquals(turnStartCount, 1);
+        assertEquals(loseCount, 0);
+        ongoingGame.endTurn();
+        assertEquals(turnStartCount, 1);
+        assertEquals(loseCount, 1);
+
+        assertEquals(ongoingGame, ongoingGame.nextState());
     }
 
     /**
@@ -266,29 +417,21 @@ class OngoingGameTest {
      */
     @Test
     void checkHasOptions() {
-        Worker worker = getWorker(0, 1);
-        ongoingGame.moveWorker(worker, board.getCellFromCoords(0, 2));
+        modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
+        modelEventProvider.registerPlayerLoseEventObserver(event -> loseCount++);
+        ongoingGame = new OngoingGame(modelEventProvider, board, players);
+        ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
-        assertFalse(ongoingGame.checkCanEndTurn());
+        assertEquals(turnStartCount, 1);
+        assertEquals(loseCount, 0);
 
         board.getCellFromCoords(0, 1).setDoomed(true);
         board.getCellFromCoords(1, 2).setDoomed(true);
         board.getCellFromCoords(1, 3).setDoomed(true);
         board.getCellFromCoords(0, 3).setLevel(3);
 
-        assertFalse(ongoingGame.checkCanEndTurn());
-    }
-
-    /**
-     * This state should never return true for isEnded
-     */
-    @Test
-    void checkNotEnded() {
-        assertFalse(ongoingGame.isEnded());
-    }
-
-    private Worker getWorker(int player, int worker) {
-        return players.get(player).getWorkers().get(worker);
+        assertEquals(turnStartCount, 1);
+        assertEquals(loseCount, 0);
     }
 
 }

@@ -173,17 +173,6 @@ public class Game {
         return response;
     }
 
-    /**
-     * Check if the specified Player has lost
-     * @param player The Player
-     * @return true if the Player has lost
-     *
-     * <strong>This method has no side effect</strong>
-     */
-    public boolean checkHasLost(Player player) {
-        return currentState.checkHasLost(player);
-    }
-
     protected Board getOriginalBoard() {
         return currentState.getBoard();
     }

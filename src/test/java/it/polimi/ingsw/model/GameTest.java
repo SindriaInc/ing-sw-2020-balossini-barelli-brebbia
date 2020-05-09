@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.Coordinates;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
 import org.junit.jupiter.api.Test;
@@ -7,9 +8,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static it.polimi.ingsw.model.TestConstants.equalsNoOrder;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class GameTest {
 
@@ -18,7 +20,11 @@ class GameTest {
     private static final String PLAYER_OLDEST_NAME = "C";
 
     private Game game;
+    private Deck deck;
     private List<Player> players;
+
+    private int requestSpawnCount;
+    private int winCount;
 
     /**
      * Check that there is no access to the inner model
@@ -26,6 +32,7 @@ class GameTest {
     @Test
     void checkGetBoard() {
         constructSimpleGame();
+        game.init(players, deck, true);
 
         Board board = game.getBoard();
         board.getCellFromCoords(0, 0).setLevel(1);
@@ -41,6 +48,7 @@ class GameTest {
     @Test
     void checkSimpleGame() {
         constructSimpleGame();
+        game.init(players, deck, true);
         assertEquals(Game.ModelResponse.INVALID_STATE, game.selectGods(new ArrayList<>()));
     }
 
@@ -53,7 +61,8 @@ class GameTest {
         players.add(new Player("A", 1));
         players.add(new Player("B", 2));
 
-        Game game = new Game(players, null, true);
+        Game game = new Game();
+        game.init(players, deck, true);
 
         List<Player> opponents = new ArrayList<>(players);
         Player player = opponents.get(0);
@@ -68,24 +77,22 @@ class GameTest {
     @Test
     void checkGodSelection() {
         constructNormalGame();
+        game.getModelEventProvider().registerRequestWorkerSpawnEventObserver(event -> requestSpawnCount++);
 
-        List<God> gods = new ArrayList<>(game.getAvailableGods());
+        game.init(players, deck, false);
+
+        List<God> gods = new ArrayList<>(deck.getGods());
         gods.remove(4);
         gods.remove(3);
 
-        assertEquals(game.getSelectGodsCount(), players.size());
-        assertEquals(game.getSelectGodsCount(), players.size());
-        assertTrue(game.checkCanSelectGods(gods));
-        game.selectGods(gods);
-
-        assertTrue(equalsNoOrder(gods, game.getAvailableGods()));
-        game.chooseGod(gods.get(0));
-        game.chooseGod(gods.get(1));
-        game.chooseGod(gods.get(2));
+        game.selectGods(godsToStringList(gods));
+        game.chooseGod(gods.get(0).getName());
+        game.chooseGod(gods.get(1).getName());
+        assertEquals(requestSpawnCount, 0);
+        game.chooseGod(gods.get(2).getName());
 
         // Check that we are in the next state
-        assertNull(game.getAvailableGods());
-        assertTrue(game.getAvailableCells().size() > 0);
+        assertEquals(requestSpawnCount, 1);
     }
 
     /**
@@ -94,49 +101,37 @@ class GameTest {
     @Test
     void normalGameWithForce() {
         constructNormalGame();
+        game.init(players, deck, false);
 
-        List<God> gods = new ArrayList<>(game.getAvailableGods());
+        List<God> gods = new ArrayList<>(deck.getGods());
         gods.remove(4);
         gods.remove(2);
-        game.selectGods(gods);
-        game.chooseGod(gods.get(0)); // BuildBeforeMove
-        game.chooseGod(gods.get(1)); // WinOnDeltaLevel
-        game.chooseGod(gods.get(2)); // ParkourCross
+        game.selectGods(godsToStringList(gods));
+        game.chooseGod(gods.get(0).getName()); // BuildBeforeMove
+        game.chooseGod(gods.get(1).getName()); // WinOnDeltaLevel
+        game.chooseGod(gods.get(2).getName()); // ParkourCross
 
-        Worker player1worker1 = new Worker(getCell(game, 1, 0));
-        Worker player1worker2 = new Worker(getCell(game, 3, 3));
-        Worker player2worker1 = new Worker(getCell(game, 4, 2));
-        Worker player2worker2 = new Worker(getCell(game, 2, 3));
-        Worker player3worker1 = new Worker(getCell(game, 4, 3));
-        Worker player3worker2 = new Worker(getCell(game, 2, 1));
+        game.spawnWorker(new Coordinates(1, 0)); // Worker 0
+        game.spawnWorker(new Coordinates(3, 3)); // Worker 1
+        game.spawnWorker(new Coordinates(4, 2)); // Worker 2
+        game.spawnWorker(new Coordinates(2, 3)); // Worker 3
+        game.spawnWorker(new Coordinates(4, 3)); // Worker 4
+        game.spawnWorker(new Coordinates(2, 1)); // Worker 5
 
-        game.spawnWorker(player1worker1);
-        game.spawnWorker(player1worker2);
-        game.spawnWorker(player2worker1);
-        game.spawnWorker(player2worker2);
-        game.spawnWorker(player3worker1);
-        game.spawnWorker(player3worker2);
-
-        assertFalse(game.checkCanEndTurn());
-        game.moveWorker(player1worker1, getCell(game, 0, 0));
-        game.buildBlock(player1worker1, getCell(game, 1, 0));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(1, new Coordinates(0, 0)));
+        game.moveWorker(0, new Coordinates(0, 0));
+        game.buildBlock(0, new Coordinates(1, 0));
         game.endTurn();
 
-        game.moveWorker(player2worker2, getCell(game, 2, 2));
-        game.buildBlock(player2worker2, getCell(game, 3, 2));
+        game.moveWorker(3, new Coordinates(2, 2));
+        game.buildBlock(3, new Coordinates(3, 2));
         game.endTurn();
 
-        assertTrue(equalsNoOrder(game.getAvailableForces(player3worker2, player2worker2), List.of(getCell(game, 2, 0))));
-        game.forceWorker(player3worker2, player2worker2, getCell(game, 2, 0));
-        assertEquals(game.forceWorker(player3worker1, player2worker2, getCell(game, 2, 2)), Game.ModelResponse.INVALID_PARAMS);
-        game.moveWorker(player3worker2, getCell(game, 2, 2));
-        game.buildBlock(player3worker2, getCell(game, 2, 1));
+        assertEquals(game.forceWorker(5, 3, new Coordinates(2, 0)), Game.ModelResponse.ALLOW);
+        assertEquals(game.forceWorker(4, 3, new Coordinates(2, 2)), Game.ModelResponse.INVALID_PARAMS);
+        game.moveWorker(5, new Coordinates(2, 2));
+        game.buildBlock(5, new Coordinates(2, 1));
         game.endTurn();
-
-        getCell(game, 1, 0).setLevel(3);
-        getCell(game, 0, 1).setLevel(3);
-        getCell(game, 1, 1).setLevel(3);
-        assertFalse(game.checkCanEndTurn());
     }
 
     /**
@@ -145,42 +140,36 @@ class GameTest {
     @Test
     void simpleGameWithStates() {
         constructSimpleGame();
-
-        Worker player1worker1 = new Worker(getCell(game, 1, 0));
-        Worker player1worker2 = new Worker(getCell(game, 3, 3));
-        Worker player2worker1 = new Worker(getCell(game, 4, 2));
-        Worker player2worker2 = new Worker(getCell(game, 2, 1));
-        Worker unusedWorker = new Worker(getCell(game, 4, 2));
+        game.getModelEventProvider().registerPlayerWinEventObserver(event -> {
+            winCount++;
+            assertEquals(event.getPlayer(), PLAYER_OLDEST_NAME);
+        });
+        game.init(players, deck, true);
 
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_YOUNGEST_NAME);
-        game.spawnWorker(player1worker1);
+        game.spawnWorker(new Coordinates(1, 0)); // Worker 0
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_YOUNGEST_NAME);
-        game.spawnWorker(player1worker2);
+        game.spawnWorker(new Coordinates(3, 3)); // Worker 1
 
         // Next turn
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
-        game.spawnWorker(player2worker1);
+        game.spawnWorker(new Coordinates(4, 2)); // Worker 2
         assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS,game.spawnWorker(unusedWorker));
-        game.spawnWorker(player2worker2);
+        game.spawnWorker(new Coordinates(2, 1)); // Worker 3
 
-        assertTrue(game.getAvailableMoves(player1worker1).contains(getCell(game, 2, 0)));
-        game.moveWorker(player1worker1, getCell(game, 2, 0));
+        game.moveWorker(0, new Coordinates(2, 0));
         assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.buildDome(player1worker1,getCell(game, 3, 0)));
-        assertTrue(game.getAvailableBlockBuilds(player1worker1).contains(getCell(game, 3, 0)));
-        game.buildBlock(player1worker1, getCell(game, 3, 0));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.buildDome(0, new Coordinates(3, 0)));
+        game.buildBlock(0, new Coordinates(3, 0));
         game.endTurn();
 
         getCell(game, 3, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(player2worker2,getCell(game, 2, 0)));
-        game.moveWorker(player2worker1, getCell(game, 4, 3));
+        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(3, new Coordinates(2, 0)));
+        game.moveWorker(2, new Coordinates(4, 3));
         assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
-        assertTrue(game.getAvailableDomeBuilds(player2worker1).contains(getCell(game, 3, 2)));
-        game.buildDome(player2worker1, getCell(game, 3, 2));
+        game.buildDome(2, new Coordinates(3, 2));
         game.endTurn();
 
-        assertFalse(game.checkCanEndTurn());
         getCell(game, 1, 0).setLevel(2);
         getCell(game, 1, 1).setLevel(2);
         getCell(game, 2, 1).setLevel(2);
@@ -194,29 +183,9 @@ class GameTest {
         getCell(game, 4, 2).setLevel(2);
         getCell(game, 3, 2).setLevel(2);
         getCell(game, 3, 1).setLevel(2);
-        Player toRemove = game.getCurrentPlayer();
-        assertTrue(game.checkCanEndTurn());
+        assertEquals(winCount, 0);
         game.endTurn();
-        assertTrue(game.checkHasLost(toRemove));
-        assertTrue(game.isEnded());
-    }
-
-    /**
-     * Call event observers
-     */
-    @Test
-    void checkEventObserver () {
-        constructNormalGame();
-        game.registerChallengerSelectGodsEventObserver( (event) -> {});
-        game.registerPlayerChooseGodEventObserver( (event) -> {});
-        game.registerPlayerLoseEventObserver( (event) -> {});
-        game.registerPlayerTurnStartEventObserver( (event) -> {});
-        game.registerPlayerWinEventObserver( (event) -> {});
-        game.registerWorkerBuildBlockEventObserver( (event) -> {});
-        game.registerWorkerBuildDomeEventObserver( (event) -> {});
-        game.registerWorkerForceEventObserver( (event) -> {});
-        game.registerWorkerMoveEventObserver( (event) -> {});
-        game.registerWorkerSpawnEventObserver( (event) -> {});
+        assertEquals(winCount, 1);
     }
 
     private Cell getCell(Game game, int x, int y) {
@@ -228,7 +197,7 @@ class GameTest {
         players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
         players.add(new Player(PLAYER_OLDEST_NAME, 2));
 
-        this.game = new Game(players, null, true);
+        this.game = new Game();
         this.players = players;
     }
 
@@ -239,15 +208,18 @@ class GameTest {
         players.add(new Player(PLAYER_OLDEST_NAME, 3));
 
         List<God> gods = new ArrayList<>();
-        gods.add(new God("G1", 1, "", "", Map.of(BuildBeforeMove.class, false)));
-        gods.add(new God("G2", 2, "", "", Map.of(WinOnDeltaLevel.class, false)));
-        gods.add(new God("G3", 3, "", "", Map.of(BlockOnPlayerMoveUp.class, true)));
-        gods.add(new God("G4", 4, "", "", Map.of(ParkourCross.class, false)));
-        gods.add(new God("G5", 5, "", "", Map.of(NoWinOnPerimeter.class, true)));
-        Deck deck = new Deck(gods);
+        gods.add(new God("G1", 1, "", "","", Map.of(BuildBeforeMove.class, false)));
+        gods.add(new God("G2", 2, "", "","", Map.of(WinOnDeltaLevel.class, false)));
+        gods.add(new God("G3", 3, "", "","", Map.of(BlockOnPlayerMoveUp.class, true)));
+        gods.add(new God("G4", 4, "", "","", Map.of(ParkourCross.class, false)));
+        gods.add(new God("G5", 5, "", "","", Map.of(NoWinOnPerimeter.class, true)));
+        deck = new Deck(gods);
 
-        this.game = new Game(players, deck, false);
+        this.game = new Game();
         this.players = players;
+    }
+    private List<String> godsToStringList(List<God> gods) {
+        return gods.stream().map(God::getName).collect(Collectors.toList());
     }
 
 }

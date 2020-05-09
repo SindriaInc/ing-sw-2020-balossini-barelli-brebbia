@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.TestConstants;
+import it.polimi.ingsw.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,12 +16,14 @@ class AbstractGameStateTest {
     private Board board;
     private List<Player> players;
     private AbstractGameState abstractGameState;
+    private ModelEventProvider modelEventProvider;
 
     @BeforeEach
     void setUp() {
         board = new Board(TestConstants.BOARD_TEST_ROWS, TestConstants.BOARD_TEST_COLUMNS);
         players = List.of(new Player("A", 0), new Player("B", 1));
-        abstractGameState = new AbstractGameState(board, players) {
+        modelEventProvider = new ModelEventProvider();
+        abstractGameState = new AbstractGameState(modelEventProvider, board, players) {
 
             @Override
             public AbstractGameState nextState() {
@@ -36,32 +35,18 @@ class AbstractGameStateTest {
                 return null;
             }
 
-            @Override
-            public boolean isEnded() {
-                return false;
-            }
-
         };
     }
 
     @Test
     void testDefaults() {
-        assertNull(abstractGameState.getAvailableGods());
-        assertNull(abstractGameState.getSelectGodsCount());
-        assertFalse(abstractGameState.checkCanSelectGods(List.of()));
         assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.selectGods(List.of()));
         assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.chooseGod(null));
-        assertNull(abstractGameState.getAvailableCells());
         assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.spawnWorker(null));
-        assertNull(abstractGameState.getAvailableMoves(null));
-        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.moveWorker(null, null));
-        assertNull(abstractGameState.getAvailableBlockBuilds(null));
-        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildBlock(null, null));
-        assertNull(abstractGameState.getAvailableDomeBuilds(null));
-        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildDome(null, null));
-        assertNull(abstractGameState.getAvailableForces(null, null));
-        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.forceWorker(null, null, null));
-        assertFalse(abstractGameState.checkCanEndTurn());
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.moveWorker(0, null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildBlock(0, null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.buildDome(0, null));
+        assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.forceWorker(0, 0, null));
         assertEquals(Game.ModelResponse.INVALID_STATE, abstractGameState.endTurn());
     }
 
@@ -69,6 +54,7 @@ class AbstractGameStateTest {
     void testGetters() {
         assertEquals(board, abstractGameState.getBoard());
         assertEquals(players, abstractGameState.getPlayers());
+        assertEquals(modelEventProvider, abstractGameState.getModelEventProvider());
     }
 
     @Test

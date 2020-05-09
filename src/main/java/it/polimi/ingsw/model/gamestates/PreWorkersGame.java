@@ -23,6 +23,7 @@ public class PreWorkersGame extends AbstractGameState {
     /**
      * The next worker id
      * Each worker must have a unique id
+     * The counter starts at 0
      */
     private int nextWorkerId;
 
@@ -56,7 +57,6 @@ public class PreWorkersGame extends AbstractGameState {
             return Game.ModelResponse.INVALID_PARAMS;
         }
 
-
         Cell cell = getBoard().getCell(position);
         Worker worker = new Worker(nextWorkerId, cell);
         nextWorkerId++;
@@ -69,7 +69,8 @@ public class PreWorkersGame extends AbstractGameState {
         );
 
         Player next = getCurrentPlayer();
-        if (next.equals(player)) {
+
+        if (next != null && next.equals(player)) {
             // Notify the current player that a new worker can be placed
             getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
                     new RequestWorkerSpawnEvent(player.getName(), getAvailablePositions())
@@ -81,6 +82,10 @@ public class PreWorkersGame extends AbstractGameState {
 
     @Override
     public Player getCurrentPlayer() {
+        if (isDone()) {
+            return null;
+        }
+
         Player currentPlayer = getPlayers().get(playerIndex);
 
         if (currentPlayer.getWorkers().size() < maxWorkers) {
@@ -101,13 +106,21 @@ public class PreWorkersGame extends AbstractGameState {
 
     @Override
     public AbstractGameState nextState() {
-        for (Player player : getPlayers()) {
-            if (player.getWorkers().size() < maxWorkers) {
-                return this;
-            }
+        if (!isDone()) {
+            return this;
         }
 
         return new OngoingGame(getModelEventProvider(), getBoard(), getPlayers());
+    }
+
+    private boolean isDone() {
+        for (Player player : getPlayers()) {
+            if (player.getWorkers().size() < maxWorkers) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

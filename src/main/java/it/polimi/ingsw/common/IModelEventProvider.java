@@ -66,12 +66,6 @@ public interface IModelEventProvider {
     void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer);
 
     /**
-     * Register the observer for PlayerEndTurnEvent in the related observable
-     * @param observer The Observer
-     */
-    void registerPlayerEndTurnObserver(Observer<PlayerEndTurnEvent> observer);
-
-    /**
      * Register the observer for PlayerLoseEvent in the related observable
      * @param observer The Observer
      */

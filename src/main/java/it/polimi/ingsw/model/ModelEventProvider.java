@@ -58,10 +58,6 @@ public class ModelEventProvider implements IModelEventProvider {
      */
     private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
 
-    /**
-     * Observable for PlayerEndTurnEvent
-     */
-    private final Observable<PlayerEndTurnEvent> playerEndTurnEventObservable = new Observable<>();
 
     /**
      * Observable for PlayerLoseEvent
@@ -181,14 +177,6 @@ public class ModelEventProvider implements IModelEventProvider {
     @Override
     public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
         playerChooseGodEventObservable.register(observer);
-    }
-
-    /**
-     * @see IModelEventProvider#registerPlayerEndTurnObserver(Observer)
-     */
-    @Override
-    public void registerPlayerEndTurnObserver(Observer<PlayerEndTurnEvent> observer) {
-        playerEndTurnEventObservable.register(observer);
     }
 
     /**

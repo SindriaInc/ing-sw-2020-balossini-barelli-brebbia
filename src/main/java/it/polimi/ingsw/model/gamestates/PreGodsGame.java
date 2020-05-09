@@ -103,12 +103,7 @@ public class PreGodsGame extends AbstractGameState {
 
         // Notify the first player to choose a god
         Player player = getCurrentPlayer();
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                new PlayerTurnStartEvent(player.getName())
-        );
-        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
-                new RequestPlayerChooseGodEvent(player.getName(), getAvailableGods())
-        );
+        generateChooseRequests(player);
 
         return Game.ModelResponse.ALLOW;
     }
@@ -143,11 +138,22 @@ public class PreGodsGame extends AbstractGameState {
         getModelEventProvider().getPlayerChooseGodEventObservable().notifyObservers(
                 new PlayerChooseGodEvent(player.getName(), god)
         );
+
+        Player next = getCurrentPlayer();
+
+        if (next != null) {
+            generateChooseRequests(next);
+        }
+
         return Game.ModelResponse.ALLOW;
     }
 
     @Override
     public Player getCurrentPlayer() {
+        if (isDone()) {
+            return null;
+        }
+
         if (phase == Phase.CHALLENGER_SELECT_GODS) {
             return getPlayers().get(challengerIndex);
         }
@@ -159,28 +165,30 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         playerIndex++;
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                new PlayerTurnStartEvent(currentPlayer.getName())
-        );
-        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
-                new RequestPlayerChooseGodEvent(currentPlayer.getName(), getAvailableGods())
-        );
         return getPlayers().get(playerIndex);
     }
 
     @Override
     public AbstractGameState nextState() {
-        if (phase == Phase.CHALLENGER_SELECT_GODS) {
+        if (!isDone()) {
             return this;
+        }
+
+        return new PreWorkersGame(getModelEventProvider(), getBoard(), getPlayers(), maxWorkers, true);
+    }
+
+    private boolean isDone() {
+        if (phase == Phase.CHALLENGER_SELECT_GODS) {
+            return false;
         }
 
         for (Player player : getPlayers()) {
             if (player.getGod().isEmpty()) {
-                return this;
+                return false;
             }
         }
 
-        return new PreWorkersGame(getModelEventProvider(), getBoard(), getPlayers(), maxWorkers, true);
+        return true;
     }
 
     /**
@@ -216,6 +224,15 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         return gods.size() == getSelectGodsCount();
+    }
+
+    private void generateChooseRequests(Player player) {
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
+                new PlayerTurnStartEvent(player.getName())
+        );
+        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
+                new RequestPlayerChooseGodEvent(player.getName(), getAvailableGods())
+        );
     }
 
     private List<String> toStringList(List<God> gods) {
