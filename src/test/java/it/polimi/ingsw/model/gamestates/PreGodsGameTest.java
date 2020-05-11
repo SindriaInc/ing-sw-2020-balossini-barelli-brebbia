@@ -76,8 +76,8 @@ class PreGodsGameTest {
             requestChooseCount++;
         });
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, preGodsGame.selectGods(List.of("NotPresent")));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, preGodsGame.selectGods(List.of(gods.get(0).getName(), gods.get(0).getName())));
+        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.selectGods(List.of("NotPresent")));
+        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.selectGods(List.of(gods.get(0).getName(), gods.get(0).getName())));
         preGodsGame.selectGods(selectedGods);
         assertEquals(turnStartCount, 2);
         assertEquals(requestChooseCount, 1);
@@ -113,14 +113,14 @@ class PreGodsGameTest {
         preGodsGame = new PreGodsGame(modelEventProvider, board, players, TestConstants.MAX_WORKERS, gods);
         assertEquals(preGodsGame, preGodsGame.nextState());
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS,preGodsGame.selectGods(List.of()));
+        assertEquals(ModelResponse.INVALID_PARAMS,preGodsGame.selectGods(List.of()));
 
         preGodsGame.selectGods(List.of(gods.get(0).getName(), gods.get(1).getName()));
 
         assertEquals(preGodsGame, preGodsGame.nextState());
         assertEquals(preGodsGame.getPlayers().get(0), preGodsGame.getCurrentPlayer());
 
-        assertEquals(Game.ModelResponse.INVALID_STATE, preGodsGame.selectGods(List.of()));
+        assertEquals(ModelResponse.INVALID_STATE, preGodsGame.selectGods(List.of()));
     }
 
     /**
@@ -130,7 +130,7 @@ class PreGodsGameTest {
     @Test
     void checkChooseGod() {
         preGodsGame = new PreGodsGame(modelEventProvider, board, players, TestConstants.MAX_WORKERS, gods);
-        assertEquals(Game.ModelResponse.INVALID_STATE, preGodsGame.chooseGod(gods.get(0).getName()));
+        assertEquals(ModelResponse.INVALID_STATE, preGodsGame.chooseGod(gods.get(0).getName()));
 
         preGodsGame.selectGods(List.of(gods.get(0).getName(), gods.get(1).getName()));
 
@@ -143,7 +143,7 @@ class PreGodsGameTest {
 
         assertNotEquals(preGodsGame, preGodsGame.nextState());
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, preGodsGame.chooseGod(god4.getName()));
+        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.chooseGod(god4.getName()));
     }
 
     /**

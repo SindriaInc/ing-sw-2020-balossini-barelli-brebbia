@@ -12,9 +12,9 @@ public class EndGame extends AbstractGameState {
     public EndGame(ModelEventProvider provider, Board board, Player winner) {
         super(provider, board, List.of(winner));
 
-        getModelEventProvider().getPlayerWinEventObservable().notifyObservers(
-                new PlayerWinEvent(winner.getName())
-        );
+        var event = new PlayerWinEvent(winner.getName());
+        setReceivers(event);
+        getModelEventProvider().getPlayerWinEventObservable().notifyObservers(event);
     }
 
     @Override

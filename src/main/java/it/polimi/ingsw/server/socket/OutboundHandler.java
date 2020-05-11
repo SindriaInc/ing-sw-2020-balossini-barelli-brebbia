@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.socket;
 
+import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
 
@@ -35,7 +36,7 @@ public class OutboundHandler implements Runnable {
                     out.write(message.getMessage());
                     out.flush();
                 } catch (IOException exception) {
-                    exception.printStackTrace();
+                    Logger.getInstance().exception(exception);
                     reader.scheduleRead(new ErrorMessage(ErrorMessage.ErrorType.OUTBOUND_MESSAGE_FAILED, message));
                 }
             }

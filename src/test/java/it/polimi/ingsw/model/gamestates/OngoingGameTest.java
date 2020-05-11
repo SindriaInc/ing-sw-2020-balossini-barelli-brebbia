@@ -70,16 +70,16 @@ class OngoingGameTest {
             moveCount++;
         });
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(-1, new Coordinates(0, 2)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(-1, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
         assertEquals(moveCount, 0);
-        assertEquals(Game.ModelResponse.ALLOW, ongoingGame.moveWorker(1, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.ALLOW, ongoingGame.moveWorker(1, new Coordinates(0, 2)));
         assertEquals(requestMoveCount, 1);
         assertEquals(moveCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 3)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 1)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(0, new Coordinates(0, 1)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(0, 1)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
         assertEquals(requestMoveCount, 1);
@@ -119,24 +119,24 @@ class OngoingGameTest {
 
         ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(0, 2)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 2)));
 
         assertEquals(buildBlockCount, 0);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(-1, new Coordinates(0, 3)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(-1, new Coordinates(0, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 3)));
         ongoingGame.buildBlock(1, new Coordinates(0, 3));
         assertEquals(buildBlockCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 1)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(0, new Coordinates(0, 1)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.moveWorker(1, new Coordinates(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
         assertEquals(buildBlockCount, 1);
@@ -181,24 +181,24 @@ class OngoingGameTest {
         ongoingGame.moveWorker(1, new Coordinates(0, 2));
         assertEquals(requestBuildDomeCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(0, 2)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(0, 2)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(0, 2)));
 
         assertEquals(buildDomeCount, 0);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(-1, new Coordinates(0, 3)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(2, new Coordinates(0, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(-1, new Coordinates(0, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(2, new Coordinates(0, 3)));
         ongoingGame.buildDome(1, new Coordinates(0, 3));
         assertEquals(buildDomeCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(0, new Coordinates(1, 3)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildDome(1, new Coordinates(1, 3)));
 
         board.getCellFromCoords(1, 3).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.buildBlock(1, new Coordinates(1, 3)));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS,  ongoingGame.moveWorker(1, new Coordinates(1, 3)));
+        assertEquals(ModelResponse.INVALID_PARAMS,  ongoingGame.moveWorker(1, new Coordinates(1, 3)));
 
         assertEquals(ongoingGame, ongoingGame.nextState());
         assertEquals(turnStartCount,1);
@@ -220,9 +220,9 @@ class OngoingGameTest {
         assertEquals(turnStartCount, 1);
 
         modelEventProvider.registerWorkerForceEventObserver(event -> forceCount++);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, 2, new Coordinates(2, 0)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, -1, new Coordinates(2, 0)));
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(-1, 2, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, 2, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(0, -1, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, ongoingGame.forceWorker(-1, 2, new Coordinates(2, 0)));
         assertEquals(turnStartCount, 1);
         assertEquals(requestForceCount, 0);
         assertEquals(forceCount, 0);
@@ -312,11 +312,11 @@ class OngoingGameTest {
 
         ongoingGame = new OngoingGame(modelEventProvider, board, players);
 
-        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
+        assertEquals(ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.moveWorker(1, new Coordinates(0, 2));
 
-        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
+        assertEquals(ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.buildBlock(1, new Coordinates(0, 3));
 
@@ -324,13 +324,13 @@ class OngoingGameTest {
         assertEquals(turnStartCount, 2);
         assertEquals(requestEndTurnCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
+        assertEquals(ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.moveWorker(2, new Coordinates(2, 0));
         assertEquals(turnStartCount, 2);
         assertEquals(requestEndTurnCount, 1);
 
-        assertEquals(Game.ModelResponse.INVALID_STATE, ongoingGame.endTurn());
+        assertEquals(ModelResponse.INVALID_STATE, ongoingGame.endTurn());
 
         ongoingGame.buildBlock(2, new Coordinates(2, 1));
         assertEquals(turnStartCount, 2);

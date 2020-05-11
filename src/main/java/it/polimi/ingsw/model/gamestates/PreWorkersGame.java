@@ -42,19 +42,20 @@ public class PreWorkersGame extends AbstractGameState {
             sortPlayers(sortedPlayers);
         }
 
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                new PlayerTurnStartEvent(getCurrentPlayer().getName())
-        );
+        var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
+        setReceivers(event);
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+
         getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
                 new RequestWorkerSpawnEvent(getCurrentPlayer().getName(), getAvailablePositions())
         );
     }
 
     @Override
-    public Game.ModelResponse spawnWorker(Coordinates position) {
+    public ModelResponse spawnWorker(Coordinates position) {
         if (!getAvailablePositions().contains(position)) {
             // Invalid cell selected
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Cell cell = getBoard().getCell(position);
@@ -64,9 +65,9 @@ public class PreWorkersGame extends AbstractGameState {
         Player player = getCurrentPlayer();
         player.addWorker(worker);
 
-        getModelEventProvider().getWorkerSpawnEventObservable().notifyObservers(
-                new WorkerSpawnEvent(player.getName(), worker.getId(), toCoordinates(cell))
-        );
+        var event = new WorkerSpawnEvent(player.getName(), worker.getId(), toCoordinates(cell));
+        setReceivers(event);
+        getModelEventProvider().getWorkerSpawnEventObservable().notifyObservers(event);
 
         Player next = getCurrentPlayer();
 
@@ -77,7 +78,7 @@ public class PreWorkersGame extends AbstractGameState {
             );
         }
 
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
@@ -95,12 +96,14 @@ public class PreWorkersGame extends AbstractGameState {
         playerIndex++;
         currentPlayer = getPlayers().get(playerIndex);
 
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                new PlayerTurnStartEvent(currentPlayer.getName())
-        );
+        var event = new PlayerTurnStartEvent(currentPlayer.getName());
+        setReceivers(event);
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+
         getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
                 new RequestWorkerSpawnEvent(currentPlayer.getName(), getAvailablePositions())
         );
+
         return currentPlayer;
     }
 

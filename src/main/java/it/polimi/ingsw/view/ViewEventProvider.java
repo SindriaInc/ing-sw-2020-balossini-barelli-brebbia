@@ -5,7 +5,23 @@ import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.Observer;
 import it.polimi.ingsw.common.event.*;
 
+@SuppressWarnings("unused")
 public class ViewEventProvider implements IViewEventProvider {
+
+    /**
+     * Observable for PlayerLoginEvent
+     */
+    private final Observable<PlayerLoginEvent> playerLoginEventObservable = new Observable<>();
+
+    /**
+     * Observable for PlayerCreateRoomEvent
+     */
+    private final Observable<PlayerCreateRoomEvent> playerCreateRoomEventObservable = new Observable<>();
+
+    /**
+     * Observable for PlayerJoinRoomEvent
+     */
+    private final Observable<PlayerJoinRoomEvent> playerJoinRoomEventObservable = new Observable<>();
 
     /**
      * Observable for RequestChallengerSelectGodsEvent
@@ -48,6 +64,21 @@ public class ViewEventProvider implements IViewEventProvider {
     private final Observable<WorkerSpawnEvent> workerSpawnEventObservable = new Observable<>();
 
     @Override
+    public void registerPlayerLoginEventObserver(Observer<PlayerLoginEvent> observer) {
+        playerLoginEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerPlayerCreateRoomEventObserver(Observer<PlayerCreateRoomEvent> observer) {
+        playerCreateRoomEventObservable.register(observer);
+    }
+
+    @Override
+    public void registerPlayerJoinRoomEventObserver(Observer<PlayerJoinRoomEvent> observer) {
+        playerJoinRoomEventObservable.register(observer);
+    }
+
+    @Override
     public void registerPlayerChallengerSelectGodsEventObserver(Observer<PlayerChallengerSelectGodsEvent> observer) {
         playerChallengerSelectGodsEventObservable.register(observer);
     }
@@ -85,6 +116,18 @@ public class ViewEventProvider implements IViewEventProvider {
     @Override
     public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
         workerSpawnEventObservable.register(observer);
+    }
+
+    public Observable<PlayerLoginEvent> getPlayerLoginEventObservable() {
+        return playerLoginEventObservable;
+    }
+
+    public Observable<PlayerCreateRoomEvent> getPlayerCreateRoomEventObservable() {
+        return playerCreateRoomEventObservable;
+    }
+
+    public Observable<PlayerJoinRoomEvent> getPlayerJoinRoomEventObservable() {
+        return playerJoinRoomEventObservable;
     }
 
     public Observable<PlayerChallengerSelectGodsEvent> getPlayerChallengerSelectGodsEventObservable() {

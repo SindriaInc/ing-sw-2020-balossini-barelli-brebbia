@@ -11,14 +11,6 @@ import java.util.List;
 
 public class Game {
 
-    public enum ModelResponse {
-
-        ALLOW,
-        INVALID_PARAMS,
-        INVALID_STATE
-
-    }
-
     public static final int BOARD_ROWS = 5;
     public static final int BOARD_COLUMNS = 5;
     public static final int MAX_WORKERS = 2;
@@ -32,9 +24,7 @@ public class Game {
      * Instantiates the Game
      * The game will have only have the ModelEventProvider, Game#init needs to be called to start the game
      */
-    public Game() {
-        ModelEventProvider provider = new ModelEventProvider();
-
+    public Game(ModelEventProvider provider) {
         currentState = new PreInitGame(provider);
     }
 
@@ -59,6 +49,16 @@ public class Game {
      */
     public IModelEventProvider getModelEventProvider() {
         return currentState.getModelEventProvider();
+    }
+
+    /**
+     * Obtain a copy of the game players
+     * @return The players
+     *
+     * <strong>This method has no side effect</strong>
+     */
+    public List<Player> getAllPlayers() {
+        return List.copyOf(currentState.getAllPlayers());
     }
 
     /**

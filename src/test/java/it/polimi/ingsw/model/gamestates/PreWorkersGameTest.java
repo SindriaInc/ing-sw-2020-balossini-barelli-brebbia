@@ -5,10 +5,8 @@ import it.polimi.ingsw.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static it.polimi.ingsw.model.TestConstants.equalsNoOrder;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PreWorkersGameTest {
@@ -58,7 +56,7 @@ class PreWorkersGameTest {
             spawnCount++;
         });
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Coordinates(-1,-1)));
+        assertEquals(ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Coordinates(-1,-1)));
         assertEquals(spawnCount, 0);
         preWorkersGame.spawnWorker(new Coordinates(0, 0));
         assertEquals(requestSpawnCount, 2);
@@ -68,7 +66,7 @@ class PreWorkersGameTest {
         assertEquals(preWorkersGame, preWorkersGame.nextState());
         assertEquals(preWorkersGame.getCurrentPlayer(), players.get(0));
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Coordinates(0, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, preWorkersGame.spawnWorker(new Coordinates(0, 0)));
 
         preWorkersGame.spawnWorker(new Coordinates(0, 1));
         assertEquals(requestSpawnCount, 3);

@@ -1,9 +1,30 @@
 package it.polimi.ingsw.common;
 
 import it.polimi.ingsw.common.event.*;
+import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
+import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
+import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
 import it.polimi.ingsw.common.event.request.*;
 
 public interface IModelEventProvider {
+
+    /**
+     * Register the observer for LobbyUpdateEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerLobbyUpdateEventObserver(Observer<LobbyUpdateEvent> observer);
+
+    /**
+     * Register the observer for LobbyRoomUpdateEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerLobbyRoomUpdateEventObserver(Observer<LobbyRoomUpdateEvent> observer);
+
+    /**
+     * Register the observer for LobbyGameStartEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerLobbyGameStartEventObserver(Observer<LobbyGameStartEvent> observer);
 
     /**
      * Register the observer for PlayerRequestChallengerSelectGodsEvent in the related observable

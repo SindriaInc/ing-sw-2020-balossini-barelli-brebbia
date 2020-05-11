@@ -5,6 +5,24 @@ import it.polimi.ingsw.common.event.*;
 public interface IViewEventProvider {
 
     /**
+     * Register the observer for PlayerLoginEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerLoginEventObserver(Observer<PlayerLoginEvent> observer);
+
+    /**
+     * Register the observer for PlayerCreateRoomEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerCreateRoomEventObserver(Observer<PlayerCreateRoomEvent> observer);
+
+    /**
+     * Register the observer for PlayerJoinRoomEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerJoinRoomEventObserver(Observer<PlayerJoinRoomEvent> observer);
+
+    /**
      * Register the observer for ChallengerSelectGodsEvent in the related observable
      * @param observer The Observer
      */

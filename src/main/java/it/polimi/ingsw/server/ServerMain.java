@@ -1,17 +1,12 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.model.Deck;
-import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.abilities.decorators.AdditionalMove;
-import it.polimi.ingsw.model.abilities.decorators.BuildBeforeMove;
-import it.polimi.ingsw.model.abilities.decorators.BuildBelow;
+import it.polimi.ingsw.common.logging.Logger;
+import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
+import it.polimi.ingsw.common.logging.reader.FileLogReader;
+import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.server.socket.SocketServer;
 
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class ServerMain {
@@ -20,47 +15,47 @@ public class ServerMain {
 
     private static final long SLEEP_PERIOD_MS = 10;
 
+    /**
+     * The server implementation instance
+     */
     private final IServer server;
 
-    private boolean active;
+    /**
+     * Whether or not the server is running
+     * Set to false only when the server is shutting down
+     */
+    private boolean active = true;
 
     public ServerMain(String... args) {
+        Logger logger = Logger.getInstance();
+        logger.addReader(new ConsoleLogReader(System.out));
+        logger.info("Initializing server...");
+
         // TODO: Configuration loading
         // Read first from optional command line args, then from file, then from constants
         ServerConfiguration configuration = ServerConfiguration.fromFile(Path.of(""));
+        logger.addReader(new FileLogReader(Path.of(configuration.getLogPath())));
+        logger.info("Configuration loaded");
 
-        active = true;
-        System.out.println("Starting server");
         server = new SocketServer(configuration.getPort());
-        System.out.println("Server started");
+        logger.info("Server started");
+        logger.start();
 
         // TODO: The initialization below serves as an example and will be replaced
-        GameController controller = new GameController(server);
-        controller.selectGame(
-                List.of(new Player("A", 1),
-                        new Player("B", 2),
-                        new Player("C", 3)),
-                new Deck(
-                        List.of(
-                                new God("G1", 1, "A", "A", "A", Map.of(BuildBeforeMove.class, false)),
-                                new God("G2", 2, "A", "A", "A", Map.of(BuildBelow.class, false)),
-                                new God("G3", 3, "A", "A", "A", Map.of(AdditionalMove.class, false))
-                        )),
-                false
-        );
+        Controller controller = new Controller(server);
 
-        System.out.println("Starting ticking");
+        logger.debug("Ticking starting");
         new Thread(this::loop, "ServerLoop").start();
-        System.out.println("Ticking started");
+        logger.debug("Ticking started");
 
-        System.out.println("Starting listening");
         listenForInput();
 
-        System.out.println("Goodbye!");
+        logger.debug("Main shutdown");
     }
 
     private void listenForInput() {
-        System.out.println("Listening started");
+        Logger logger = Logger.getInstance();
+        logger.debug("Listening started");
 
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
@@ -71,7 +66,7 @@ public class ServerMain {
                 break;
             }
 
-            System.out.println("Unknown command");
+            logger.info("Unknown command");
         }
     }
 
@@ -81,14 +76,13 @@ public class ServerMain {
 
             try {
                 Thread.sleep(SLEEP_PERIOD_MS);
-            } catch (InterruptedException exception) {
-                exception.printStackTrace();
-            }
+            } catch (InterruptedException ignored) {}
         }
 
+        Logger logger = Logger.getInstance();
+        logger.info("Shutting down, goodbye!");
         server.shutdown();
-
-        System.exit(0);
+        logger.shutdown();
     }
 
 }

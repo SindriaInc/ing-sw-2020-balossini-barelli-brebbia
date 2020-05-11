@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.socket;
 
+import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.server.message.InboundMessage;
 
 import java.io.IOException;
@@ -24,24 +25,22 @@ public class InboundHandler implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("Helo");
-
         try {
             Scanner in = new Scanner(socket.getInputStream());
 
             while (active) {
-                while (player == null) {
-                    String packet = in.nextLine();
-                    player = packet;
-                    System.out.println("Helo: " + packet);
+                String packet = in.nextLine();
+
+                if (player == null) {
+                    reader.scheduleRead(new InboundMessage(packet, player -> this.player = player));
+                } else {
+                    reader.scheduleRead(new InboundMessage(player, packet));
                 }
 
-                String packet = in.nextLine();
-                reader.scheduleRead(new InboundMessage(player, packet));
-                System.out.println("Hulu: " + packet);
+                Logger.getInstance().debug("Received message: " + packet);
             }
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Logger.getInstance().exception(exception);
         }
     }
 

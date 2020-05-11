@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.socket;
 
+import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.server.*;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.InboundMessage;
@@ -8,6 +9,7 @@ import it.polimi.ingsw.server.message.OutboundMessage;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class SocketServer implements IServer {
+public class SocketServer implements IServer, Runnable {
 
     private final int port;
 
@@ -31,17 +33,18 @@ public class SocketServer implements IServer {
 
     private boolean active;
 
+    private ServerSocket serverSocket;
+
     public SocketServer(int port) {
         this.port = port;
 
         active = true;
-        new Thread(this::runSocket).start();
+        new Thread(this).start();
     }
 
     @Override
     public void send(OutboundMessage message) {
-        // TODO: Replace with logging
-        System.out.println("Sending outbound message: " + message.getMessage());
+        Logger.getInstance().debug("Sending outbound message to \"" + message.getDestinationPlayer() + "\": " + message.getMessage());
 
         for (SocketHandler socketHandler : socketHandlers) {
             if (socketHandler.getPlayer().isEmpty()) {
@@ -69,6 +72,12 @@ public class SocketServer implements IServer {
     @Override
     public void shutdown() {
         active = false;
+
+        try {
+            serverSocket.close();
+        } catch (IOException exception) {
+            Logger.getInstance().exception(exception);
+        }
     }
 
     @Override
@@ -90,16 +99,15 @@ public class SocketServer implements IServer {
         }
     }
 
-    private void runSocket() {
+    @Override
+    public void run() {
         ExecutorService executorService = Executors.newCachedThreadPool();
-
-        ServerSocket serverSocket;
 
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException exception) {
             scheduleError(new ErrorMessage(ErrorMessage.ErrorType.INIT_FAILED, null));
-            System.err.println(exception.getMessage());
+            Logger.getInstance().exception(exception);
             return;
         }
 
@@ -108,9 +116,17 @@ public class SocketServer implements IServer {
                 Socket socket = serverSocket.accept();
                 SocketHandler handler = new SocketHandler(executorService, socket, this::scheduleRead, this::scheduleError);
                 socketHandlers.add(handler);
+            } catch (SocketException exception) {
+              if (!active) {
+                  // Server is shutting down
+                  continue;
+              }
+
+              scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
+              Logger.getInstance().exception(exception);
             } catch (IOException exception) {
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
-                System.err.println(exception.getMessage());
+                Logger.getInstance().exception(exception);
             }
         }
 
@@ -118,6 +134,7 @@ public class SocketServer implements IServer {
             socketHandler.shutdown();
         }
         executorService.shutdown();
+        Logger.getInstance().debug("Socket shutdown");
     }
 
     private void scheduleError(ErrorMessage message) {

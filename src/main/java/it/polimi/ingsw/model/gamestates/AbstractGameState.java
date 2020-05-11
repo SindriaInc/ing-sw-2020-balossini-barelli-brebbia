@@ -1,14 +1,13 @@
 package it.polimi.ingsw.model.gamestates;
 
 import it.polimi.ingsw.common.Coordinates;
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.ModelEventProvider;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.common.event.AbstractEvent;
+import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractGameState {
 
@@ -30,42 +29,49 @@ public abstract class AbstractGameState {
      */
     private final List<Player> activePlayers = new LinkedList<>();
 
+    /**
+     * List of the players spectating
+     *
+     * When a player loses it gets added into this list
+     */
+    private final List<Player> spectatorPlayers = new LinkedList<>();
+
     public AbstractGameState(ModelEventProvider provider, Board board, List<Player> players) {
         this.modelEventProvider = provider;
         this.board = board;
         this.activePlayers.addAll(players);
     }
 
-    public Game.ModelResponse selectGods(List<String> gods) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse selectGods(List<String> gods) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse chooseGod(String god) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse chooseGod(String god) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse spawnWorker(Coordinates position) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse spawnWorker(Coordinates position) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse moveWorker(int worker, Coordinates destination) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse moveWorker(int worker, Coordinates destination) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse buildBlock(int worker, Coordinates destination) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse buildBlock(int worker, Coordinates destination) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse buildDome(int worker, Coordinates destination) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse buildDome(int worker, Coordinates destination) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse forceWorker(int worker, int target, Coordinates destination) {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
+        return ModelResponse.INVALID_STATE;
     }
 
-    public Game.ModelResponse endTurn() {
-        return Game.ModelResponse.INVALID_STATE;
+    public ModelResponse endTurn() {
+        return ModelResponse.INVALID_STATE;
     }
 
     public final ModelEventProvider getModelEventProvider() {
@@ -80,6 +86,12 @@ public abstract class AbstractGameState {
         return List.copyOf(activePlayers);
     }
 
+    public final List<Player> getAllPlayers() {
+        List<Player> allPlayers = new ArrayList<>(activePlayers);
+        allPlayers.addAll(spectatorPlayers);
+        return allPlayers;
+    }
+
     public final List<Player> getOpponents(Player player) {
         List<Player> opponents = new ArrayList<>(activePlayers);
         opponents.remove(player);
@@ -88,10 +100,20 @@ public abstract class AbstractGameState {
     }
 
     /**
+     * Set the receivers of an event as every player in the game
+     */
+    final void setReceivers(AbstractEvent event) {
+        List<String> receivers = getAllPlayers().stream().map(Player::getName).collect(Collectors.toList());
+        event.setReceivers(receivers);
+    }
+
+    /**
      * Remove the player from the players list
+     * The player is added as a spectator
      */
     final void removePlayer(Player player) {
         this.activePlayers.remove(player);
+        spectatorPlayers.add(player);
     }
 
     /**

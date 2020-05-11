@@ -4,9 +4,27 @@ import it.polimi.ingsw.common.IModelEventProvider;
 import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.Observer;
 import it.polimi.ingsw.common.event.*;
+import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
+import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
+import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
 import it.polimi.ingsw.common.event.request.*;
 
 public class ModelEventProvider implements IModelEventProvider {
+
+    /**
+     * Observable for LobbyUpdateEvent
+     */
+    private final Observable<LobbyUpdateEvent> lobbyUpdateEventObservable = new Observable<>();
+
+    /**
+     * Observable for LobbyRoomUpdateEvent
+     */
+    private final Observable<LobbyRoomUpdateEvent> lobbyRoomUpdateEventObservable = new Observable<>();
+
+    /**
+     * Observable for LobbyGameStartEvent
+     */
+    private final Observable<LobbyGameStartEvent> lobbyGameStartEventObservable = new Observable<>();
 
     /**
      * Observable for RequestChallengerSelectGodsEvent
@@ -98,6 +116,30 @@ public class ModelEventProvider implements IModelEventProvider {
      * Observable for WorkerSpawnEvent
      */
     private final Observable<WorkerSpawnEvent> workerSpawnEventObservable = new Observable<>();
+
+    /**
+     * @see IModelEventProvider#registerLobbyUpdateEventObserver(Observer)
+     */
+    @Override
+    public void registerLobbyUpdateEventObserver(Observer<LobbyUpdateEvent> observer) {
+        lobbyUpdateEventObservable.register(observer);
+    }
+
+    /**
+     * @see IModelEventProvider#registerLobbyRoomUpdateEventObserver(Observer)
+     */
+    @Override
+    public void registerLobbyRoomUpdateEventObserver(Observer<LobbyRoomUpdateEvent> observer) {
+        lobbyRoomUpdateEventObservable.register(observer);
+    }
+
+    /**
+     * @see IModelEventProvider#registerLobbyGameStartEventObserver(Observer)
+     */
+    @Override
+    public void registerLobbyGameStartEventObserver(Observer<LobbyGameStartEvent> observer) {
+        lobbyGameStartEventObservable.register(observer);
+    }
 
     /**
      * @see IModelEventProvider#registerPlayerRequestChallengerSelectGodsEventObserver(Observer)
@@ -241,6 +283,18 @@ public class ModelEventProvider implements IModelEventProvider {
     @Override
     public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
         workerSpawnEventObservable.register(observer);
+    }
+
+    public Observable<LobbyUpdateEvent> getLobbyUpdateEventObservable() {
+        return lobbyUpdateEventObservable;
+    }
+
+    public Observable<LobbyRoomUpdateEvent> getLobbyRoomUpdateEventObservable() {
+        return lobbyRoomUpdateEventObservable;
+    }
+
+    public Observable<LobbyGameStartEvent> getLobbyGameStartEventObservable() {
+        return lobbyGameStartEventObservable;
     }
 
     public Observable<RequestPlayerChallengerSelectGodsEvent> getPlayerRequestChallengerSelectGodsEventObservable() {

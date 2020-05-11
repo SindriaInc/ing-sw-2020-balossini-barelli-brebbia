@@ -5,15 +5,15 @@ import it.polimi.ingsw.common.event.*;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
-import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Game;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.model.Lobby;
+import it.polimi.ingsw.model.ModelResponse;
 import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.view.VirtualView;
 
-import java.util.List;
+import java.util.Optional;
 
-public class GameController {
+public class Controller {
 
     /**
      * The response event provider
@@ -21,21 +21,27 @@ public class GameController {
     private final ResponseEventProvider responseEventProvider;
 
     /**
-     * The model of the game
+     * The model of the game rooms
      */
-    private Game game;
+    private final Lobby lobby;
 
     /**
      * The virtual view
      */
-    private VirtualView virtualView;
+    private final VirtualView virtualView;
 
-    public GameController(IServer server) {
+    public Controller(IServer server) {
         responseEventProvider = new ResponseEventProvider();
 
+        lobby = new Lobby();
+
         virtualView = new VirtualView(server, responseEventProvider);
+        virtualView.selectModelEventProvider(lobby.getModelEventProvider());
 
         IViewEventProvider provider = virtualView.getViewEventProvider();
+        provider.registerPlayerLoginEventObserver(this::onPlayerLogin);
+        provider.registerPlayerCreateRoomEventObserver(this::onPlayerCreateRoom);
+        provider.registerPlayerJoinRoomEventObserver(this::onPlayerJoinRoom);
         provider.registerPlayerChallengerSelectGodsEventObserver(this::onChallengerSelectGods);
         provider.registerPlayerChooseGodEventObserver(this::onPlayerChooseGod);
         provider.registerWorkerSpawnEventObserver(this::onWorkerSpawn);
@@ -46,14 +52,26 @@ public class GameController {
         provider.registerPlayerEndTurnEventObserver(this::onPlayerEndTurn);
     }
 
-    public void selectGame(List<Player> players, Deck deck, boolean simpleGame) {
-        this.game = new Game();
-        virtualView.selectModelEventProvider(game.getModelEventProvider());
-        game.init(players, deck, simpleGame);
+    private void onPlayerLogin(PlayerLoginEvent event) {
+        dispatchResponseFromModel(event.getPlayer(), lobby.login(event.getPlayer(), event.getAge()));
+    }
+
+    private void onPlayerCreateRoom(PlayerCreateRoomEvent event) {
+        dispatchResponseFromModel(event.getPlayer(), lobby.createRoom(event.getPlayer(), event.getMaxPlayers(), event.isSimpleGame()));
+    }
+
+    private void onPlayerJoinRoom(PlayerJoinRoomEvent event) {
+        dispatchResponseFromModel(event.getPlayer(), lobby.joinRoom(event.getPlayer(), event.getRoomOwner()));
     }
 
     private void onChallengerSelectGods(PlayerChallengerSelectGodsEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -61,7 +79,13 @@ public class GameController {
     }
 
     private void onPlayerChooseGod(PlayerChooseGodEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -69,7 +93,13 @@ public class GameController {
     }
 
     private void onWorkerSpawn(WorkerSpawnEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -77,7 +107,13 @@ public class GameController {
     }
 
     private void onWorkerMove(WorkerMoveEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -85,7 +121,13 @@ public class GameController {
     }
 
     private void onWorkerBuildBlock(WorkerBuildBlockEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -93,7 +135,13 @@ public class GameController {
     }
 
     private void onWorkerBuildDome(WorkerBuildDomeEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -101,7 +149,13 @@ public class GameController {
     }
 
     private void onWorkerForce(WorkerForceEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
@@ -109,14 +163,31 @@ public class GameController {
     }
 
     private void onPlayerEndTurn(PlayerEndTurnEvent event) {
-        if (!checkOrDispatchResponse(event.getPlayer())) {
+        Game game = getGameOrNull(event.getPlayer());
+
+        if (game == null) {
+            return;
+        }
+
+        if (!checkOrDispatchResponse(game, event.getPlayer())) {
             return;
         }
 
         dispatchResponseFromModel(event.getPlayer(), game.endTurn());
     }
 
-    private boolean checkOrDispatchResponse(String player) {
+    private Game getGameOrNull(String player) {
+        Optional<Game> optionalGame = lobby.getGame(player);
+
+        if (optionalGame.isEmpty()) {
+            dispatchInvalidState(player);
+            return null;
+        }
+
+        return optionalGame.get();
+    }
+
+    private boolean checkOrDispatchResponse(Game game, String player) {
         if (game.getCurrentPlayer().getName().equals(player)) {
             return true;
         }
@@ -127,7 +198,13 @@ public class GameController {
         return false;
     }
 
-    private void dispatchResponseFromModel(String player, Game.ModelResponse response) {
+    private void dispatchInvalidState(String player) {
+        responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
+                new ResponseInvalidStateEvent(player)
+        );
+    }
+
+    private void dispatchResponseFromModel(String player, ModelResponse response) {
         switch (response) {
             case INVALID_PARAMS -> responseEventProvider.getResponseInvalidParametersEventObservable().notifyObservers(
                     new ResponseInvalidParametersEvent(player)

@@ -25,28 +25,28 @@ public class OngoingGame extends AbstractGameState {
         super(provider, board, players);
 
         Player player = getCurrentPlayer();
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                new PlayerTurnStartEvent(player.getName())
-        );
+        var event = new PlayerTurnStartEvent(player.getName());
+        setReceivers(event);
+        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
         generateRequests(player);
     }
 
     @Override
-    public Game.ModelResponse moveWorker(int worker, Coordinates destination) {
+    public ModelResponse moveWorker(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
 
         if (modelWorker == null) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         if (!getAvailableMoves(turn.get()).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Cell cell = getBoard().getCell(destination);
@@ -55,29 +55,30 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getModelEventProvider().getWorkerMoveEventObservable().notifyObservers(
-                new WorkerMoveEvent(player.getName(), worker, destination)
-        );
+        var event = new WorkerMoveEvent(player.getName(), worker, destination);
+        setReceivers(event);
+        getModelEventProvider().getWorkerMoveEventObservable().notifyObservers(event);
+
         generateRequests(getCurrentPlayer());
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
-    public Game.ModelResponse buildBlock(int worker, Coordinates destination) {
+    public ModelResponse buildBlock(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
 
         if (modelWorker == null) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         if (!getAvailableBlockBuilds(turn.get()).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Cell cell = getBoard().getCell(destination);
@@ -86,29 +87,30 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getModelEventProvider().getWorkerBuildBlockEventObservable().notifyObservers(
-                new WorkerBuildBlockEvent(player.getName(), worker, destination)
-        );
+        var event = new WorkerBuildBlockEvent(player.getName(), worker, destination);
+        setReceivers(event);
+        getModelEventProvider().getWorkerBuildBlockEventObservable().notifyObservers(event);
+
         generateRequests(getCurrentPlayer());
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
-    public Game.ModelResponse buildDome(int worker, Coordinates destination) {
+    public ModelResponse buildDome(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
 
         if (modelWorker == null) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         if (!getAvailableDomeBuilds(turn.get()).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Cell cell = getBoard().getCell(destination);
@@ -117,34 +119,35 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getModelEventProvider().getWorkerBuildDomeEventObservable().notifyObservers(
-                new WorkerBuildDomeEvent(player.getName(), worker, destination)
-        );
+        var event = new WorkerBuildDomeEvent(player.getName(), worker, destination);
+        setReceivers(event);
+        getModelEventProvider().getWorkerBuildDomeEventObservable().notifyObservers(event);
+
         generateRequests(getCurrentPlayer());
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
-    public Game.ModelResponse forceWorker(int worker, int target, Coordinates destination) {
+    public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
         Worker modelTarget = getOtherWorkerById(target);
 
         if (modelWorker == null) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         if (modelTarget == null) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Optional<Turn> turn = getOrGenerateTurn(modelWorker);
 
         if (turn.isEmpty()) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         if (!getAvailableForces(turn.get(), modelTarget).contains(destination)) {
-            return Game.ModelResponse.INVALID_PARAMS;
+            return ModelResponse.INVALID_PARAMS;
         }
 
         Cell cell = getBoard().getCell(destination);
@@ -153,17 +156,18 @@ public class OngoingGame extends AbstractGameState {
 
         this.turn = turn.get();
 
-        getModelEventProvider().getWorkerForceEventObservable().notifyObservers(
-                new WorkerForceEvent(player.getName(), worker, target, destination)
-        );
+        var event = new WorkerForceEvent(player.getName(), worker, target, destination);
+        setReceivers(event);
+        getModelEventProvider().getWorkerForceEventObservable().notifyObservers(event);
+
         generateRequests(getCurrentPlayer());
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
-    public Game.ModelResponse endTurn() {
+    public ModelResponse endTurn() {
         if (!checkCanEndTurn()) {
-            return Game.ModelResponse.INVALID_STATE;
+            return ModelResponse.INVALID_STATE;
         }
 
         Player endingPlayer = getCurrentPlayer();
@@ -173,28 +177,28 @@ public class OngoingGame extends AbstractGameState {
         if (turn == null) {
             // The player had to end the turn without doing anything
             doLose();
-            return Game.ModelResponse.ALLOW;
+            return ModelResponse.ALLOW;
         }
 
         if (hasCompletedMandatoryInteractions(turn)) {
             if (!endingPlayer.checkHasWon(turn)) {
                 playerIndex = (playerIndex + 1) % getPlayers().size();
 
-                getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(
-                        new PlayerTurnStartEvent(getCurrentPlayer().getName())
-                );
+                var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
+                setReceivers(event);
+                getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
                 generateRequests(getCurrentPlayer());
-                return Game.ModelResponse.ALLOW;
+                return ModelResponse.ALLOW;
             }
 
             // The current player has won, remove every opponent
             getOpponents(endingPlayer).forEach(super::removePlayer);
-            return Game.ModelResponse.ALLOW;
+            return ModelResponse.ALLOW;
         }
 
         // The player had to end the turn without being able to either move or build after moving
         doLose();
-        return Game.ModelResponse.ALLOW;
+        return ModelResponse.ALLOW;
     }
 
     @Override
@@ -412,9 +416,9 @@ public class OngoingGame extends AbstractGameState {
 
         playerIndex = playerIndex % getPlayers().size();
 
-        getModelEventProvider().getPlayerLoseEventObservable().notifyObservers(
-                new PlayerLoseEvent(player.getName())
-        );
+        var event = new PlayerLoseEvent(player.getName());
+        setReceivers(event);
+        getModelEventProvider().getPlayerLoseEventObservable().notifyObservers(event);
 
         if (!isDone()) {
             generateRequests(getCurrentPlayer());

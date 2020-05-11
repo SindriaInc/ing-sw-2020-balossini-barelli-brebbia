@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 
@@ -76,8 +77,8 @@ public class God {
     public IAbilities applyAbilities(IAbilities abilities) {
         try {
             return doApplyAbilities(abilities);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException exception) {
+            Logger.getInstance().exception(exception);
             throw new IllegalStateException("Unable to instantiate decorators");
         }
     }
@@ -90,8 +91,8 @@ public class God {
     public IAbilities applyOpponentAbilities(IAbilities abilities, Player originalPlayer) {
         try {
             return doApplyOpponentAbilities(abilities, originalPlayer);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
+        } catch (ReflectiveOperationException exception) {
+            Logger.getInstance().exception(exception);
             throw new IllegalStateException("Unable to instantiate decorators");
         }
     }

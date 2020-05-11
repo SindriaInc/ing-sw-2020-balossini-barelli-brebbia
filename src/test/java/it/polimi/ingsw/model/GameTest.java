@@ -49,7 +49,7 @@ class GameTest {
     void checkSimpleGame() {
         constructSimpleGame();
         game.init(players, deck, true);
-        assertEquals(Game.ModelResponse.INVALID_STATE, game.selectGods(new ArrayList<>()));
+        assertEquals(ModelResponse.INVALID_STATE, game.selectGods(new ArrayList<>()));
     }
 
     /**
@@ -61,7 +61,7 @@ class GameTest {
         players.add(new Player("A", 1));
         players.add(new Player("B", 2));
 
-        Game game = new Game();
+        Game game = new Game(new ModelEventProvider());
         game.init(players, deck, true);
 
         List<Player> opponents = new ArrayList<>(players);
@@ -118,7 +118,7 @@ class GameTest {
         game.spawnWorker(new Coordinates(4, 3)); // Worker 4
         game.spawnWorker(new Coordinates(2, 1)); // Worker 5
 
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(1, new Coordinates(0, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, game.moveWorker(1, new Coordinates(0, 0)));
         game.moveWorker(0, new Coordinates(0, 0));
         game.buildBlock(0, new Coordinates(1, 0));
         game.endTurn();
@@ -127,8 +127,8 @@ class GameTest {
         game.buildBlock(3, new Coordinates(3, 2));
         game.endTurn();
 
-        assertEquals(game.forceWorker(5, 3, new Coordinates(2, 0)), Game.ModelResponse.ALLOW);
-        assertEquals(game.forceWorker(4, 3, new Coordinates(2, 2)), Game.ModelResponse.INVALID_PARAMS);
+        assertEquals(game.forceWorker(5, 3, new Coordinates(2, 0)), ModelResponse.ALLOW);
+        assertEquals(game.forceWorker(4, 3, new Coordinates(2, 2)), ModelResponse.INVALID_PARAMS);
         game.moveWorker(5, new Coordinates(2, 2));
         game.buildBlock(5, new Coordinates(2, 1));
         game.endTurn();
@@ -158,15 +158,15 @@ class GameTest {
         game.spawnWorker(new Coordinates(2, 1)); // Worker 3
 
         game.moveWorker(0, new Coordinates(2, 0));
-        assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.buildDome(0, new Coordinates(3, 0)));
+        assertEquals(ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(ModelResponse.INVALID_PARAMS, game.buildDome(0, new Coordinates(3, 0)));
         game.buildBlock(0, new Coordinates(3, 0));
         game.endTurn();
 
         getCell(game, 3, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
-        assertEquals(Game.ModelResponse.INVALID_PARAMS, game.moveWorker(3, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.INVALID_PARAMS, game.moveWorker(3, new Coordinates(2, 0)));
         game.moveWorker(2, new Coordinates(4, 3));
-        assertEquals(Game.ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(ModelResponse.INVALID_STATE, game.endTurn());
         game.buildDome(2, new Coordinates(3, 2));
         game.endTurn();
 
@@ -197,7 +197,7 @@ class GameTest {
         players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
         players.add(new Player(PLAYER_OLDEST_NAME, 2));
 
-        this.game = new Game();
+        this.game = new Game(new ModelEventProvider());
         this.players = players;
     }
 
@@ -215,7 +215,7 @@ class GameTest {
         gods.add(new God("G5", 5, "", "","", Map.of(NoWinOnPerimeter.class, true)));
         deck = new Deck(gods);
 
-        this.game = new Game();
+        this.game = new Game(new ModelEventProvider());
         this.players = players;
     }
     private List<String> godsToStringList(List<God> gods) {
