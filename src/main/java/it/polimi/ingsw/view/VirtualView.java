@@ -1,10 +1,12 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.common.IModelEventProvider;
+import it.polimi.ingsw.common.IPlayerChecker;
 import it.polimi.ingsw.common.IResponseEventProvider;
 import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.event.AbstractEvent;
 import it.polimi.ingsw.common.event.PlayerLoginEvent;
+import it.polimi.ingsw.common.event.PlayerLogoutEvent;
 import it.polimi.ingsw.common.event.lobby.AbstractLobbyEvent;
 import it.polimi.ingsw.common.event.request.AbstractRequestEvent;
 import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
@@ -24,12 +26,15 @@ public class VirtualView {
 
     private final IServer server;
 
+    private final IPlayerChecker playerChecker;
+
     private final ViewEventProvider viewEventProvider;
 
     private final GsonEventSerializer eventSerializer;
 
-    public VirtualView(IServer server, IResponseEventProvider responseEventProvider) {
+    public VirtualView(IServer server, IPlayerChecker playerChecker, IResponseEventProvider responseEventProvider) {
         this.server = server;
+        this.playerChecker = playerChecker;
 
         server.registerHandler(this::onMessage);
         server.registerHandler(this::onError);
@@ -61,6 +66,7 @@ public class VirtualView {
         modelEventProvider.registerPlayerLoseEventObserver(this::onEvent);
         modelEventProvider.registerPlayerTurnStartEventObserver(this::onEvent);
         modelEventProvider.registerPlayerWinEventObserver(this::onEvent);
+        modelEventProvider.registerWorkerMoveEventObserver(this::onEvent);
         modelEventProvider.registerWorkerBuildBlockEventObserver(this::onEvent);
         modelEventProvider.registerWorkerBuildDomeEventObserver(this::onEvent);
         modelEventProvider.registerWorkerForceEventObserver(this::onEvent);
@@ -91,7 +97,14 @@ public class VirtualView {
             try {
                 PlayerLoginEvent playerLoginEvent = (PlayerLoginEvent) event;
                 player = playerLoginEvent.getPlayer();
-                message.onLogin(player);
+
+                if (playerChecker.isNameAvailable(player)) {
+                    message.onLogin(player);
+                } else {
+                    // Send the response directly from the server
+                    message.onLoginFail();
+                    return;
+                }
             } catch (ClassCastException exception) {
                 // Bad client
                 Logger.getInstance().warning("Invalid event received while logging in: " + exception.getMessage());
@@ -103,6 +116,10 @@ public class VirtualView {
                 // Bad client
                 Logger.getInstance().warning("Invalid player in event: Got " + event.getSender() + ", expected " + message.getSourcePlayer());
                 return;
+            }
+
+            if (event instanceof PlayerLogoutEvent) {
+                server.disconnect(((PlayerLogoutEvent) event).getPlayer());
             }
 
             player = message.getSourcePlayer().get();

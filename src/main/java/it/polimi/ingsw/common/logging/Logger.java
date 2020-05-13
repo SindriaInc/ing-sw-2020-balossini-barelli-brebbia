@@ -3,8 +3,8 @@ package it.polimi.ingsw.common.logging;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Logger {
@@ -21,7 +21,7 @@ public class Logger {
     /**
      * The messages to be processed by the actual logging thread
      */
-    private final Deque<String> pendingMessages = new LinkedBlockingDeque<>();
+    private final BlockingDeque<String> pendingMessages = new LinkedBlockingDeque<>();
 
     /**
      * The list of log readers, which process messages
@@ -98,7 +98,7 @@ public class Logger {
     }
 
     public void exception(Exception exception) {
-        String message = exception.getMessage();
+        String message = "Unexpected exception: " + exception.getMessage();
 
         // Print the stacktrace if debugging
         if (LogLevel.DEBUG.filter(level)) {
@@ -123,14 +123,13 @@ public class Logger {
 
     private void process() {
         while (started) {
-            while (pendingMessages.size() > 0) {
-                String message = pendingMessages.poll();
-                process(message);
-            }
-
             try {
-                Thread.sleep(SLEEP_PERIOD_MS);
-            } catch (InterruptedException ignored) {}
+                String message = pendingMessages.take();
+                process(message);
+            } catch (InterruptedException exception) {
+                Logger.getInstance().exception(exception);
+                exception.printStackTrace();
+            }
         }
 
         debug("Logger shutdown");

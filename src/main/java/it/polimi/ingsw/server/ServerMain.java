@@ -20,12 +20,6 @@ public class ServerMain {
      */
     private final IServer server;
 
-    /**
-     * Whether or not the server is running
-     * Set to false only when the server is shutting down
-     */
-    private boolean active = true;
-
     public ServerMain(String... args) {
         Logger logger = Logger.getInstance();
         logger.addReader(new ConsoleLogReader(System.out));
@@ -42,11 +36,7 @@ public class ServerMain {
         logger.start();
 
         // TODO: The initialization below serves as an example and will be replaced
-        Controller controller = new Controller(server);
-
-        logger.debug("Ticking starting");
-        new Thread(this::loop, "ServerLoop").start();
-        logger.debug("Ticking started");
+        new Controller(server);
 
         listenForInput();
 
@@ -62,27 +52,14 @@ public class ServerMain {
             String input = scanner.next();
 
             if (input.equals(COMMAND_STOP)) {
-                active = false;
+                logger.info("Shutting down, goodbye!");
+                server.shutdown();
+                logger.shutdown();
                 break;
             }
 
             logger.info("Unknown command");
         }
-    }
-
-    private void loop() {
-        while (active) {
-            server.tick();
-
-            try {
-                Thread.sleep(SLEEP_PERIOD_MS);
-            } catch (InterruptedException ignored) {}
-        }
-
-        Logger logger = Logger.getInstance();
-        logger.info("Shutting down, goodbye!");
-        server.shutdown();
-        logger.shutdown();
     }
 
 }

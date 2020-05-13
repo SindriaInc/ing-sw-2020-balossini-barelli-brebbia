@@ -5,7 +5,6 @@ import it.polimi.ingsw.client.clientstates.inputstates.AbstractInputState;
 
 public class InputState extends AbstractClientState {
 
-
     /**
      * The current state of input phase, implementing the available interactions
      */
@@ -19,7 +18,7 @@ public class InputState extends AbstractClientState {
     public DataTypes.GamerData readGamerData() {
         DataTypes.GamerData gamerData = currentInputState.readGamerData();
         currentInputState = currentInputState.nextInputState();
-        return  gamerData;
+        return gamerData;
     }
 
     @Override

@@ -35,7 +35,7 @@ public class Controller {
 
         lobby = new Lobby();
 
-        virtualView = new VirtualView(server, responseEventProvider);
+        virtualView = new VirtualView(server, lobby.getPlayerChecker(), responseEventProvider);
         virtualView.selectModelEventProvider(lobby.getModelEventProvider());
 
         IViewEventProvider provider = virtualView.getViewEventProvider();
@@ -145,7 +145,7 @@ public class Controller {
             return;
         }
 
-        dispatchResponseFromModel(event.getPlayer(), game.buildBlock(event.getId(), event.getDestination()));
+        dispatchResponseFromModel(event.getPlayer(), game.buildDome(event.getId(), event.getDestination()));
     }
 
     private void onWorkerForce(WorkerForceEvent event) {

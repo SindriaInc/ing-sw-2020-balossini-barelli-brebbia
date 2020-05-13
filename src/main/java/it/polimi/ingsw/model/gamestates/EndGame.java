@@ -9,17 +9,20 @@ import java.util.List;
 
 public class EndGame extends AbstractGameState {
 
-    public EndGame(ModelEventProvider provider, Board board, Player winner) {
-        super(provider, board, List.of(winner));
+    private final String winner;
 
-        var event = new PlayerWinEvent(winner.getName());
+    public EndGame(ModelEventProvider provider, Board board, String winner, List<Player> players) {
+        super(provider, board, players);
+        this.winner = winner;
+
+        var event = new PlayerWinEvent(winner);
         setReceivers(event);
         getModelEventProvider().getPlayerWinEventObservable().notifyObservers(event);
     }
 
     @Override
     public Player getCurrentPlayer() {
-        return getPlayers().get(0);
+        return null;
     }
 
     @Override

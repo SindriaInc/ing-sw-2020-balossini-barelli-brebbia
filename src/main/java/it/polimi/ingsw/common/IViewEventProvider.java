@@ -11,6 +11,12 @@ public interface IViewEventProvider {
     void registerPlayerLoginEventObserver(Observer<PlayerLoginEvent> observer);
 
     /**
+     * Register the observer for PlayerLogoutEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerLogoutEventObserver(Observer<PlayerLogoutEvent> observer);
+
+    /**
      * Register the observer for PlayerCreateRoomEvent in the related observable
      * @param observer The Observer
      */

@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.Worker;
 
 public abstract class AbilitiesDecorator implements IAbilities {
 
-    private IAbilities abilities;
+    private final IAbilities abilities;
 
     public AbilitiesDecorator(IAbilities abilities) {
         this.abilities = abilities;

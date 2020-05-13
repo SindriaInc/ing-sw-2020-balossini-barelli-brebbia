@@ -4,7 +4,7 @@ import it.polimi.ingsw.common.event.AbstractPlayerEvent;
 
 import java.util.Optional;
 
-public class AbstractLobbyEvent extends AbstractPlayerEvent {
+public abstract class AbstractLobbyEvent extends AbstractPlayerEvent {
 
     public AbstractLobbyEvent(String player) {
         super(player);

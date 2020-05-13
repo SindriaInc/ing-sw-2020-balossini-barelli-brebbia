@@ -9,12 +9,19 @@ import java.util.List;
  */
 public class LobbyUpdateEvent extends AbstractLobbyEvent {
 
+    private final List<String> freePlayers;
+
     private final List<RoomInfo> rooms;
 
-    public LobbyUpdateEvent(String player, List<RoomInfo> rooms) {
+    public LobbyUpdateEvent(String player, List<String> freePlayers, List<RoomInfo> rooms) {
         super(player);
 
+        this.freePlayers = freePlayers;
         this.rooms = rooms;
+    }
+
+    public List<String> getFreePlayers() {
+        return freePlayers;
     }
 
     public List<RoomInfo> getRooms() {

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.common.IPlayerChecker;
 import it.polimi.ingsw.common.RoomInfo;
 import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
@@ -31,8 +32,12 @@ public class Lobby {
         return provider;
     }
 
+    public IPlayerChecker getPlayerChecker() {
+        return this::isAvailable;
+    }
+
     public ModelResponse login(String player, int age) {
-        if (isFree(player) || isInRoom(player) || isInGame(player)) {
+        if (!isAvailable(player)) {
             Logger.getInstance().debug("Received login with an invalid player");
             return ModelResponse.INVALID_PARAMS;
         }
@@ -43,7 +48,7 @@ public class Lobby {
         }
 
         freePlayers.add(new Player(player, age));
-        provider.getLobbyUpdateEventObservable().notifyObservers(new LobbyUpdateEvent(player, generateRoomInfos()));
+        notifyLobbyUpdate();
         return ModelResponse.ALLOW;
     }
 
@@ -62,6 +67,7 @@ public class Lobby {
 
         Room room = new Room(foundPlayer.get(), maxPlayers, simpleGame);
         rooms.add(room);
+        notifyLobbyUpdate();
         notifyRoomUpdate(room);
         return ModelResponse.ALLOW;
     }
@@ -91,12 +97,14 @@ public class Lobby {
         room.addPlayer(foundPlayer.get());
         freePlayers.remove(foundPlayer.get());
 
+        // Always notify a room update so that the client can use this as a response
+        notifyRoomUpdate(room);
+
         if (room.isFull()) {
             startGame(room);
             return ModelResponse.ALLOW;
         }
 
-        notifyLobbyUpdate();
         return ModelResponse.ALLOW;
     }
 
@@ -136,9 +144,11 @@ public class Lobby {
     private void notifyLobbyUpdate() {
         List<RoomInfo> roomInfos = generateRoomInfos();
 
+        List<String> players = freePlayers.stream().map(Player::getName).collect(Collectors.toList());
+
         for (Player player : freePlayers) {
             provider.getLobbyUpdateEventObservable().notifyObservers(
-                    new LobbyUpdateEvent(player.getName(), roomInfos)
+                    new LobbyUpdateEvent(player.getName(), players, roomInfos)
             );
         }
     }
@@ -167,6 +177,10 @@ public class Lobby {
                 room.getOtherPlayers().stream().map(Player::getName).collect(Collectors.toList()),
                 room.getMaxPlayers(),
                 room.isSimpleGame());
+    }
+
+    private boolean isAvailable(String player) {
+        return !isFree(player) && !isInRoom(player) && !isInGame(player);
     }
 
     private boolean isFree(String name) {

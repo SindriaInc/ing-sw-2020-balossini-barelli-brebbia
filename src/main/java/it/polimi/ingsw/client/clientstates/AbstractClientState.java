@@ -35,8 +35,6 @@ public abstract class AbstractClientState {
         return null;
     }
 
-
-
     /**
      * Obtain the next state of the client
      * Calling this method repeatedly should not result in a different state unless other methods got called

@@ -1,8 +1,7 @@
-package it.polimi.ingsw.server.socket;
+package it.polimi.ingsw.client.socket;
 
+import it.polimi.ingsw.client.message.ErrorMessage;
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.server.message.ErrorMessage;
-import it.polimi.ingsw.server.message.OutboundMessage;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,7 +15,7 @@ public class OutboundHandler implements Runnable {
 
     private final IErrorMessageReader reader;
 
-    private final BlockingDeque<OutboundMessage> pendingPackets = new LinkedBlockingDeque<>();
+    private final BlockingDeque<String> pendingPackets = new LinkedBlockingDeque<>();
 
     private boolean active = true;
 
@@ -28,22 +27,27 @@ public class OutboundHandler implements Runnable {
     @Override
     public void run() {
         while (active) {
-            OutboundMessage message;
+            String message;
+
             try {
                 message = pendingPackets.take();
             } catch (InterruptedException exception) {
-                // Server is shutting down
+                // Shutting down
                 continue;
             }
 
+            Logger.getInstance().debug("Sending packet: " + message);
+
             try {
                 PrintWriter out = new PrintWriter(socket.getOutputStream());
-                out.write(message.getMessage() + System.lineSeparator());
+                out.write(message + System.lineSeparator());
                 out.flush();
             } catch (IOException exception) {
                 Logger.getInstance().exception(exception);
-                reader.scheduleRead(new ErrorMessage(ErrorMessage.ErrorType.OUTBOUND_MESSAGE_FAILED, message));
+                reader.scheduleRead(new ErrorMessage(ErrorMessage.ErrorType.MESSAGE_FAILED, message));
             }
+
+            Logger.getInstance().debug("Packet sent");
         }
     }
 
@@ -51,7 +55,7 @@ public class OutboundHandler implements Runnable {
         active = false;
     }
 
-    public void schedulePacket(OutboundMessage message) {
+    public void schedulePacket(String message) {
         pendingPackets.addLast(message);
     }
 

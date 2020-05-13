@@ -14,6 +14,11 @@ public class ViewEventProvider implements IViewEventProvider {
     private final Observable<PlayerLoginEvent> playerLoginEventObservable = new Observable<>();
 
     /**
+     * Observable for PlayerLoginEvent
+     */
+    private final Observable<PlayerLogoutEvent> playerLogoutEventObservable = new Observable<>();
+
+    /**
      * Observable for PlayerCreateRoomEvent
      */
     private final Observable<PlayerCreateRoomEvent> playerCreateRoomEventObservable = new Observable<>();
@@ -69,6 +74,11 @@ public class ViewEventProvider implements IViewEventProvider {
     }
 
     @Override
+    public void registerPlayerLogoutEventObserver(Observer<PlayerLogoutEvent> observer) {
+        playerLogoutEventObservable.register(observer);
+    }
+
+    @Override
     public void registerPlayerCreateRoomEventObserver(Observer<PlayerCreateRoomEvent> observer) {
         playerCreateRoomEventObservable.register(observer);
     }
@@ -120,6 +130,10 @@ public class ViewEventProvider implements IViewEventProvider {
 
     public Observable<PlayerLoginEvent> getPlayerLoginEventObservable() {
         return playerLoginEventObservable;
+    }
+
+    public Observable<PlayerLogoutEvent> getPlayerLogoutEventObservable() {
+        return playerLogoutEventObservable;
     }
 
     public Observable<PlayerCreateRoomEvent> getPlayerCreateRoomEventObservable() {

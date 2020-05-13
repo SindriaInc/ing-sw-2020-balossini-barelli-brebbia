@@ -10,8 +10,8 @@ public interface IServer {
 
     void registerHandler(IErrorHandler receiver);
 
-    void shutdown();
+    void disconnect(String player);
 
-    void tick();
+    void shutdown();
 
 }

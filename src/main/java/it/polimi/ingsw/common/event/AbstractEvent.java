@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.event;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
  */
 public abstract class AbstractEvent {
 
+    @Expose(serialize = false, deserialize = false)
     private List<String> receivers = null;
 
     public Optional<String> getSender() {

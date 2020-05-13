@@ -209,7 +209,7 @@ public class OngoingGame extends AbstractGameState {
     @Override
     public AbstractGameState nextState() {
         if (isDone()) {
-            return new EndGame(getModelEventProvider(), getBoard(), getPlayers().get(0));
+            return new EndGame(getModelEventProvider(), getBoard(), getPlayers().get(0).getName(), getAllPlayers());
         }
 
         return this;

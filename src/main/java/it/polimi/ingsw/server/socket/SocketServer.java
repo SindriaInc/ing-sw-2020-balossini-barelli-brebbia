@@ -1,7 +1,9 @@
 package it.polimi.ingsw.server.socket;
 
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.server.*;
+import it.polimi.ingsw.server.IErrorHandler;
+import it.polimi.ingsw.server.IMessageHandler;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.InboundMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
@@ -11,13 +13,39 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public class SocketServer implements IServer, Runnable {
+public class SocketServer implements IServer {
+
+    private static class PendingMessage {
+
+        private final ErrorMessage errorMessage;
+        private final InboundMessage inboundMessage;
+
+        public PendingMessage(ErrorMessage errorMessage) {
+            this.errorMessage = errorMessage;
+            this.inboundMessage = null;
+        }
+
+        public PendingMessage(InboundMessage inboundMessage) {
+            this.inboundMessage = inboundMessage;
+            this.errorMessage = null;
+        }
+
+        public Optional<ErrorMessage> getErrorMessage() {
+            return Optional.ofNullable(errorMessage);
+        }
+
+        public Optional<InboundMessage> getInboundMessage() {
+            return Optional.ofNullable(inboundMessage);
+        }
+
+    }
 
     private final int port;
 
@@ -27,9 +55,9 @@ public class SocketServer implements IServer, Runnable {
 
     private final List<SocketHandler> socketHandlers = new ArrayList<>();
 
-    private final Deque<ErrorMessage> pendingErrors = new LinkedBlockingDeque<>();
+    private final BlockingDeque<PendingMessage> pendingMessages = new LinkedBlockingDeque<>();
 
-    private final Deque<InboundMessage> pendingReads = new LinkedBlockingDeque<>();
+    private final ExecutorService executorService;
 
     private boolean active;
 
@@ -39,7 +67,10 @@ public class SocketServer implements IServer, Runnable {
         this.port = port;
 
         active = true;
-        new Thread(this).start();
+
+        executorService = Executors.newCachedThreadPool();
+        executorService.submit(this::readMessages);
+        executorService.submit(this::runSocket);
     }
 
     @Override
@@ -70,6 +101,17 @@ public class SocketServer implements IServer, Runnable {
     }
 
     @Override
+    public void disconnect(String player) {
+        for (SocketHandler socketHandler : socketHandlers) {
+            if (socketHandler.getPlayer().isEmpty() || !socketHandler.getPlayer().get().equals(player)) {
+                continue;
+            }
+
+            socketHandler.shutdown();
+        }
+    }
+
+    @Override
     public void shutdown() {
         active = false;
 
@@ -80,29 +122,33 @@ public class SocketServer implements IServer, Runnable {
         }
     }
 
-    @Override
-    public void tick() {
-        while (pendingErrors.size() > 0) {
-            ErrorMessage message = pendingErrors.poll();
+    private void readMessages() {
+        while (active) {
+            try {
+                PendingMessage pendingMessage = pendingMessages.take();
 
-            for (IErrorHandler errorHandler : errorHandlers) {
-                errorHandler.onError(message);
-            }
-        }
+                Optional<ErrorMessage> errorMessage = pendingMessage.getErrorMessage();
 
-        while (pendingReads.size() > 0) {
-            InboundMessage message = pendingReads.poll();
+                if (errorMessage.isPresent()) {
+                    for (IErrorHandler errorHandler : errorHandlers) {
+                        errorHandler.onError(errorMessage.get());
+                    }
+                }
 
-            for (IMessageHandler packetHandler : packetHandlers) {
-                packetHandler.onMessage(message);
+                Optional<InboundMessage> inboundMessage = pendingMessage.getInboundMessage();
+
+                if (inboundMessage.isPresent()) {
+                    for (IMessageHandler packetHandler : packetHandlers) {
+                        packetHandler.onMessage(inboundMessage.get());
+                    }
+                }
+            } catch (InterruptedException ignored) {
+                // Server is shutting down
             }
         }
     }
 
-    @Override
-    public void run() {
-        ExecutorService executorService = Executors.newCachedThreadPool();
-
+    private void runSocket() {
         try {
             serverSocket = new ServerSocket(port);
         } catch (IOException exception) {
@@ -114,35 +160,45 @@ public class SocketServer implements IServer, Runnable {
         while (active) {
             try {
                 Socket socket = serverSocket.accept();
+                Logger.getInstance().debug("Accepted a new socket from " + socket.getInetAddress().getHostAddress());
                 SocketHandler handler = new SocketHandler(executorService, socket, this::scheduleRead, this::scheduleError);
                 socketHandlers.add(handler);
             } catch (SocketException exception) {
-              if (!active) {
-                  // Server is shutting down
-                  continue;
-              }
+                if (!active) {
+                    // Server is shutting down
+                    continue;
+                }
 
-              scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
-              Logger.getInstance().exception(exception);
+                scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
+                Logger.getInstance().exception(exception);
             } catch (IOException exception) {
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
                 Logger.getInstance().exception(exception);
             }
         }
 
-        for (SocketHandler socketHandler : socketHandlers) {
-            socketHandler.shutdown();
+        for (SocketHandler handler : socketHandlers) {
+            handler.shutdown();
         }
-        executorService.shutdown();
+
+        // Interrupt socket handlers
+        executorService.shutdownNow();
+
+        try {
+            serverSocket.close();
+        } catch (IOException exception) {
+            Logger.getInstance().exception(exception);
+        }
+
         Logger.getInstance().debug("Socket shutdown");
     }
 
     private void scheduleError(ErrorMessage message) {
-        pendingErrors.addLast(message);
+        pendingMessages.addLast(new PendingMessage(message));
     }
 
     private void scheduleRead(InboundMessage message) {
-        pendingReads.addLast(message);
+        pendingMessages.addLast(new PendingMessage(message));
     }
 
 }

@@ -11,18 +11,22 @@ public class InboundMessage {
 
     private final Consumer<String> onLogin;
 
+    private final Runnable onLoginFail;
+
     public InboundMessage(String sourcePlayer, String message) {
         this.sourcePlayer = sourcePlayer;
         this.message = message;
 
-        this.onLogin = (player -> {throw new IllegalStateException();});
+        this.onLogin = player -> {throw new IllegalStateException();};
+        this.onLoginFail = () -> {throw new IllegalStateException();};
     }
 
-    public InboundMessage(String message, Consumer<String> onLogin) {
+    public InboundMessage(String message, Consumer<String> onLogin, Runnable onLoginFail) {
         this.sourcePlayer = null;
         this.message = message;
 
         this.onLogin = onLogin;
+        this.onLoginFail = onLoginFail;
     }
 
     public Optional<String> getSourcePlayer() {
@@ -35,6 +39,10 @@ public class InboundMessage {
 
     public void onLogin(String player) {
         onLogin.accept(player);
+    }
+
+    public void onLoginFail() {
+        onLoginFail.run();
     }
 
 }

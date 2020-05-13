@@ -4,6 +4,8 @@ import it.polimi.ingsw.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EndGameTest {
@@ -29,8 +31,8 @@ class EndGameTest {
      */
     @Test
     void checkGetCurrentPlayer() {
-        endGame = new EndGame(modelEventProvider, board, winner);
-        assertEquals(winner, endGame.getCurrentPlayer());
+        endGame = new EndGame(modelEventProvider, board, winner.getName(), List.of(winner));
+        assertNull(endGame.getCurrentPlayer());
     }
 
     /**
@@ -38,7 +40,7 @@ class EndGameTest {
      */
     @Test
     void checkNextState() {
-        endGame = new EndGame(modelEventProvider, board, winner);
+        endGame = new EndGame(modelEventProvider, board, winner.getName(), List.of(winner));
         assertEquals(endGame, endGame.nextState());
     }
 
@@ -48,7 +50,7 @@ class EndGameTest {
             checkEventCalled = true;
             assertEquals(event.getPlayer(), winner.getName());
         });
-        endGame = new EndGame(modelEventProvider, board, winner);
+        endGame = new EndGame(modelEventProvider, board, winner.getName(), List.of(winner));
         assertTrue(checkEventCalled);
     }
 }

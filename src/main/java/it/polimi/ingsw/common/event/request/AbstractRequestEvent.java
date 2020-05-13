@@ -4,7 +4,7 @@ import it.polimi.ingsw.common.event.AbstractPlayerEvent;
 
 import java.util.Optional;
 
-public class AbstractRequestEvent extends AbstractPlayerEvent {
+public abstract class AbstractRequestEvent extends AbstractPlayerEvent {
 
     public AbstractRequestEvent(String player) {
         super(player);
