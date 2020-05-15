@@ -42,13 +42,79 @@ public class Lobby {
             return ModelResponse.INVALID_PARAMS;
         }
 
-        if (age <= 0) {
-            Logger.getInstance().debug("Received login with an invalid age");
-            return ModelResponse.INVALID_PARAMS;
-        }
-
         freePlayers.add(new Player(player, age));
         notifyLobbyUpdate();
+        return ModelResponse.ALLOW;
+    }
+
+    /**
+     * Handle the player disconnection
+     * This method must always return ModelResponse.ALLOW
+     * @param player The player disconnected
+     * @return ModelResponse.ALLOW
+     */
+    public ModelResponse logout(String player) {
+        Optional<Player> optionalPlayer = getFreePlayer(player);
+
+        if (optionalPlayer.isPresent()) {
+            // The player was in the lobby
+
+            freePlayers.remove(optionalPlayer.get());
+            notifyLobbyUpdate();
+            return ModelResponse.ALLOW;
+        }
+
+        Optional<Room> optionalRoom = getRoom(player);
+
+        if (optionalRoom.isPresent()) {
+            // The player is in a room, either the owner or just a player
+            Room room = optionalRoom.get();
+
+            if (room.getOwner().getName().equals(player)) {
+                // The room owner has quit
+                rooms.remove(room);
+
+                if (room.getOtherPlayers().size() > 0) {
+                    // Move the players in the deleted room into a new room
+                    rooms.remove(room);
+
+                    Player owner = room.getOtherPlayers().get(0);
+                    Room replaced = new Room(owner, room.getMaxPlayers(), room.isSimpleGame());
+                    room.getOtherPlayers().subList(1, room.getOtherPlayers().size()).forEach(replaced::addPlayer);
+
+                    rooms.add(replaced);
+                    notifyRoomUpdate(replaced);
+                }
+
+            } else {
+                // The player was in another player's room
+                optionalPlayer = getRoomOtherPlayer(room, player);
+
+                if (optionalPlayer.isEmpty()) {
+                    return ModelResponse.ALLOW;
+                }
+
+                room.removePlayer(optionalPlayer.get());
+            }
+
+            notifyLobbyUpdate();
+            return ModelResponse.ALLOW;
+        }
+
+        Optional<Game> optionalGame = getGame(player);
+
+        if (optionalGame.isPresent()) {
+            Game game = optionalGame.get();
+
+            optionalPlayer = getGamePlayer(game, player);
+
+            if (optionalPlayer.isEmpty()) {
+                return ModelResponse.ALLOW;
+            }
+
+            game.logout(player);
+        }
+
         return ModelResponse.ALLOW;
     }
 
@@ -56,7 +122,7 @@ public class Lobby {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
         if (foundPlayer.isEmpty()) {
-            // Trying to create a room while already in a room
+            // Trying to create a room while already in a room or in game
             return ModelResponse.INVALID_STATE;
         }
 
@@ -67,6 +133,7 @@ public class Lobby {
 
         Room room = new Room(foundPlayer.get(), maxPlayers, simpleGame);
         rooms.add(room);
+        freePlayers.remove(foundPlayer.get());
         notifyLobbyUpdate();
         notifyRoomUpdate(room);
         return ModelResponse.ALLOW;
@@ -76,7 +143,7 @@ public class Lobby {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
         if (foundPlayer.isEmpty()) {
-            // Trying to join a room while already in a room
+            // Trying to join a room while already in a room or in game
             return ModelResponse.INVALID_STATE;
         }
 
@@ -157,8 +224,20 @@ public class Lobby {
         return freePlayers.stream().filter(player -> player.getName().equals(name)).findFirst();
     }
 
-    private Optional<Room> getRoomByOwner(String owner) {
-        return rooms.stream().filter(room -> room.getOwner().getName().equals(owner)).findFirst();
+    private Optional<Player> getRoomOtherPlayer(Room room, String name) {
+        return room.getOtherPlayers().stream().filter(player -> player.getName().equals(name)).findFirst();
+    }
+
+    private Optional<Player> getGamePlayer(Game game, String name) {
+        return game.getAllPlayers().stream().filter(player -> player.getName().equals(name)).findFirst();
+    }
+
+    private Optional<Room> getRoom(String name) {
+        return rooms.stream().filter(room -> room.getAllPlayers().stream().anyMatch(player -> player.getName().equals(name))).findFirst();
+    }
+
+    private Optional<Room> getRoomByOwner(String name) {
+        return rooms.stream().filter(room -> room.getOwner().getName().equals(name)).findFirst();
     }
 
     private List<RoomInfo> generateRoomInfos() {

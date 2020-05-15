@@ -4,7 +4,11 @@ import it.polimi.ingsw.server.message.OutboundMessage;
 
 public interface IServer {
 
+    String UNIDENTIFIED_PLAYER_PREFIX = "#UNKNOWN:";
+
     void send(OutboundMessage message);
+
+    void registerHandler(IConnectHandler receiver);
 
     void registerHandler(IMessageHandler receiver);
 
@@ -13,5 +17,9 @@ public interface IServer {
     void disconnect(String player);
 
     void shutdown();
+
+    static boolean isIdentified(String player) {
+        return !player.startsWith(UNIDENTIFIED_PLAYER_PREFIX);
+    }
 
 }

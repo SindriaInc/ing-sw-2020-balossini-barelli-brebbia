@@ -1,13 +1,11 @@
 package it.polimi.ingsw.server.socket;
 
-import it.polimi.ingsw.common.event.PlayerLogoutEvent;
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.common.serializer.GsonEventSerializer;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.InboundMessage;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 import java.util.Scanner;
 
 public class InboundHandler implements Runnable {
@@ -16,16 +14,14 @@ public class InboundHandler implements Runnable {
 
     private final IInboundMessageReader reader;
 
-    private final Runnable onLoginFail;
-
     private boolean active = true;
 
     private String player;
 
-    public InboundHandler(Socket socket, IInboundMessageReader reader, Runnable onLoginFail) {
+    public InboundHandler(String tempName, Socket socket, IInboundMessageReader reader) {
         this.socket = socket;
         this.reader = reader;
-        this.onLoginFail = onLoginFail;
+        this.player = tempName;
     }
 
     @Override
@@ -33,20 +29,19 @@ public class InboundHandler implements Runnable {
         try {
             Scanner in = new Scanner(socket.getInputStream());
 
-            while (active) {
+            while (active && in.hasNextLine()) {
                 String packet = in.nextLine();
 
-                if (player == null) {
-                    reader.scheduleRead(new InboundMessage(packet, this::onLogin, onLoginFail));
+                if (!IServer.isIdentified(player)) {
+                    reader.scheduleRead(new InboundMessage(packet, player, this::onLogin));
                 } else {
-                    reader.scheduleRead(new InboundMessage(player, packet));
+                    reader.scheduleRead(new InboundMessage(packet, player));
                 }
 
                 Logger.getInstance().debug("Received message: " + packet);
             }
-        } catch (IOException exception) {
+        } catch (IOException ignored) {
             // Socket is closed
-            reader.scheduleRead(new InboundMessage(player, new GsonEventSerializer().serialize(new PlayerLogoutEvent(player))));
         }
     }
 
@@ -54,8 +49,8 @@ public class InboundHandler implements Runnable {
         active = false;
     }
 
-    public Optional<String> getPlayer() {
-        return Optional.ofNullable(player);
+    public String getPlayer() {
+        return player;
     }
 
     private void onLogin(String player) {

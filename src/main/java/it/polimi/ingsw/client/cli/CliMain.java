@@ -467,6 +467,11 @@ public class CliMain {
             return;
         }
 
+        if (event instanceof RequestPlayerPingEvent) {
+            client.send(serializer.serialize(new PlayerPingEvent(player)));
+            return;
+        }
+
         if (event instanceof AbstractResponseEvent) {
             invalid = true;
             return;

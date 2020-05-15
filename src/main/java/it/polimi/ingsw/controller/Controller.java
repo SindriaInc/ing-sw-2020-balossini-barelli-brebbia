@@ -40,6 +40,7 @@ public class Controller {
 
         IViewEventProvider provider = virtualView.getViewEventProvider();
         provider.registerPlayerLoginEventObserver(this::onPlayerLogin);
+        provider.registerPlayerLogoutEventObserver(this::onPlayerLogout);
         provider.registerPlayerCreateRoomEventObserver(this::onPlayerCreateRoom);
         provider.registerPlayerJoinRoomEventObserver(this::onPlayerJoinRoom);
         provider.registerPlayerChallengerSelectGodsEventObserver(this::onChallengerSelectGods);
@@ -54,6 +55,10 @@ public class Controller {
 
     private void onPlayerLogin(PlayerLoginEvent event) {
         dispatchResponseFromModel(event.getPlayer(), lobby.login(event.getPlayer(), event.getAge()));
+    }
+
+    private void onPlayerLogout(PlayerLogoutEvent event) {
+        dispatchResponseFromModel(event.getPlayer(), lobby.logout(event.getPlayer()));
     }
 
     private void onPlayerCreateRoom(PlayerCreateRoomEvent event) {

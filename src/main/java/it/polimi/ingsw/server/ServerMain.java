@@ -13,8 +13,6 @@ public class ServerMain {
 
     private static final String COMMAND_STOP = "stop";
 
-    private static final long SLEEP_PERIOD_MS = 10;
-
     /**
      * The server implementation instance
      */
@@ -24,6 +22,8 @@ public class ServerMain {
         Logger logger = Logger.getInstance();
         logger.addReader(new ConsoleLogReader(System.out));
         logger.info("Initializing server...");
+        logger.filter("\"RequestPlayerPingEvent\"");
+        logger.filter("\"PlayerPingEvent\"");
 
         // TODO: Configuration loading
         // Read first from optional command line args, then from file, then from constants

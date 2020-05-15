@@ -1,36 +1,27 @@
 package it.polimi.ingsw.server.message;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class InboundMessage {
 
-    private final String sourcePlayer;
-
     private final String message;
+
+    private final String sourcePlayer;
 
     private final Consumer<String> onLogin;
 
-    private final Runnable onLoginFail;
-
-    public InboundMessage(String sourcePlayer, String message) {
-        this.sourcePlayer = sourcePlayer;
+    public InboundMessage(String message, String sourcePlayer) {
         this.message = message;
+        this.sourcePlayer = sourcePlayer;
 
         this.onLogin = player -> {throw new IllegalStateException();};
-        this.onLoginFail = () -> {throw new IllegalStateException();};
     }
 
-    public InboundMessage(String message, Consumer<String> onLogin, Runnable onLoginFail) {
-        this.sourcePlayer = null;
+    public InboundMessage(String message, String tempName, Consumer<String> onLogin) {
         this.message = message;
+        this.sourcePlayer = tempName;
 
         this.onLogin = onLogin;
-        this.onLoginFail = onLoginFail;
-    }
-
-    public Optional<String> getSourcePlayer() {
-        return Optional.ofNullable(sourcePlayer);
     }
 
     public String getMessage() {
@@ -41,8 +32,8 @@ public class InboundMessage {
         onLogin.accept(player);
     }
 
-    public void onLoginFail() {
-        onLoginFail.run();
+    public String getSourcePlayer() {
+        return sourcePlayer;
     }
 
 }

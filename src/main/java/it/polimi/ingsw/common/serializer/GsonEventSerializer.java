@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.serializer;
 
 import com.google.gson.*;
+import com.google.gson.annotations.Expose;
 import it.polimi.ingsw.common.event.AbstractEvent;
 
 public class GsonEventSerializer implements ISerializer<AbstractEvent> {
@@ -17,6 +18,28 @@ public class GsonEventSerializer implements ISerializer<AbstractEvent> {
 
     public GsonEventSerializer() {
         GsonBuilder builder = new GsonBuilder();
+
+        // Exclude from serialization fields with @Expose(false)
+        builder.addSerializationExclusionStrategy(new ExclusionStrategy() {
+
+            @Override
+            public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                Expose expose = fieldAttributes.getAnnotation(Expose.class);
+
+                if (expose == null) {
+                    return false;
+                }
+
+                return !expose.serialize();
+            }
+
+            @Override
+            public boolean shouldSkipClass(Class<?> aClass) {
+                return false;
+            }
+
+        });
+
         gson = builder.create();
     }
 

@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class AbstractGameState {
@@ -72,6 +73,26 @@ public abstract class AbstractGameState {
 
     public ModelResponse endTurn() {
         return ModelResponse.INVALID_STATE;
+    }
+
+    /**
+     * Handles the player disconnection
+     * If the player is a spectator, logging out should have no effect
+     * If the player is still in-game, the game is ended
+     * @param player The disconnected player
+     * @return true if the game has to be ended
+     */
+    public boolean logout(String player) {
+        Optional<Player> spectator = spectatorPlayers.stream().filter(other -> other.getName().equals(player)).findFirst();
+
+        if (spectator.isPresent()) {
+            // The disconnected player is a spectator, no need to do anything
+            spectatorPlayers.remove(spectator.get());
+            return false;
+        }
+
+        Optional<Player> active = activePlayers.stream().filter(other -> other.getName().equals(player)).findFirst();
+        return active.isPresent();
     }
 
     public final ModelEventProvider getModelEventProvider() {

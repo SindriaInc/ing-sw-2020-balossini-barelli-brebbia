@@ -46,8 +46,6 @@ public class OutboundHandler implements Runnable {
                 Logger.getInstance().exception(exception);
                 reader.scheduleRead(new ErrorMessage(ErrorMessage.ErrorType.MESSAGE_FAILED, message));
             }
-
-            Logger.getInstance().debug("Packet sent");
         }
     }
 

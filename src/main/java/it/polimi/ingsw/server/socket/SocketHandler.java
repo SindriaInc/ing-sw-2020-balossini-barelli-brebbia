@@ -1,13 +1,11 @@
 package it.polimi.ingsw.server.socket;
 
-import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.common.serializer.GsonEventSerializer;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.OutboundMessage;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 
 public class SocketHandler {
@@ -17,17 +15,17 @@ public class SocketHandler {
     private final InboundHandler inboundHandler;
     private final OutboundHandler outboundHandler;
 
-    public SocketHandler(ExecutorService executorService, Socket socket, IInboundMessageReader inboundMessageReader, IErrorMessageReader errorMessageReader) {
+    public SocketHandler(String tempName, ExecutorService executorService, Socket socket, IInboundMessageReader inboundMessageReader, IErrorMessageReader errorMessageReader) {
         this.socket = socket;
 
-        inboundHandler = new InboundHandler(socket, inboundMessageReader, this::onLoginFail);
+        inboundHandler = new InboundHandler(tempName, socket, inboundMessageReader);
         outboundHandler = new OutboundHandler(socket, errorMessageReader);
 
         executorService.submit(inboundHandler);
         executorService.submit(outboundHandler);
     }
 
-    public Optional<String> getPlayer() {
+    public String getPlayer() {
         return inboundHandler.getPlayer();
     }
 
@@ -41,15 +39,20 @@ public class SocketHandler {
             Logger.getInstance().warning("Exception while closing socket");
             Logger.getInstance().exception(exception);
         }
+
+        String playerInfo = "";
+
+        if (IServer.isIdentified(getPlayer())) {
+            playerInfo = " (Identified as " + getPlayer() + ")";
+        } else {
+            playerInfo = " (Temporarily known as " + getPlayer() + ")";
+        }
+
+        Logger.getInstance().debug("Disconnected " + socket.getInetAddress().getHostAddress() + playerInfo);
     }
 
     public void schedulePacket(OutboundMessage message) {
         outboundHandler.schedulePacket(message);
-    }
-
-    private void onLoginFail() {
-        // Need to send the packet back to the player without having an association in the socket
-        schedulePacket(new OutboundMessage(null, new GsonEventSerializer().serialize(new ResponseInvalidParametersEvent(null))));
     }
 
 }

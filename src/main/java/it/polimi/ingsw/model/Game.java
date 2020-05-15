@@ -2,11 +2,9 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.common.Coordinates;
 import it.polimi.ingsw.common.IModelEventProvider;
-import it.polimi.ingsw.model.gamestates.AbstractGameState;
-import it.polimi.ingsw.model.gamestates.PreGodsGame;
-import it.polimi.ingsw.model.gamestates.PreInitGame;
-import it.polimi.ingsw.model.gamestates.PreWorkersGame;
+import it.polimi.ingsw.model.gamestates.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
@@ -171,6 +169,22 @@ public class Game {
         ModelResponse response = currentState.endTurn();
         updateState();
         return response;
+    }
+
+    /**
+     * Handles a player disconnection
+     * Does not return anything since a disconnection can't be cancelled
+     * @param player The player
+     */
+    public void logout(String player) {
+        if (!currentState.logout(player)) {
+            return;
+        }
+
+        // Forcibly end the game
+        List<Player> players = new ArrayList<>(currentState.getAllPlayers());
+        players.removeIf(other -> other.getName().equals(player));
+        currentState = new EndGame(currentState.getModelEventProvider(), currentState.getBoard(), null, players);
     }
 
     protected Board getOriginalBoard() {

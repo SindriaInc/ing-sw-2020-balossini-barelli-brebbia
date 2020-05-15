@@ -13,6 +13,8 @@ public class ClientMain {
     public ClientMain(String... args) {
         Logger logger = Logger.getInstance();
         logger.addReader(new ConsoleLogReader(System.out));
+        logger.filter("\"RequestPlayerPingEvent\"");
+        logger.filter("\"PlayerPingEvent\"");
         logger.start();
         logger.info("Initializing client...");
 

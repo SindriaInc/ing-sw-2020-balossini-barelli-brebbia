@@ -3,6 +3,7 @@ package it.polimi.ingsw.common.logging;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -26,7 +27,9 @@ public class Logger {
     /**
      * The list of log readers, which process messages
      */
-    private final List<ILogReader> readers = new ArrayList<>();
+    private final List<ILogReader> readers = Collections.synchronizedList(new ArrayList<>());
+
+    private final List<String> filters = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * The logger level, messages with a level lower than the logger level will be ignored
@@ -141,9 +144,19 @@ public class Logger {
     }
 
     private void process(String message) {
+        for (String filter : filters) {
+            if (message.contains(filter)) {
+                return;
+            }
+        }
+
         for (ILogReader reader : readers) {
             reader.read(message);
         }
+    }
+
+    public void filter(String string) {
+        filters.add(string);
     }
 
 }
