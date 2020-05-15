@@ -6,10 +6,15 @@ import it.polimi.ingsw.common.logging.reader.FileLogReader;
 import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.server.socket.SocketServer;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerMain {
+
+    private static final int INIT_TIMEOUT = 10000;
 
     private static final String COMMAND_STOP = "stop";
 
@@ -18,7 +23,14 @@ public class ServerMain {
      */
     private final IServer server;
 
+    /**
+     * The controller
+     */
+    private final Controller controller;
+
     public ServerMain(String... args) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
         Logger logger = Logger.getInstance();
         logger.addReader(new ConsoleLogReader(System.out));
         logger.info("Initializing server...");
@@ -30,36 +42,60 @@ public class ServerMain {
         ServerConfiguration configuration = ServerConfiguration.fromFile(Path.of(""));
         logger.addReader(new FileLogReader(Path.of(configuration.getLogPath())));
         logger.info("Configuration loaded");
+        logger.start(executorService);
 
-        server = new SocketServer(configuration.getPort());
+        SocketServer server;
+
+        try {
+            server = new SocketServer(executorService, configuration.getPort());
+        } catch (IllegalArgumentException | IOException exception) {
+            logger.exception(exception);
+            logger.severe("Unable to start the server, shutting down");
+
+            this.server = null;
+            this.controller = null;
+            logger.shutdown();
+            executorService.shutdownNow();
+            return;
+        }
+
         logger.info("Server started");
-        logger.start();
+        executorService.submit(this::runInputListener);
 
-        // TODO: The initialization below serves as an example and will be replaced
-        new Controller(server);
-
-        listenForInput();
-
-        logger.debug("Main shutdown");
+        this.server = server;
+        this.controller = new Controller(server);
     }
 
-    private void listenForInput() {
+    private void runInputListener() {
         Logger logger = Logger.getInstance();
         logger.debug("Listening started");
 
         Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNext()) {
-            String input = scanner.next();
 
-            if (input.equals(COMMAND_STOP)) {
-                logger.info("Shutting down, goodbye!");
-                server.shutdown();
-                logger.shutdown();
-                break;
+        try {
+            while (scanner.hasNext()) {
+                String input = scanner.next();
+
+                if (input.equals(COMMAND_STOP)) {
+                    shutdown();
+                    return;
+                }
+
+                logger.info("Unknown command");
             }
-
-            logger.info("Unknown command");
+        } catch (IllegalStateException ignored) {
+            // Server is shutting down
         }
+
+        shutdown();
+    }
+
+    private void shutdown() {
+        Logger logger = Logger.getInstance();
+        logger.info("Shutting down, goodbye!");
+        controller.shutdown();
+        server.shutdown();
+        logger.shutdown();
     }
 
 }

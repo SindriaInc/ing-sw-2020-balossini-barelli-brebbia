@@ -6,8 +6,14 @@ public class ErrorMessage {
 
     public enum ErrorType {
 
-        INIT_FAILED,
+        /**
+         * When there was an error while accepting a new player
+         */
         ACCEPT_FAILED,
+
+        /**
+         * When a message couldn't be sent to a player
+         */
         OUTBOUND_MESSAGE_FAILED;
 
     }

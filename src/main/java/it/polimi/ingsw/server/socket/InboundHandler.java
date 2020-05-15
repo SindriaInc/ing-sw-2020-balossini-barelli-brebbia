@@ -4,43 +4,55 @@ import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.InboundMessage;
 
-import java.io.IOException;
-import java.net.Socket;
+import java.io.InputStream;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 public class InboundHandler implements Runnable {
 
-    private final Socket socket;
+    /**
+     * The input stream, for reading incoming messages
+     */
+    private final InputStream inputStream;
 
-    private final IInboundMessageReader reader;
+    /**
+     * The message consumer, handling reads
+     */
+    private final Consumer<InboundMessage> inboundMessageConsumer;
 
+    /**
+     * Whether or not the handler should be running
+     */
     private boolean active = true;
 
+    /**
+     * The player associated to this handler, or the fake temporary name if not yet logged on
+     */
     private String player;
 
-    public InboundHandler(String tempName, Socket socket, IInboundMessageReader reader) {
-        this.socket = socket;
-        this.reader = reader;
+    public InboundHandler(InputStream inputStream, String tempName, Consumer<InboundMessage> inboundMessageConsumer) {
+        this.inputStream = inputStream;
+        this.inboundMessageConsumer = inboundMessageConsumer;
         this.player = tempName;
     }
 
     @Override
     public void run() {
         try {
-            Scanner in = new Scanner(socket.getInputStream());
+            Scanner in = new Scanner(inputStream);
 
             while (active && in.hasNextLine()) {
                 String packet = in.nextLine();
 
                 if (!IServer.isIdentified(player)) {
-                    reader.scheduleRead(new InboundMessage(packet, player, this::onLogin));
+                    inboundMessageConsumer.accept(new InboundMessage(packet, player, this::onLogin));
                 } else {
-                    reader.scheduleRead(new InboundMessage(packet, player));
+                    inboundMessageConsumer.accept(new InboundMessage(packet, player));
                 }
 
                 Logger.getInstance().debug("Received message: " + packet);
             }
-        } catch (IOException ignored) {
+        } catch (IllegalStateException ignored) {
             // Socket is closed
         }
     }

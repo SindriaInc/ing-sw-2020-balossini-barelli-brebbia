@@ -28,12 +28,16 @@ public class InboundMessage {
         return message;
     }
 
-    public void onLogin(String player) {
-        onLogin.accept(player);
-    }
-
     public String getSourcePlayer() {
         return sourcePlayer;
+    }
+
+    /**
+     * Handle the player login, after it's been verified
+     * @param player The player name
+     */
+    public void onLogin(String player) {
+        onLogin.accept(player);
     }
 
 }

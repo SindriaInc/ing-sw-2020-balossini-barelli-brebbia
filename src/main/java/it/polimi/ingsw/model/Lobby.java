@@ -36,6 +36,12 @@ public class Lobby {
         return this::isAvailable;
     }
 
+    /**
+     * Handle the player login
+     * @param player The player that wants to login
+     * @param age The age of the player, assumed to be valid
+     * @return the response - ModelResponse.ALLOW if the name is available
+     */
     public ModelResponse login(String player, int age) {
         if (!isAvailable(player)) {
             Logger.getInstance().debug("Received login with an invalid player");
@@ -118,6 +124,13 @@ public class Lobby {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Moves a free player into a new room, using that player as the owner
+     * @param player The player
+     * @param maxPlayers The players needed to start the game
+     * @param simpleGame True if the game should have gods
+     * @return the response - ModelResponse.ALLOW if the player can create a room
+     */
     public ModelResponse createRoom(String player, int maxPlayers, boolean simpleGame) {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
@@ -139,6 +152,12 @@ public class Lobby {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Moves a free player into an existing room
+     * @param player The player
+     * @param owner The owner that identifies the room
+     * @return the response - ModelResponse.ALLOW if the player can join the room
+     */
     public ModelResponse joinRoom(String player, String owner) {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
@@ -175,6 +194,11 @@ public class Lobby {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Obtain the current game that the player is playing
+     * @param player The player
+     * @return Optional.empty() if there player is not in a game, the game otherwise
+     */
     public Optional<Game> getGame(String player) {
         return games.stream().filter(game -> game.getAllPlayers().stream().anyMatch(other -> other.getName().equals(player))).findFirst();
     }

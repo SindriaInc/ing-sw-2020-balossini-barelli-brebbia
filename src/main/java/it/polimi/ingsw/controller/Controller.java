@@ -53,6 +53,13 @@ public class Controller {
         provider.registerPlayerEndTurnEventObserver(this::onPlayerEndTurn);
     }
 
+    /**
+     * Handle server shutdown
+     */
+    public void shutdown() {
+        virtualView.shutdown();
+    }
+
     private void onPlayerLogin(PlayerLoginEvent event) {
         dispatchResponseFromModel(event.getPlayer(), lobby.login(event.getPlayer(), event.getAge()));
     }

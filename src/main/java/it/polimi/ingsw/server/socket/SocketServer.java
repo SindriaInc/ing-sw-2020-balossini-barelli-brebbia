@@ -1,7 +1,10 @@
 package it.polimi.ingsw.server.socket;
 
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.server.*;
+import it.polimi.ingsw.server.IConnectHandler;
+import it.polimi.ingsw.server.IErrorHandler;
+import it.polimi.ingsw.server.IMessageHandler;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.InboundMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
@@ -15,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class SocketServer implements IServer {
@@ -58,32 +60,57 @@ public class SocketServer implements IServer {
 
     }
 
-    private final int port;
-
-    private final List<IConnectHandler> connectHandlers = new ArrayList<>();
-
-    private final List<IMessageHandler> packetHandlers = new ArrayList<>();
-
-    private final List<IErrorHandler> errorHandlers = new ArrayList<>();
-
-    private final List<SocketHandler> socketHandlers = new ArrayList<>();
-
-    private final BlockingDeque<PendingMessage> pendingMessages = new LinkedBlockingDeque<>();
-
+    /**
+     * The executor service, providing threads for tasks
+     */
     private final ExecutorService executorService;
 
+    /**
+     * The ServerSocket instance, guaranteed to be open until shutdown
+     */
+    private final ServerSocket serverSocket;
+
+    /**
+     * The list of IConnectHandlers, called when a player connects
+     */
+    private final List<IConnectHandler> connectHandlers = new ArrayList<>();
+
+    /**
+     * The list of IMessageHandler, called when a player sends a packet
+     */
+    private final List<IMessageHandler> packetHandlers = new ArrayList<>();
+
+    /**
+     * The list of IErrorHandler, called when there's an error accepting a socket or sending a message
+     */
+    private final List<IErrorHandler> errorHandlers = new ArrayList<>();
+
+    /**
+     * The list of connection handlers, one for each connected player
+     */
+    private final List<SocketHandler> socketHandlers = new ArrayList<>();
+
+    /**
+     * The list of messages to be sent
+     */
+    private final BlockingDeque<PendingMessage> pendingMessages = new LinkedBlockingDeque<>();
+
+    /**
+     * Whether or not the server is active and not shutting down
+     */
     private boolean active;
 
-    private ServerSocket serverSocket;
-
+    /**
+     * The value used to determine the next player's fake name
+     */
     private int nextPlayerId;
 
-    public SocketServer(int port) {
-        this.port = port;
+    public SocketServer(ExecutorService executorService, int port) throws IllegalArgumentException, IOException {
+        this.executorService = executorService;
 
+        serverSocket = new ServerSocket(port);
         active = true;
 
-        executorService = Executors.newCachedThreadPool();
         executorService.submit(this::readMessages);
         executorService.submit(this::runSocket);
     }
@@ -177,14 +204,6 @@ public class SocketServer implements IServer {
     }
 
     private void runSocket() {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException exception) {
-            scheduleError(new ErrorMessage(ErrorMessage.ErrorType.INIT_FAILED, null));
-            Logger.getInstance().exception(exception);
-            return;
-        }
-
         while (active) {
             try {
                 Socket socket = serverSocket.accept();
@@ -203,7 +222,7 @@ public class SocketServer implements IServer {
 
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
                 Logger.getInstance().exception(exception);
-            } catch (IOException exception) {
+            } catch (IllegalArgumentException | IOException exception) {
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
                 Logger.getInstance().exception(exception);
             }

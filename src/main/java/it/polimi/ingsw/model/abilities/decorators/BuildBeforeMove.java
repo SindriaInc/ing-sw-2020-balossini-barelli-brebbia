@@ -6,37 +6,20 @@ import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 import it.polimi.ingsw.model.abilities.predicates.CanInteractNoWorkers;
-import it.polimi.ingsw.model.abilities.predicates.CellLevelDifference;
 import it.polimi.ingsw.model.abilities.predicates.MaxLevel;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD_LEVEL;
-import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_UP;
 
 public class BuildBeforeMove extends AbilitiesDecorator {
 
     private final ITriPredicate canInteractNoWorkers;
     private final ITriPredicate maxBuildLevel;
-    private final ITriPredicate cellLevelDifference;
 
     public BuildBeforeMove(IAbilities abilities) {
         super(abilities);
 
         canInteractNoWorkers = new CanInteractNoWorkers();
         maxBuildLevel = new MaxLevel(DEFAULT_MAX_BUILD_LEVEL);
-        cellLevelDifference = new CellLevelDifference(DEFAULT_MAX_UP);
-    }
-
-    @Override
-    public boolean checkCanMove(Turn turn, Cell cell) {
-        if (turn.getMoves().size() > 0) {
-            return super.checkCanMove(turn, cell);
-        }
-
-        if (!cellLevelDifference.check(turn, cell)) {
-            return super.checkCanMove(turn, cell);
-        }
-
-        return canInteractNoWorkers.check(turn, cell) || super.checkCanMove(turn, cell);
     }
 
     @Override

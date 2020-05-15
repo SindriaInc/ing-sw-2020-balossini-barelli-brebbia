@@ -1,28 +1,40 @@
 package it.polimi.ingsw.server.socket;
 
-import it.polimi.ingsw.common.logging.Logger;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
 
-import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.function.Consumer;
 
 public class OutboundHandler implements Runnable {
 
-    private final Socket socket;
+    /**
+     * The output stream, for sending messages
+     */
+    private final OutputStream outputStream;
 
-    private final IErrorMessageReader reader;
+    /**
+     * The error message consumer, handling errors
+     */
+    private final Consumer<ErrorMessage> errorMessageConsumer;
 
+    /**
+     * The packets to be sent
+     */
     private final BlockingDeque<OutboundMessage> pendingPackets = new LinkedBlockingDeque<>();
 
+    /**
+     * Whether or not the handler should be running
+     */
     private boolean active = true;
 
-    public OutboundHandler(Socket socket, IErrorMessageReader reader) {
-        this.socket = socket;
-        this.reader = reader;
+    public OutboundHandler(OutputStream outputStream, Consumer<ErrorMessage> errorMessageConsumer) {
+        this.outputStream = outputStream;
+        this.errorMessageConsumer = errorMessageConsumer;
     }
 
     @Override
@@ -36,21 +48,25 @@ public class OutboundHandler implements Runnable {
                 continue;
             }
 
-            try {
-                PrintWriter out = new PrintWriter(socket.getOutputStream());
-                out.write(message.getMessage() + System.lineSeparator());
-                out.flush();
-            } catch (IOException exception) {
-                Logger.getInstance().exception(exception);
-                reader.scheduleRead(new ErrorMessage(ErrorMessage.ErrorType.OUTBOUND_MESSAGE_FAILED, message));
+            PrintWriter out = new PrintWriter(outputStream);
+            out.write(message.getMessage() + System.lineSeparator());
+
+            if (out.checkError()) {
+                errorMessageConsumer.accept(new ErrorMessage(ErrorMessage.ErrorType.OUTBOUND_MESSAGE_FAILED, message));
             }
         }
     }
 
+    /**
+     * Shuts down the handler
+     */
     public void shutdown() {
         active = false;
     }
 
+    /**
+     * @see IServer#send(OutboundMessage)
+     */
     public void schedulePacket(OutboundMessage message) {
         pendingPackets.addLast(message);
     }

@@ -73,6 +73,11 @@ public class VirtualView {
         }, 0, PING_SCHEDULE_MS);
     }
 
+    /**
+     * Set the VirtualView's IModelEventProvider
+     * The VirtualView will register observers for each model -> view event
+     * @param modelEventProvider - The IModelEventProvider
+     */
     public void selectModelEventProvider(IModelEventProvider modelEventProvider) {
         modelEventProvider.registerLobbyUpdateEventObserver(this::onLobbyEvent);
         modelEventProvider.registerLobbyRoomUpdateEventObserver(this::onLobbyEvent);
@@ -103,6 +108,9 @@ public class VirtualView {
         return viewEventProvider;
     }
 
+    /**
+     * Handle server shutdown
+     */
     public void shutdown() {
         timer.cancel();
     }
