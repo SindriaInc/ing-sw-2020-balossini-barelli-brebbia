@@ -24,8 +24,11 @@ public class Lobby {
 
     private final List<Game> games = new ArrayList<>();
 
-    public Lobby() {
+    private final Deck deck;
+
+    public Lobby(Deck deck) {
         this.provider = new ModelEventProvider();
+        this.deck = deck;
     }
 
     public ModelEventProvider getModelEventProvider() {
@@ -208,7 +211,7 @@ public class Lobby {
         notifyGameStart(room);
 
         Game game = new Game(provider);
-        game.init(room.getAllPlayers(), new Deck(List.of()), room.isSimpleGame());
+        game.init(room.getAllPlayers(), deck, room.isSimpleGame());
         games.add(game);
     }
 

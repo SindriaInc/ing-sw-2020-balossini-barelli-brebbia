@@ -1,0 +1,184 @@
+[
+  {
+    "description":"Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated.",
+    "id":"1",
+    "name":"Apollo",
+    "title":"God of Music",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"ForceSwapMove",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Move: Your Worker may move one additional time, but not back to its initial space.",
+    "id":"2",
+    "name":"Artemis",
+    "title":"Goddess of the hunt",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"AdditionalMove",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.",
+    "id":"3",
+    "name":"Athena",
+    "title":"Goddess of Wisdom",
+    "type":"Simple",
+     "effects":[
+    	{
+    		"name":"BlockOnPlayerMoveUp",
+    		"opponents":"true"
+    	}
+    ]
+  },
+  {
+    "description":"Your Build: Your Worker may build a dome at any level",
+    "id":"4",
+    "name":"Atlas",
+    "title":"Titan Shouldering the Heaven",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"BuildDomeOnAnyLevel",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Build: Your Worker may build one additional time, but not on the same space.",
+    "id":"5",
+    "name":"Demeter",
+    "title":"Goddess of the Harvest",
+    "type":"Simple",
+     "effects":[
+    	{
+    		"name":"AdditionalBuildOnDifferentCell",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Build: Your Worker may build one additional block (not dome) on top of your first block.",
+    "id":"6",
+    "name":"Hephaestus",
+    "title":"God of Blacksmiths",
+    "type":"Simple",
+     "effects":[
+    	{
+    		"name":"AdditionalBuildOnSameCell",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level.",
+    "id":"8",
+    "name":"Minotaur",
+    "title":"Bull-headed monster",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"ForcePushMove",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Win Condition: You also win if your Worker moves down two or more levels.",
+    "id":"9",
+    "name":"Pan",
+    "title":"God of the Wild",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"WinOnDeltaLevel",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Turn: If your Worker does not move up, it may build both before and after moving.",
+    "id":"10",
+    "name":"Prometheus",
+    "title":"Titan Benefactor of Mankind",
+    "type":"Simple",
+    "effects":[
+    	{
+    		"name":"BuildBeforeMove",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Your Move: Before your Worker moves, you may force a neighboring opponent Worker to the space directly on the other side of your Worker, if that space is unoccupied.",
+    "id":"15",
+    "name":"Charon",
+    "title":"Ferryman to the Underworld",
+    "type":"Advanced",
+    "effects":[
+    	{
+    		"name":"ParkourCross",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Opponent’s Turn: An opponent cannot win by moving into a perimeter space.",
+    "id":"20",
+    "name":"Hera",
+    "title":"Goddess of Marriage",
+    "type":"Advanced",
+    "effects":[
+    	{
+    		"name":"NoWinOnPerimeter",
+    		"opponents":"true"
+    	}
+    ]
+  },
+  {
+    "description":"Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space.",
+    "id":"21",
+    "name":"Hestia",
+    "title":"Goddess of Hearth and Home",
+    "type":"Advanced",
+    "effects":[
+    	{
+    		"name":"AdditionalBuildNotOnPerimeter",
+    		"opponents":"false"
+    	}
+    ]
+  },
+  {
+    "description":"Start of Opponent’s Turn: If one of your opponent’s Workers is higher than all of their others, it cannot move.",
+    "id":"22",
+    "name":"Hypnus",
+    "title":"God of Sleep",
+    "type":"Advanced",
+    "effects":[
+    	{
+    		"name":"BlockMoveHigherWorker",
+    		"opponents":"true"
+    	}
+    ]
+  },
+  {
+    "description":"Your Build: Your Worker may build a block under itself.",
+    "id":"30",
+    "name":"Zeus",
+    "title":"God of the Sky",
+    "type":"Advanced",
+     "effects":[
+    	{
+    		"name":"BuildBelow",
+    		"opponents":"false"
+    	}
+    ]
+  }
+]

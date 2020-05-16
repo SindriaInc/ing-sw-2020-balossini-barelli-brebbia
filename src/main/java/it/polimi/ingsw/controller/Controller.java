@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.event.*;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
+import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.ModelResponse;
@@ -30,10 +31,10 @@ public class Controller {
      */
     private final VirtualView virtualView;
 
-    public Controller(IServer server) {
+    public Controller(IServer server, Deck deck) {
         responseEventProvider = new ResponseEventProvider();
 
-        lobby = new Lobby();
+        lobby = new Lobby(deck);
 
         virtualView = new VirtualView(server, lobby.getPlayerChecker(), responseEventProvider);
         virtualView.selectModelEventProvider(lobby.getModelEventProvider());

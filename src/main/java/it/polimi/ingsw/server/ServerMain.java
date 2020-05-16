@@ -4,29 +4,34 @@ import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 import it.polimi.ingsw.common.logging.reader.FileLogReader;
 import it.polimi.ingsw.controller.Controller;
+import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.server.socket.SocketServer;
 
+import javax.naming.ConfigurationException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerMain {
 
-    private static final int INIT_TIMEOUT = 10000;
+    private static final String DEFAULT_CONFIG_PATH = "../config.json";
 
     private static final String COMMAND_STOP = "stop";
 
     /**
      * The server implementation instance
      */
-    private final IServer server;
+    private IServer server;
 
     /**
      * The controller
      */
-    private final Controller controller;
+    private Controller controller;
 
     public ServerMain(String... args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
@@ -37,9 +42,30 @@ public class ServerMain {
         logger.filter("\"RequestPlayerPingEvent\"");
         logger.filter("\"PlayerPingEvent\"");
 
-        // TODO: Configuration loading
-        // Read first from optional command line args, then from file, then from constants
-        ServerConfiguration configuration = ServerConfiguration.fromFile(Path.of(""));
+        // Read the configuration, if it fails shut the server down
+        ServerConfiguration configuration;
+        try {
+            configuration = loadConfiguration(args);
+        } catch (IOException exception) {
+            dumpAndQuit(exception, exception.getMessage(), executorService);
+            return;
+        } catch (IllegalArgumentException exception) {
+            dumpAndQuit(exception.getMessage(), executorService);
+            return;
+        }
+
+        // Read the deck, if it fails shut the server down
+        Deck deck;
+        try {
+            deck = configuration.loadDeck();
+        } catch (IOException exception) {
+            dumpAndQuit(exception, exception.getMessage(), executorService);
+            return;
+        } catch (ConfigurationException exception) {
+            dumpAndQuit(exception.getMessage(), executorService);
+            return;
+        }
+
         logger.addReader(new FileLogReader(Path.of(configuration.getLogPath())));
         logger.info("Configuration loaded");
         logger.start(executorService);
@@ -49,13 +75,7 @@ public class ServerMain {
         try {
             server = new SocketServer(executorService, configuration.getPort());
         } catch (IllegalArgumentException | IOException exception) {
-            logger.exception(exception);
-            logger.severe("Unable to start the server, shutting down");
-
-            this.server = null;
-            this.controller = null;
-            logger.shutdown();
-            executorService.shutdownNow();
+            dumpAndQuit(exception, "Unable to start the socket server", executorService);
             return;
         }
 
@@ -63,7 +83,52 @@ public class ServerMain {
         executorService.submit(this::runInputListener);
 
         this.server = server;
-        this.controller = new Controller(server);
+        this.controller = new Controller(server, deck);
+    }
+
+    private ServerConfiguration loadConfiguration(String... args) throws IOException, IllegalArgumentException {
+        Map<String, String> parameters = readParameters(args);
+
+        ServerConfiguration configuration;
+
+        if (parameters.containsKey("config")) {
+            try {
+                configuration = ServerConfiguration.readFromFile(parameters.get("config"));
+            } catch (IOException exception) {
+                throw new IOException("Unable to read the config from the specified path");
+            }
+        } else if (Files.exists(Path.of(DEFAULT_CONFIG_PATH))) {
+            try {
+                configuration = ServerConfiguration.readFromFile(DEFAULT_CONFIG_PATH);
+            } catch (IOException exception) {
+                throw new IOException("Unable to read the config from the default path");
+            }
+        } else {
+            Logger.getInstance().info("Loading default config values");
+            configuration = ServerConfiguration.readDefault();
+        }
+
+        if (parameters.containsKey("port")) {
+            int port;
+
+            try {
+                port = Integer.parseInt(parameters.get("port"));
+            } catch (NumberFormatException exception) {
+                throw new IllegalArgumentException("Invalid port, must be a number");
+            }
+
+            configuration = configuration.withPort(port);
+        }
+
+        if (parameters.containsKey("log-path")) {
+            configuration = configuration.withLogPath(parameters.get("log-path"));
+        }
+
+        if (parameters.containsKey("deck-path")) {
+            configuration = configuration.withDeckPath(parameters.get("deck-path"));
+        }
+
+        return configuration;
     }
 
     private void runInputListener() {
@@ -90,12 +155,40 @@ public class ServerMain {
         shutdown();
     }
 
+    private void dumpAndQuit(Exception exception, String message, ExecutorService executorService) {
+        Logger.getInstance().exception(exception);
+        dumpAndQuit(message, executorService);
+    }
+
+    private void dumpAndQuit(String message, ExecutorService executorService) {
+        Logger logger = Logger.getInstance();
+        logger.severe(message);
+        logger.start(executorService);
+        logger.shutdown();
+        executorService.shutdownNow();
+    }
+
     private void shutdown() {
         Logger logger = Logger.getInstance();
         logger.info("Shutting down, goodbye!");
         controller.shutdown();
         server.shutdown();
         logger.shutdown();
+    }
+
+    private Map<String, String> readParameters(String... args){
+        Map<String, String> parameters = new HashMap<>();
+
+        for (int i = 1; i < args.length; i++) {
+            if (!args[i].startsWith("-")) {
+                continue;
+            }
+
+            parameters.put(args[i].substring(1), args[i + 1]);
+            i++;
+        }
+
+        return parameters;
     }
 
 }
