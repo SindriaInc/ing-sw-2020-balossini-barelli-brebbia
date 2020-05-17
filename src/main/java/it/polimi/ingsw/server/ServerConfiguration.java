@@ -7,9 +7,7 @@ import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 
 import javax.naming.ConfigurationException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,9 +59,9 @@ public class ServerConfiguration {
 
     private static final int DEFAULT_PORT = 25565;
 
-    private static final String DEFAULT_LOG_PATH = "../log.txt";
+    private static final String DEFAULT_LOG_PATH = "./latest.log";
 
-    private static final String DEFAULT_DECK_FILE = "gods.json";
+    private static final String RESOURCE_DECK_FILE = "gods.json";
 
     private final Integer port;
 
@@ -114,29 +112,25 @@ public class ServerConfiguration {
         return logPath;
     }
 
-    public String getDeckPath() {
-        if (deckPath == null) {
-            URL deckUrl = this.getClass().getClassLoader().getResource(DEFAULT_DECK_FILE);
-
-            if (deckUrl == null) {
-                return null;
-            }
-
-            return deckUrl.getPath();
-        }
-
-        return deckPath;
-    }
-
     @SuppressWarnings("unchecked")
     public Deck loadDeck() throws ConfigurationException, IOException {
-        String deckPath = getDeckPath();
+        Reader reader;
 
         if (deckPath == null) {
-            throw new ConfigurationException("Unable to find deck file");
+            // Read from the jar
+            InputStream stream = this.getClass().getClassLoader().getResourceAsStream(RESOURCE_DECK_FILE);
+
+            if (stream == null) {
+                throw new IOException("Unable to find the deck file in the jar");
+            }
+
+            reader = new InputStreamReader(stream);
+        } else {
+            // Read an external file
+            reader = new FileReader(deckPath);
         }
 
-        JsonReader jsonReader = new JsonReader(new FileReader(deckPath));
+        JsonReader jsonReader = new JsonReader(reader);
         GodConfiguration[] godConfigurations = new Gson().fromJson(jsonReader, GodConfiguration[].class);
 
         List<God> gods = new ArrayList<>();
