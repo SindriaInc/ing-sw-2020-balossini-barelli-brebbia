@@ -98,12 +98,7 @@ public class Lobby {
             } else {
                 // The player was in another player's room
                 optionalPlayer = getRoomOtherPlayer(room, player);
-
-                if (optionalPlayer.isEmpty()) {
-                    return ModelResponse.ALLOW;
-                }
-
-                room.removePlayer(optionalPlayer.get());
+                optionalPlayer.ifPresent(room::removePlayer);
             }
 
             notifyLobbyUpdate();
@@ -116,12 +111,7 @@ public class Lobby {
             Game game = optionalGame.get();
 
             optionalPlayer = getGamePlayer(game, player);
-
-            if (optionalPlayer.isEmpty()) {
-                return ModelResponse.ALLOW;
-            }
-
-            game.logout(player);
+            optionalPlayer.ifPresent(modelPlayer -> game.logout(modelPlayer.getName()));
         }
 
         return ModelResponse.ALLOW;
@@ -177,11 +167,6 @@ public class Lobby {
         }
 
         Room room = foundRoom.get();
-
-        if (room.isFull()) {
-            // Trying to join a full room
-            return ModelResponse.INVALID_PARAMS;
-        }
 
         room.addPlayer(foundPlayer.get());
         freePlayers.remove(foundPlayer.get());
