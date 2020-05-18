@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.event;
 
+import it.polimi.ingsw.view.ViewEventProvider;
+
 /**
  * Event sent by a player that wants to join a room
  *
@@ -7,7 +9,7 @@ package it.polimi.ingsw.common.event;
  */
 public class PlayerJoinRoomEvent extends AbstractPlayerEvent {
 
-    private String roomOwner;
+    private final String roomOwner;
 
     public PlayerJoinRoomEvent(String player, String roomOwner) {
         super(player);
@@ -17,6 +19,11 @@ public class PlayerJoinRoomEvent extends AbstractPlayerEvent {
 
     public String getRoomOwner() {
         return roomOwner;
+    }
+
+    @Override
+    public void accept(ViewEventProvider provider) {
+        provider.getPlayerJoinRoomEventObservable().notifyObservers(this);
     }
 
 }

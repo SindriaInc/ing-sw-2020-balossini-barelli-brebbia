@@ -1,5 +1,12 @@
 package it.polimi.ingsw.common.event;
 
+import it.polimi.ingsw.view.ViewEventProvider;
+
+/**
+ * Event send by a player that wants to create a new room
+ *
+ * View -> Model
+ */
 public class PlayerCreateRoomEvent extends AbstractPlayerEvent {
 
     private final int maxPlayers;
@@ -18,6 +25,11 @@ public class PlayerCreateRoomEvent extends AbstractPlayerEvent {
 
     public boolean isSimpleGame() {
         return simpleGame;
+    }
+
+    @Override
+    public void accept(ViewEventProvider provider) {
+        provider.getPlayerCreateRoomEventObservable().notifyObservers(this);
     }
 
 }

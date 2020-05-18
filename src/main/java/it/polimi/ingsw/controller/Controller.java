@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.event.*;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
+import it.polimi.ingsw.model.Deck;
 import it.polimi.ingsw.model.Game;
 import it.polimi.ingsw.model.Lobby;
 import it.polimi.ingsw.model.ModelResponse;
@@ -30,10 +31,10 @@ public class Controller {
      */
     private final VirtualView virtualView;
 
-    public Controller(IServer server) {
+    public Controller(IServer server, Deck deck) {
         responseEventProvider = new ResponseEventProvider();
 
-        lobby = new Lobby();
+        lobby = new Lobby(deck);
 
         virtualView = new VirtualView(server, lobby.getPlayerChecker(), responseEventProvider);
         virtualView.selectModelEventProvider(lobby.getModelEventProvider());
@@ -51,6 +52,13 @@ public class Controller {
         provider.registerWorkerBuildDomeEventObserver(this::onWorkerBuildDome);
         provider.registerWorkerForceEventObserver(this::onWorkerForce);
         provider.registerPlayerEndTurnEventObserver(this::onPlayerEndTurn);
+    }
+
+    /**
+     * Handle server shutdown
+     */
+    public void shutdown() {
+        virtualView.shutdown();
     }
 
     private void onPlayerLogin(PlayerLoginEvent event) {
@@ -197,26 +205,18 @@ public class Controller {
             return true;
         }
 
-        responseEventProvider.getResponseInvalidPlayerEventObservable().notifyObservers(
-                new ResponseInvalidPlayerEvent(player)
-        );
+        new ResponseInvalidPlayerEvent(player).accept(responseEventProvider);
         return false;
     }
 
     private void dispatchInvalidState(String player) {
-        responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
-                new ResponseInvalidStateEvent(player)
-        );
+        new ResponseInvalidStateEvent(player).accept(responseEventProvider);
     }
 
     private void dispatchResponseFromModel(String player, ModelResponse response) {
         switch (response) {
-            case INVALID_PARAMS -> responseEventProvider.getResponseInvalidParametersEventObservable().notifyObservers(
-                    new ResponseInvalidParametersEvent(player)
-            );
-            case INVALID_STATE -> responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
-                    new ResponseInvalidStateEvent(player)
-            );
+            case INVALID_PARAMS -> new ResponseInvalidParametersEvent(player).accept(responseEventProvider);
+            case INVALID_STATE -> new ResponseInvalidStateEvent(player).accept(responseEventProvider);
         }
     }
 

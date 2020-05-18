@@ -44,6 +44,11 @@ public class ViewEventProvider implements IViewEventProvider {
     private final Observable<PlayerEndTurnEvent> playerEndTurnEventObservable = new Observable<>();
 
     /**
+     * Observable for PlayerPingEvent
+     */
+    private final Observable<PlayerPingEvent> playerPingEventObservable = new Observable<>();
+
+    /**
      * Observable for WorkerBuildBlockEvent
      */
     private final Observable<WorkerBuildBlockEvent> workerBuildBlockEventObservable = new Observable<>();
@@ -104,6 +109,11 @@ public class ViewEventProvider implements IViewEventProvider {
     }
 
     @Override
+    public void registerPlayerPingEventObserver(Observer<PlayerPingEvent> observer) {
+        playerPingEventObservable.register(observer);
+    }
+
+    @Override
     public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
         workerBuildBlockEventObservable.register(observer);
     }
@@ -154,6 +164,10 @@ public class ViewEventProvider implements IViewEventProvider {
 
     public Observable<PlayerEndTurnEvent> getPlayerEndTurnEventObservable() {
         return playerEndTurnEventObservable;
+    }
+
+    public Observable<PlayerPingEvent> getPlayerPingEventObservable() {
+        return playerPingEventObservable;
     }
 
     public Observable<WorkerBuildBlockEvent> getWorkerBuildBlockEventObservable() {

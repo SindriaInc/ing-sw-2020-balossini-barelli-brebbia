@@ -69,11 +69,10 @@ public class PreGodsGame extends AbstractGameState {
 
         var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
         setReceivers(event);
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
-        getModelEventProvider().getPlayerRequestChallengerSelectGodsEventObservable().notifyObservers(
-                new RequestPlayerChallengerSelectGodsEvent(getCurrentPlayer().getName(), getAvailableGods(), getSelectGodsCount())
-        );
+        new RequestPlayerChallengerSelectGodsEvent(getCurrentPlayer().getName(), getAvailableGods(), getSelectGodsCount())
+                .accept(getModelEventProvider());
     }
 
     @Override
@@ -98,7 +97,7 @@ public class PreGodsGame extends AbstractGameState {
 
         var event = new PlayerChallengerSelectGodsEvent(getCurrentPlayer().getName(), List.copyOf(gods));
         setReceivers(event);
-        getModelEventProvider().getChallengerSelectGodsEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
         phase = Phase.PLAYER_SELECT_GOD;
 
@@ -138,7 +137,7 @@ public class PreGodsGame extends AbstractGameState {
 
         var event = new PlayerChooseGodEvent(player.getName(), god);
         setReceivers(event);
-        getModelEventProvider().getPlayerChooseGodEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
         Player next = getCurrentPlayer();
 
@@ -230,11 +229,10 @@ public class PreGodsGame extends AbstractGameState {
     private void generateChooseRequests(Player player) {
         var event = new PlayerTurnStartEvent(player.getName());
         setReceivers(event);
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
-        getModelEventProvider().getRequestPlayerChooseGodEventObservable().notifyObservers(
-                new RequestPlayerChooseGodEvent(player.getName(), getAvailableGods())
-        );
+        new RequestPlayerChooseGodEvent(player.getName(), getAvailableGods())
+                .accept(getModelEventProvider());
     }
 
     private List<String> toStringList(List<God> gods) {

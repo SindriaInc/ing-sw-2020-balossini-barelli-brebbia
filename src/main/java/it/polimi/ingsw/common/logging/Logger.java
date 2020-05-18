@@ -6,13 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Logger {
-
-    private static final String THREAD_NAME = "Logging";
-
-    private static final long SLEEP_PERIOD_MS = 10;
 
     /**
      * The logger singleton
@@ -29,6 +26,11 @@ public class Logger {
      */
     private final List<ILogReader> readers = Collections.synchronizedList(new ArrayList<>());
 
+    /**
+     * The list of log filters
+     * Messages to be logged will be checked against each filter
+     * If the message contains the filter, it will not be read
+     */
     private final List<String> filters = Collections.synchronizedList(new ArrayList<>());
 
     /**
@@ -51,12 +53,12 @@ public class Logger {
      * Starts the logging
      * @throws IllegalStateException if already started
      */
-    public void start() {
+    public void start(ExecutorService executorService) {
         if (started) {
             throw new IllegalStateException();
         }
 
-        new Thread(this::process, THREAD_NAME).start();
+        executorService.submit(this::process);
         started = true;
     }
 
@@ -128,10 +130,10 @@ public class Logger {
         while (started) {
             try {
                 String message = pendingMessages.take();
-                process(message);
-            } catch (InterruptedException exception) {
-                Logger.getInstance().exception(exception);
-                exception.printStackTrace();
+                read(message);
+            } catch (InterruptedException ignored) {
+                // Shutting down
+                started = false;
             }
         }
 
@@ -139,11 +141,11 @@ public class Logger {
 
         while (pendingMessages.size() > 0) {
             String message = pendingMessages.poll();
-            process(message);
+            read(message);
         }
     }
 
-    private void process(String message) {
+    private void read(String message) {
         for (String filter : filters) {
             if (message.contains(filter)) {
                 return;

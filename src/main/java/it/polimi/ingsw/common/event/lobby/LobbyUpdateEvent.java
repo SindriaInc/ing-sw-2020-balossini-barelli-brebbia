@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.event.lobby;
 
 import it.polimi.ingsw.common.RoomInfo;
+import it.polimi.ingsw.model.ModelEventProvider;
 
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class LobbyUpdateEvent extends AbstractLobbyEvent {
 
     public List<RoomInfo> getRooms() {
         return rooms;
+    }
+
+    @Override
+    public void accept(ModelEventProvider provider) {
+        provider.getLobbyUpdateEventObservable().notifyObservers(this);
     }
 
 }

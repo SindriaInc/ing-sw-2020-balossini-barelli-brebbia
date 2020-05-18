@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.event;
 
+import it.polimi.ingsw.view.ViewEventProvider;
+
 /**
  * Event sent by a player that has just connected
  * This event is the only event accepted when the player is not identified
@@ -18,6 +20,11 @@ public class PlayerLoginEvent extends AbstractPlayerEvent {
 
     public int getAge() {
         return age;
+    }
+
+    @Override
+    public void accept(ViewEventProvider provider) {
+        provider.getPlayerLoginEventObservable().notifyObservers(this);
     }
 
 }

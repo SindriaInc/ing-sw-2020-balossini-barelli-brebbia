@@ -5,6 +5,8 @@ import it.polimi.ingsw.client.cli.InputHandler;
 import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 
+import java.util.concurrent.Executors;
+
 public class ClientMain {
 
     public static final long SLEEP_PERIOD_MS = 100;
@@ -31,7 +33,7 @@ public class ClientMain {
         logger.addReader(new ConsoleLogReader(System.out));
         logger.filter("\"RequestPlayerPingEvent\"");
         logger.filter("\"PlayerPingEvent\"");
-        logger.start();
+        logger.start(Executors.newCachedThreadPool());
         logger.info("Initializing client...");
 
         boolean gui = false;

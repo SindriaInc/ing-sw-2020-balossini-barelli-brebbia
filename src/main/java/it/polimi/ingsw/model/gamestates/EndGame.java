@@ -14,7 +14,7 @@ public class EndGame extends AbstractGameState {
 
         var event = new PlayerWinEvent(winner);
         setReceivers(event);
-        getModelEventProvider().getPlayerWinEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
     }
 
     @Override

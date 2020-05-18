@@ -44,11 +44,10 @@ public class PreWorkersGame extends AbstractGameState {
 
         var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
         setReceivers(event);
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
-        getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
-                new RequestWorkerSpawnEvent(getCurrentPlayer().getName(), getAvailablePositions())
-        );
+        new RequestWorkerSpawnEvent(getCurrentPlayer().getName(), getAvailablePositions())
+                .accept(getModelEventProvider());
     }
 
     @Override
@@ -67,15 +66,14 @@ public class PreWorkersGame extends AbstractGameState {
 
         var event = new WorkerSpawnEvent(player.getName(), worker.getId(), toCoordinates(cell));
         setReceivers(event);
-        getModelEventProvider().getWorkerSpawnEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
         Player next = getCurrentPlayer();
 
         if (next != null && next.equals(player)) {
             // Notify the current player that a new worker can be placed
-            getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
-                    new RequestWorkerSpawnEvent(player.getName(), getAvailablePositions())
-            );
+            new RequestWorkerSpawnEvent(player.getName(), getAvailablePositions())
+                    .accept(getModelEventProvider());
         }
 
         return ModelResponse.ALLOW;
@@ -98,11 +96,10 @@ public class PreWorkersGame extends AbstractGameState {
 
         var event = new PlayerTurnStartEvent(currentPlayer.getName());
         setReceivers(event);
-        getModelEventProvider().getPlayerTurnStartEventObservable().notifyObservers(event);
+        event.accept(getModelEventProvider());
 
-        getModelEventProvider().getRequestWorkerSpawnEventObservable().notifyObservers(
-                new RequestWorkerSpawnEvent(currentPlayer.getName(), getAvailablePositions())
-        );
+        new RequestWorkerSpawnEvent(currentPlayer.getName(), getAvailablePositions())
+                .accept(getModelEventProvider());
 
         return currentPlayer;
     }

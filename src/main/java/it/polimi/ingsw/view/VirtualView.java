@@ -1,6 +1,9 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.common.*;
+import it.polimi.ingsw.common.IModelEventProvider;
+import it.polimi.ingsw.common.IPlayerChecker;
+import it.polimi.ingsw.common.IResponseEventProvider;
+import it.polimi.ingsw.common.Validator;
 import it.polimi.ingsw.common.event.AbstractEvent;
 import it.polimi.ingsw.common.event.PlayerLoginEvent;
 import it.polimi.ingsw.common.event.PlayerLogoutEvent;
@@ -19,8 +22,6 @@ import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.InboundMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Timer;
@@ -33,18 +34,40 @@ public class VirtualView {
 
     private static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
 
+    /**
+     * The server instance, handling player connections and sending/receiving packets
+     */
     private final IServer server;
 
+    /**
+     * The player checker, needed to verify the player name and age before logging in
+     */
     private final IPlayerChecker playerChecker;
 
+    /**
+     * The ViewEventProvider, used to register and send view events
+     */
     private final ViewEventProvider viewEventProvider;
 
+    /**
+     * The event serializer
+     */
     private final GsonEventSerializer eventSerializer;
 
+    /**
+     * Map having players as keys (or their temporary fake name) and the latest ping event received (measured using epoch milliseconds time)
+     * If the last ping is older than [CURRENT TIME] + [PING_TIMEOUT_MS], the player will be forcibly disconnected
+     */
     private final Map<String, Long> lastPlayerPings = new ConcurrentHashMap<>();
 
+    /**
+     * The timer used to regurarly send pings and check for timeouts
+     */
     private final Timer timer;
 
+    /**
+     * The player name validator, used to check for invalid characters
+     */
     private final Validator playerNameValidator = new Validator(Validator.PLAYER_NAME);
 
     public VirtualView(IServer server, IPlayerChecker playerChecker, IResponseEventProvider responseEventProvider) {
@@ -62,6 +85,10 @@ public class VirtualView {
         viewEventProvider = new ViewEventProvider();
         eventSerializer = new GsonEventSerializer();
 
+        // Register the VirtualView to listen for login, ping, and logout events
+        viewEventProvider.registerPlayerPingEventObserver(this::onPing);
+        viewEventProvider.registerPlayerLogoutEventObserver(this::onLogout);
+
         timer = new Timer();
         timer.schedule(new TimerTask() {
 
@@ -73,6 +100,11 @@ public class VirtualView {
         }, 0, PING_SCHEDULE_MS);
     }
 
+    /**
+     * Set the VirtualView's IModelEventProvider
+     * The VirtualView will register observers for each model -> view event
+     * @param modelEventProvider - The IModelEventProvider
+     */
     public void selectModelEventProvider(IModelEventProvider modelEventProvider) {
         modelEventProvider.registerLobbyUpdateEventObserver(this::onLobbyEvent);
         modelEventProvider.registerLobbyRoomUpdateEventObserver(this::onLobbyEvent);
@@ -103,6 +135,9 @@ public class VirtualView {
         return viewEventProvider;
     }
 
+    /**
+     * Handle server shutdown
+     */
     public void shutdown() {
         timer.cancel();
     }
@@ -113,8 +148,9 @@ public class VirtualView {
             long time = lastPlayerPing.getValue();
 
             if (System.currentTimeMillis() >= time + PING_TIMEOUT_MS) {
-                // Player timed out
+                // Player timed out, create a custom PlayerLogoutEvent
                 disconnect(player);
+                new PlayerLogoutEvent(player).accept(getViewEventProvider());
                 continue;
             }
 
@@ -124,6 +160,16 @@ public class VirtualView {
 
     private void onConnect(String tempName) {
         lastPlayerPings.put(tempName, System.currentTimeMillis());
+    }
+
+    private void onPing(PlayerPingEvent event) {
+        // Player replied to a ping event
+        lastPlayerPings.put(event.getPlayer(), System.currentTimeMillis());
+    }
+
+    private void onLogout(PlayerLogoutEvent event) {
+        // Player wants to disconnect
+        disconnect(event.getPlayer());
     }
 
     private void onMessage(InboundMessage message) {
@@ -140,18 +186,6 @@ public class VirtualView {
 
         String player = message.getSourcePlayer();
 
-        if (event instanceof PlayerPingEvent) {
-            // Player replied to a ping event
-            lastPlayerPings.put(player, System.currentTimeMillis());
-            return;
-        }
-
-        if (event instanceof PlayerLogoutEvent) {
-            // Player wants to disconnect
-            disconnect(player);
-            return;
-        }
-
         if (!IServer.isIdentified(player)) {
             // The player has not identified, the only packet that can be sent is a PlayerLoginEvent
 
@@ -165,7 +199,7 @@ public class VirtualView {
                     return;
                 }
 
-                message.onLogin(player);
+                server.identify(message.getSourcePlayer(), player);
 
                 // Replace the temporary identifier with a new one
                 lastPlayerPings.remove(message.getSourcePlayer());
@@ -183,7 +217,13 @@ public class VirtualView {
             return;
         }
 
-        handleEvent(player, event.getClass().getSimpleName(), event);
+        try {
+            event.accept(getViewEventProvider());
+        } catch (IllegalStateException exception) {
+            // Bad client, didn't send a view -> model event
+            Logger.getInstance().warning("Invalid event received from " + event.getSender().get() + ": " + event.getClass().getSimpleName());
+            onResponse(new ResponseInvalidEvent(player));
+        }
     }
 
     private void onError(ErrorMessage message) {
@@ -198,38 +238,8 @@ public class VirtualView {
         disconnect(player);
     }
 
-    @SuppressWarnings("unchecked")
-    private void handleEvent(String player, String eventName, AbstractEvent event) {
-        // The getter for the observable related to the event
-        Method observableMethod;
-
-        try {
-            observableMethod = ViewEventProvider.class.getDeclaredMethod("get" + eventName + "Observable");
-        } catch (NoSuchMethodException exception) {
-            // Should never get here unless ViewEventProvider is badly implemented
-            Logger.getInstance().exception(exception);
-            onResponse(new ResponseInvalidEvent(player));
-            return;
-        }
-
-        // The observable related to the event
-        Observable<AbstractEvent> observable;
-
-        try {
-            observable = (Observable<AbstractEvent>) observableMethod.invoke(viewEventProvider);
-        } catch (IllegalAccessException | InvocationTargetException exception) {
-            // Should never get here since we're calling a getter
-            Logger.getInstance().exception(exception);
-            onResponse(new ResponseInvalidEvent(player));
-            return;
-        }
-
-        observable.notifyObservers(event);
-    }
-
     private void disconnect(String player) {
         server.disconnect(player);
-        handleEvent(player, PlayerLogoutEvent.class.getSimpleName(), new PlayerLogoutEvent(player));
         lastPlayerPings.remove(player);
     }
 

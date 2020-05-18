@@ -1,7 +1,11 @@
 package it.polimi.ingsw.server.socket;
 
 import it.polimi.ingsw.common.logging.Logger;
-import it.polimi.ingsw.server.*;
+import it.polimi.ingsw.common.socket.SocketHandler;
+import it.polimi.ingsw.server.IConnectHandler;
+import it.polimi.ingsw.server.IErrorHandler;
+import it.polimi.ingsw.server.IMessageHandler;
+import it.polimi.ingsw.server.IServer;
 import it.polimi.ingsw.server.message.ErrorMessage;
 import it.polimi.ingsw.server.message.InboundMessage;
 import it.polimi.ingsw.server.message.OutboundMessage;
@@ -10,80 +14,65 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class SocketServer implements IServer {
 
-    private static class PendingMessage {
-
-        private final String tempName;
-        private final ErrorMessage errorMessage;
-        private final InboundMessage inboundMessage;
-
-        public PendingMessage(String tempName) {
-            this.tempName = tempName;
-            this.errorMessage = null;
-            this.inboundMessage = null;
-        }
-
-        public PendingMessage(ErrorMessage errorMessage) {
-            this.errorMessage = errorMessage;
-            this.tempName = null;
-            this.inboundMessage = null;
-        }
-
-        public PendingMessage(InboundMessage inboundMessage) {
-            this.inboundMessage = inboundMessage;
-            this.tempName = null;
-            this.errorMessage = null;
-        }
-
-        public Optional<String> getTempName() {
-            return Optional.ofNullable(tempName);
-        }
-
-        public Optional<ErrorMessage> getErrorMessage() {
-            return Optional.ofNullable(errorMessage);
-        }
-
-        public Optional<InboundMessage> getInboundMessage() {
-            return Optional.ofNullable(inboundMessage);
-        }
-
-    }
-
-    private final int port;
-
-    private final List<IConnectHandler> connectHandlers = new ArrayList<>();
-
-    private final List<IMessageHandler> packetHandlers = new ArrayList<>();
-
-    private final List<IErrorHandler> errorHandlers = new ArrayList<>();
-
-    private final List<SocketHandler> socketHandlers = new ArrayList<>();
-
-    private final BlockingDeque<PendingMessage> pendingMessages = new LinkedBlockingDeque<>();
-
+    /**
+     * The executor service, providing threads for tasks
+     */
     private final ExecutorService executorService;
 
+    /**
+     * The ServerSocket instance, guaranteed to be open until shutdown
+     */
+    private final ServerSocket serverSocket;
+
+    /**
+     * The list of IConnectHandlers, called when a player connects
+     */
+    private final List<IConnectHandler> connectHandlers = new ArrayList<>();
+
+    /**
+     * The list of IMessageHandler, called when a player sends a packet
+     */
+    private final List<IMessageHandler> packetHandlers = new ArrayList<>();
+
+    /**
+     * The list of IErrorHandler, called when there's an error accepting a socket or sending a message
+     */
+    private final List<IErrorHandler> errorHandlers = new ArrayList<>();
+
+    /**
+     * The connection handlers, one for each connected player
+     * The key of the map is the name of the player (or the temporary fake name if not logged on)
+     */
+    private final Map<String, SocketHandler> socketHandlers = new HashMap<>();
+
+    /**
+     * The list of messages to be sent
+     */
+    private final BlockingDeque<Runnable> pendingMessages = new LinkedBlockingDeque<>();
+
+    /**
+     * Whether or not the server is active and not shutting down
+     */
     private boolean active;
 
-    private ServerSocket serverSocket;
-
+    /**
+     * The value used to determine the next player's fake name
+     */
     private int nextPlayerId;
 
-    public SocketServer(int port) {
-        this.port = port;
+    public SocketServer(ExecutorService executorService, int port) throws IllegalArgumentException, IOException {
+        this.executorService = executorService;
 
+        serverSocket = new ServerSocket(port);
         active = true;
 
-        executorService = Executors.newCachedThreadPool();
         executorService.submit(this::readMessages);
         executorService.submit(this::runSocket);
     }
@@ -92,12 +81,15 @@ public class SocketServer implements IServer {
     public void send(OutboundMessage message) {
         Logger.getInstance().debug("Sending outbound message to \"" + message.getDestinationPlayer() + "\": " + message.getMessage());
 
-        for (SocketHandler socketHandler : socketHandlers) {
-            if (!socketHandler.getPlayer().equals(message.getDestinationPlayer())) {
+        for (Map.Entry<String, SocketHandler> entry : socketHandlers.entrySet()) {
+            String player = entry.getKey();
+            SocketHandler socketHandler = entry.getValue();
+
+            if (!player.equals(message.getDestinationPlayer())) {
                 continue;
             }
 
-            socketHandler.schedulePacket(message);
+            socketHandler.schedulePacket(message.getMessage());
         }
     }
 
@@ -117,18 +109,39 @@ public class SocketServer implements IServer {
     }
 
     @Override
-    public void disconnect(String player) {
-        Optional<SocketHandler> optionalSocketHandler = socketHandlers.stream()
-                .filter(socketHandler -> socketHandler.getPlayer().equals(player))
-                .findFirst();
+    public void identify(String tempName, String player) {
+        SocketHandler socketHandler = socketHandlers.get(tempName);
 
-        if (optionalSocketHandler.isEmpty()) {
+        if (socketHandler == null) {
+            Logger.getInstance().severe("Tried to identify an invalid player: " + tempName);
             return;
         }
 
-        SocketHandler socketHandler = optionalSocketHandler.get();
+        socketHandlers.put(player, socketHandler);
+        socketHandlers.remove(tempName);
+    }
+
+    @Override
+    public void disconnect(String player) {
+        SocketHandler socketHandler = socketHandlers.get(player);
+
+        if (socketHandler == null) {
+            Logger.getInstance().debug("Tried disconnecting an invalid player: " + player);
+            return;
+        }
+
         socketHandler.shutdown();
-        socketHandlers.remove(socketHandler);
+        socketHandlers.remove(player);
+
+        String playerInfo;
+
+        if (IServer.isIdentified(player)) {
+            playerInfo = " (Identified as " + player + ")";
+        } else {
+            playerInfo = " (Temporarily known as " + player + ")";
+        }
+
+        Logger.getInstance().debug("Disconnected " + socketHandler.getAddress() + playerInfo);
     }
 
     @Override
@@ -145,31 +158,8 @@ public class SocketServer implements IServer {
     private void readMessages() {
         while (active) {
             try {
-                PendingMessage pendingMessage = pendingMessages.take();
-
-                Optional<String> tempName = pendingMessage.getTempName();
-
-                if (tempName.isPresent()) {
-                    for (IConnectHandler connectHandler : connectHandlers) {
-                        connectHandler.onConnect(tempName.get());
-                    }
-                }
-
-                Optional<ErrorMessage> errorMessage = pendingMessage.getErrorMessage();
-
-                if (errorMessage.isPresent()) {
-                    for (IErrorHandler errorHandler : errorHandlers) {
-                        errorHandler.onError(errorMessage.get());
-                    }
-                }
-
-                Optional<InboundMessage> inboundMessage = pendingMessage.getInboundMessage();
-
-                if (inboundMessage.isPresent()) {
-                    for (IMessageHandler packetHandler : packetHandlers) {
-                        packetHandler.onMessage(inboundMessage.get());
-                    }
-                }
+                Runnable pendingMessage = pendingMessages.take();
+                pendingMessage.run();
             } catch (InterruptedException ignored) {
                 // Server is shutting down
             }
@@ -177,14 +167,6 @@ public class SocketServer implements IServer {
     }
 
     private void runSocket() {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException exception) {
-            scheduleError(new ErrorMessage(ErrorMessage.ErrorType.INIT_FAILED, null));
-            Logger.getInstance().exception(exception);
-            return;
-        }
-
         while (active) {
             try {
                 Socket socket = serverSocket.accept();
@@ -192,8 +174,8 @@ public class SocketServer implements IServer {
 
                 String tempName = IServer.UNIDENTIFIED_PLAYER_PREFIX + nextPlayerId++;
 
-                SocketHandler handler = new SocketHandler(tempName, executorService, socket, this::scheduleRead, this::scheduleError);
-                socketHandlers.add(handler);
+                SocketHandler handler = new SocketHandler(executorService, socket, this::scheduleRead, this::scheduleError);
+                socketHandlers.put(tempName, handler);
                 scheduleConnect(tempName);
             } catch (SocketException exception) {
                 if (!active) {
@@ -203,15 +185,16 @@ public class SocketServer implements IServer {
 
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
                 Logger.getInstance().exception(exception);
-            } catch (IOException exception) {
+            } catch (IllegalArgumentException | IOException exception) {
                 scheduleError(new ErrorMessage(ErrorMessage.ErrorType.ACCEPT_FAILED, null));
                 Logger.getInstance().exception(exception);
             }
         }
 
-        for (SocketHandler handler : socketHandlers) {
+        for (SocketHandler handler : socketHandlers.values()) {
             handler.shutdown();
         }
+        socketHandlers.clear();
 
         // Interrupt socket handlers
         executorService.shutdownNow();
@@ -226,15 +209,62 @@ public class SocketServer implements IServer {
     }
 
     private void scheduleConnect(String tempName) {
-        pendingMessages.addLast(new PendingMessage(tempName));
+        pendingMessages.addLast(() -> {
+            for (IConnectHandler connectHandler : connectHandlers) {
+                connectHandler.onConnect(tempName);
+            }
+        });
     }
 
     private void scheduleError(ErrorMessage message) {
-        pendingMessages.addLast(new PendingMessage(message));
+        pendingMessages.addLast(() -> {
+            for (IErrorHandler errorHandler : errorHandlers) {
+                errorHandler.onError(message);
+            }
+        });
     }
 
-    private void scheduleRead(InboundMessage message) {
-        pendingMessages.addLast(new PendingMessage(message));
+    private void scheduleError(SocketHandler socketHandler, String message) {
+        Optional<String> player = getPlayerByHandler(socketHandler);
+
+        if (player.isEmpty()) {
+            Logger.getInstance().severe("Received an error from an invalid socket handler");
+            return;
+        }
+
+        OutboundMessage outboundMessage = new OutboundMessage(player.get(), message);
+        ErrorMessage errorMessage = new ErrorMessage(ErrorMessage.ErrorType.OUTBOUND_MESSAGE_FAILED, outboundMessage);
+
+        scheduleError(errorMessage);
+    }
+
+    private void scheduleRead(SocketHandler socketHandler, String message) {
+        Optional<String> player = getPlayerByHandler(socketHandler);
+
+        if (player.isEmpty()) {
+            Logger.getInstance().severe("Received a packet from an invalid socket handler");
+            return;
+        }
+
+        InboundMessage inboundMessage = new InboundMessage(player.get(), message);
+
+        pendingMessages.addLast(() -> {
+            for (IMessageHandler packetHandler : packetHandlers) {
+                packetHandler.onMessage(inboundMessage);
+            }
+        });
+    }
+
+    private Optional<String> getPlayerByHandler(SocketHandler socketHandler) {
+        for (Map.Entry<String, SocketHandler> entry : socketHandlers.entrySet()) {
+            if (entry.getValue() != socketHandler) {
+                continue;
+            }
+
+            return Optional.of(entry.getKey());
+        }
+
+        return Optional.empty();
     }
 
 }

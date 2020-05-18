@@ -24,8 +24,11 @@ public class Lobby {
 
     private final List<Game> games = new ArrayList<>();
 
-    public Lobby() {
+    private final Deck deck;
+
+    public Lobby(Deck deck) {
         this.provider = new ModelEventProvider();
+        this.deck = deck;
     }
 
     public ModelEventProvider getModelEventProvider() {
@@ -36,6 +39,12 @@ public class Lobby {
         return this::isAvailable;
     }
 
+    /**
+     * Handle the player login
+     * @param player The player that wants to login
+     * @param age The age of the player, assumed to be valid
+     * @return the response - ModelResponse.ALLOW if the name is available
+     */
     public ModelResponse login(String player, int age) {
         if (!isAvailable(player)) {
             Logger.getInstance().debug("Received login with an invalid player");
@@ -89,12 +98,7 @@ public class Lobby {
             } else {
                 // The player was in another player's room
                 optionalPlayer = getRoomOtherPlayer(room, player);
-
-                if (optionalPlayer.isEmpty()) {
-                    return ModelResponse.ALLOW;
-                }
-
-                room.removePlayer(optionalPlayer.get());
+                optionalPlayer.ifPresent(room::removePlayer);
             }
 
             notifyLobbyUpdate();
@@ -107,17 +111,19 @@ public class Lobby {
             Game game = optionalGame.get();
 
             optionalPlayer = getGamePlayer(game, player);
-
-            if (optionalPlayer.isEmpty()) {
-                return ModelResponse.ALLOW;
-            }
-
-            game.logout(player);
+            optionalPlayer.ifPresent(modelPlayer -> game.logout(modelPlayer.getName()));
         }
 
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Moves a free player into a new room, using that player as the owner
+     * @param player The player
+     * @param maxPlayers The players needed to start the game
+     * @param simpleGame True if the game should have gods
+     * @return the response - ModelResponse.ALLOW if the player can create a room
+     */
     public ModelResponse createRoom(String player, int maxPlayers, boolean simpleGame) {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
@@ -139,6 +145,12 @@ public class Lobby {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Moves a free player into an existing room
+     * @param player The player
+     * @param owner The owner that identifies the room
+     * @return the response - ModelResponse.ALLOW if the player can join the room
+     */
     public ModelResponse joinRoom(String player, String owner) {
         Optional<Player> foundPlayer = getFreePlayer(player);
 
@@ -156,11 +168,6 @@ public class Lobby {
 
         Room room = foundRoom.get();
 
-        if (room.isFull()) {
-            // Trying to join a full room
-            return ModelResponse.INVALID_PARAMS;
-        }
-
         room.addPlayer(foundPlayer.get());
         freePlayers.remove(foundPlayer.get());
 
@@ -175,6 +182,11 @@ public class Lobby {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * Obtain the current game that the player is playing
+     * @param player The player
+     * @return Optional.empty() if there player is not in a game, the game otherwise
+     */
     public Optional<Game> getGame(String player) {
         return games.stream().filter(game -> game.getAllPlayers().stream().anyMatch(other -> other.getName().equals(player))).findFirst();
     }
@@ -184,7 +196,7 @@ public class Lobby {
         notifyGameStart(room);
 
         Game game = new Game(provider);
-        game.init(room.getAllPlayers(), new Deck(List.of()), room.isSimpleGame());
+        game.init(room.getAllPlayers(), deck, room.isSimpleGame());
         games.add(game);
     }
 
@@ -192,9 +204,7 @@ public class Lobby {
         RoomInfo roomInfo = generateRoomInfo(room);
 
         for (Player other : room.getAllPlayers()) {
-            provider.getLobbyGameStartEventObservable().notifyObservers(
-                    new LobbyGameStartEvent(other.getName(), roomInfo)
-            );
+            new LobbyGameStartEvent(other.getName(), roomInfo).accept(provider);
         }
     }
 
@@ -202,9 +212,7 @@ public class Lobby {
         RoomInfo roomInfo = generateRoomInfo(room);
 
         for (Player other : room.getAllPlayers()) {
-            provider.getLobbyRoomUpdateEventObservable().notifyObservers(
-                    new LobbyRoomUpdateEvent(other.getName(), roomInfo)
-            );
+            new LobbyRoomUpdateEvent(other.getName(), roomInfo).accept(provider);
         }
     }
 
@@ -214,9 +222,7 @@ public class Lobby {
         List<String> players = freePlayers.stream().map(Player::getName).collect(Collectors.toList());
 
         for (Player player : freePlayers) {
-            provider.getLobbyUpdateEventObservable().notifyObservers(
-                    new LobbyUpdateEvent(player.getName(), players, roomInfos)
-            );
+            new LobbyUpdateEvent(player.getName(), players, roomInfos).accept(provider);
         }
     }
 

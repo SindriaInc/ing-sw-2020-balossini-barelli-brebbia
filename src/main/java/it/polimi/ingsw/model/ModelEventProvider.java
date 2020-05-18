@@ -69,7 +69,7 @@ public class ModelEventProvider implements IModelEventProvider {
     /**
      * Observable for ChallengerSelectGodsEvent
      */
-    private final Observable<PlayerChallengerSelectGodsEvent> challengerSelectGodsEventObservable = new Observable<>();
+    private final Observable<PlayerChallengerSelectGodsEvent> playerChallengerSelectGodsEventObservable = new Observable<>();
 
     /**
      * Observable for PlayerChooseGodEvent
@@ -210,7 +210,7 @@ public class ModelEventProvider implements IModelEventProvider {
      */
     @Override
     public void registerPlayerChallengerSelectGodsEventObserver(Observer<PlayerChallengerSelectGodsEvent> observer) {
-        challengerSelectGodsEventObservable.register(observer);
+        playerChallengerSelectGodsEventObservable.register(observer);
     }
 
     /**
@@ -297,7 +297,7 @@ public class ModelEventProvider implements IModelEventProvider {
         return lobbyGameStartEventObservable;
     }
 
-    public Observable<RequestPlayerChallengerSelectGodsEvent> getPlayerRequestChallengerSelectGodsEventObservable() {
+    public Observable<RequestPlayerChallengerSelectGodsEvent> getRequestPlayerChallengerSelectGodsEventObservable() {
         return requestPlayerChallengerSelectGodsEventObservable;
     }
 
@@ -329,8 +329,8 @@ public class ModelEventProvider implements IModelEventProvider {
         return requestWorkerSpawnEventObservable;
     }
 
-    public Observable<PlayerChallengerSelectGodsEvent> getChallengerSelectGodsEventObservable() {
-        return challengerSelectGodsEventObservable;
+    public Observable<PlayerChallengerSelectGodsEvent> getPlayerChallengerSelectGodsEventObservable() {
+        return playerChallengerSelectGodsEventObservable;
     }
 
     public Observable<PlayerChooseGodEvent> getPlayerChooseGodEventObservable() {

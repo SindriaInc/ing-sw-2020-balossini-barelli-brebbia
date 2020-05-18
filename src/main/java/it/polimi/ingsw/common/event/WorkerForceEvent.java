@@ -1,6 +1,8 @@
 package it.polimi.ingsw.common.event;
 
 import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.model.ModelEventProvider;
+import it.polimi.ingsw.view.ViewEventProvider;
 
 /**
  * Event for a worker force move
@@ -20,6 +22,16 @@ public class WorkerForceEvent extends AbstractWorkerInteractEvent {
 
     public int getTarget() {
         return target;
+    }
+
+    @Override
+    public void accept(ModelEventProvider provider) {
+        provider.getWorkerForceEventObservable().notifyObservers(this);
+    }
+
+    @Override
+    public void accept(ViewEventProvider provider) {
+        provider.getWorkerForceEventObservable().notifyObservers(this);
     }
 
 }
