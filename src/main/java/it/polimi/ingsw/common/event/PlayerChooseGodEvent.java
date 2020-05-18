@@ -1,5 +1,8 @@
 package it.polimi.ingsw.common.event;
 
+import it.polimi.ingsw.model.ModelEventProvider;
+import it.polimi.ingsw.view.ViewEventProvider;
+
 /**
  * Event for the god choice by the player
  *
@@ -18,6 +21,16 @@ public class PlayerChooseGodEvent extends AbstractPlayerEvent {
 
     public String getGod() {
         return god;
+    }
+
+    @Override
+    public void accept(ModelEventProvider provider) {
+        provider.getPlayerChooseGodEventObservable().notifyObservers(this);
+    }
+
+    @Override
+    public void accept(ViewEventProvider provider) {
+        provider.getPlayerChooseGodEventObservable().notifyObservers(this);
     }
 
 }

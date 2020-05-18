@@ -205,26 +205,18 @@ public class Controller {
             return true;
         }
 
-        responseEventProvider.getResponseInvalidPlayerEventObservable().notifyObservers(
-                new ResponseInvalidPlayerEvent(player)
-        );
+        new ResponseInvalidPlayerEvent(player).accept(responseEventProvider);
         return false;
     }
 
     private void dispatchInvalidState(String player) {
-        responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
-                new ResponseInvalidStateEvent(player)
-        );
+        new ResponseInvalidStateEvent(player).accept(responseEventProvider);
     }
 
     private void dispatchResponseFromModel(String player, ModelResponse response) {
         switch (response) {
-            case INVALID_PARAMS -> responseEventProvider.getResponseInvalidParametersEventObservable().notifyObservers(
-                    new ResponseInvalidParametersEvent(player)
-            );
-            case INVALID_STATE -> responseEventProvider.getResponseInvalidStateEventObservable().notifyObservers(
-                    new ResponseInvalidStateEvent(player)
-            );
+            case INVALID_PARAMS -> new ResponseInvalidParametersEvent(player).accept(responseEventProvider);
+            case INVALID_STATE -> new ResponseInvalidStateEvent(player).accept(responseEventProvider);
         }
     }
 

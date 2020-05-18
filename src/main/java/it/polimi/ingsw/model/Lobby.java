@@ -204,9 +204,7 @@ public class Lobby {
         RoomInfo roomInfo = generateRoomInfo(room);
 
         for (Player other : room.getAllPlayers()) {
-            provider.getLobbyGameStartEventObservable().notifyObservers(
-                    new LobbyGameStartEvent(other.getName(), roomInfo)
-            );
+            new LobbyGameStartEvent(other.getName(), roomInfo).accept(provider);
         }
     }
 
@@ -214,9 +212,7 @@ public class Lobby {
         RoomInfo roomInfo = generateRoomInfo(room);
 
         for (Player other : room.getAllPlayers()) {
-            provider.getLobbyRoomUpdateEventObservable().notifyObservers(
-                    new LobbyRoomUpdateEvent(other.getName(), roomInfo)
-            );
+            new LobbyRoomUpdateEvent(other.getName(), roomInfo).accept(provider);
         }
     }
 
@@ -226,9 +222,7 @@ public class Lobby {
         List<String> players = freePlayers.stream().map(Player::getName).collect(Collectors.toList());
 
         for (Player player : freePlayers) {
-            provider.getLobbyUpdateEventObservable().notifyObservers(
-                    new LobbyUpdateEvent(player.getName(), players, roomInfos)
-            );
+            new LobbyUpdateEvent(player.getName(), players, roomInfos).accept(provider);
         }
     }
 

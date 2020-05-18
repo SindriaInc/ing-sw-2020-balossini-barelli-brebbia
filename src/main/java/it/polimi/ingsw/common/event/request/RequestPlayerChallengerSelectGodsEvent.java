@@ -1,7 +1,12 @@
 package it.polimi.ingsw.common.event.request;
 
+import it.polimi.ingsw.model.ModelEventProvider;
+
 import java.util.List;
 
+/**
+ * Request a PlayerChallengerSelectGodsEvent response from the player
+ */
 public class RequestPlayerChallengerSelectGodsEvent extends AbstractRequestEvent {
 
     public static final String ATTRIBUTE_GODS = "gods";
@@ -24,6 +29,11 @@ public class RequestPlayerChallengerSelectGodsEvent extends AbstractRequestEvent
 
     public int getSelectedGodsCount() {
         return selectedGodsCount;
+    }
+
+    @Override
+    public void accept(ModelEventProvider provider) {
+        provider.getRequestPlayerChallengerSelectGodsEventObservable().notifyObservers(this);
     }
 
 }

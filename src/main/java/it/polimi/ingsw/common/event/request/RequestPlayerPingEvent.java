@@ -3,6 +3,9 @@ package it.polimi.ingsw.common.event.request;
 /**
  * Request a ping response from the player
  * The response will be used to determine whether or not the player is still connected
+ * This event is not related to other request events and can always be replied to
+ *
+ * This event is handled by the VirtualView and therefore does not pass through the ModelEventProvider
  */
 public class RequestPlayerPingEvent extends AbstractRequestEvent {
 

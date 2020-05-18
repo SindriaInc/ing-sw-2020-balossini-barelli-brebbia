@@ -1,10 +1,15 @@
 package it.polimi.ingsw.common.event.request;
 
 import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.model.ModelEventProvider;
 
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Request a RequestWorkerForceEvent from the player
+ * The player may send another view event if the related request was sent between this and a previous non-request event
+ */
 public class RequestWorkerForceEvent extends AbstractRequestEvent {
 
     private final int worker;
@@ -24,6 +29,11 @@ public class RequestWorkerForceEvent extends AbstractRequestEvent {
 
     public Map<Integer, List<Coordinates>> getAvailableTargetDestinations() {
         return availableTargetDestinations;
+    }
+
+    @Override
+    public void accept(ModelEventProvider provider) {
+        provider.getRequestWorkerForceEventObservable().notifyObservers(this);
     }
 
 }

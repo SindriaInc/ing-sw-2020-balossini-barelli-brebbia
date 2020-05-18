@@ -63,10 +63,22 @@ public class ServerConfiguration {
 
     private static final String RESOURCE_DECK_FILE = "gods.json";
 
+    /**
+     * The server port
+     * If null, the default server port will be used instead
+     */
     private final Integer port;
 
+    /**
+     * The path where the log file will be saved
+     * If null, the default log path will be used instead
+     */
     private final String logPath;
 
+    /**
+     * The path to the file from which the deck should be loaded from
+     * If null, the deck will be loaded from the application jar
+     */
     private final String deckPath;
 
     public static ServerConfiguration readDefault() {

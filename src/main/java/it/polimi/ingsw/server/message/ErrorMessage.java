@@ -18,8 +18,14 @@ public class ErrorMessage {
 
     }
 
+    /**
+     * The type of the error message, for more info see ErrorMessage.ErrorType
+     */
     private final ErrorType errorType;
 
+    /**
+     * The message that was being sent, or null the error was not related to a specific message
+     */
     private final OutboundMessage outboundMessage;
 
     public ErrorMessage(ErrorType errorType, OutboundMessage outboundMessage) {

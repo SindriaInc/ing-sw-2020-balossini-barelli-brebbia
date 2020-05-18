@@ -1,6 +1,9 @@
 package it.polimi.ingsw.common.event;
 
 import com.google.gson.annotations.Expose;
+import it.polimi.ingsw.controller.ResponseEventProvider;
+import it.polimi.ingsw.model.ModelEventProvider;
+import it.polimi.ingsw.view.ViewEventProvider;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +20,33 @@ public abstract class AbstractEvent {
 
     @Expose(serialize = false, deserialize = false)
     private List<String> receivers = null;
+
+    /**
+     * Call the appropriate observer in the ModelEventProvider if present
+     * @param provider The ModelEventProvider (the visitor)
+     * @throws IllegalStateException if the actual event is not a Model -> View event
+     */
+    public void accept(ModelEventProvider provider) {
+        throw new IllegalStateException("Not a model event");
+    }
+
+    /**
+     * Call the appropriate observer in the ResponseEventProvider if present
+     * @param provider The ResponseEventProvider (the visitor)
+     * @throws IllegalStateException if the actual event is not a Controller -> View event
+     */
+    public void accept(ResponseEventProvider provider) {
+        throw new IllegalStateException("Not a controller event");
+    }
+
+    /**
+     * Call the appropriate observer in the ViewEventProvider if present
+     * @param provider The ViewEventProvider (the visitor)
+     * @throws IllegalStateException if the actual event is not a View -> Model event
+     */
+    public void accept(ViewEventProvider provider) {
+        throw new IllegalStateException("Not a view event");
+    }
 
     public Optional<String> getSender() {
         return Optional.empty();

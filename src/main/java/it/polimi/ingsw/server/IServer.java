@@ -36,6 +36,13 @@ public interface IServer {
     void registerHandler(IErrorHandler receiver);
 
     /**
+     * Identify a temporary fake name with the actual player name
+     * @param tempName The temporary name
+     * @param player The player name
+     */
+    void identify(String tempName, String player);
+
+    /**
      * Disconnect a player
      * @param player The player's name or the fake temporary name
      */

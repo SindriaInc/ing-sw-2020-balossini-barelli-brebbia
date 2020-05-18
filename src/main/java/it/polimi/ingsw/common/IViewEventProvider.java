@@ -47,6 +47,12 @@ public interface IViewEventProvider {
     void registerPlayerEndTurnEventObserver(Observer<PlayerEndTurnEvent> observer);
 
     /**
+     * Register the observer for PlayerPingEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerPingEventObserver(Observer<PlayerPingEvent> observer);
+
+    /**
      * Register the observer for WorkerBuildBlockEvent in the related observable
      * @param observer The Observer
      */

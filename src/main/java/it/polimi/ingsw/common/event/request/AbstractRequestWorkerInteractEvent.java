@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.Coordinates;
 
 import java.util.List;
 
+/**
+ * Events that relate to a worker interacting with a given coordinate
+ */
 public abstract class AbstractRequestWorkerInteractEvent extends AbstractRequestEvent {
 
     private final int worker;
