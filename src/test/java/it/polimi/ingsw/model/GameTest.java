@@ -132,6 +132,7 @@ class GameTest {
         game.moveWorker(5, new Coordinates(2, 2));
         game.buildBlock(5, new Coordinates(2, 1));
         game.endTurn();
+
     }
 
     /**
@@ -188,7 +189,66 @@ class GameTest {
         assertEquals(winCount, 1);
     }
 
-    private Cell getCell(Game game, int x, int y) {
+    /**
+     * Simulate a simple game where the loser logs out from the game
+     */
+    @Test
+    void simpleGameWithLogout() {
+        constructSimpleGameThreePlayers();
+        game.init(players, deck, true);
+
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_YOUNGEST_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(1, 0))); // Worker 0
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_YOUNGEST_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(3, 3))); // Worker 1
+
+        // Next turn
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_MIDDLE_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(4, 2))); // Worker 2
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_MIDDLE_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(2, 1))); // Worker 3
+
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(4, 4))); // Worker 4
+        assertEquals(game.getCurrentPlayer().getName(), PLAYER_OLDEST_NAME);
+        assertEquals(ModelResponse.ALLOW, game.spawnWorker(new Coordinates(0, 0))); // Worker 5
+
+        assertEquals(ModelResponse.ALLOW, game.moveWorker(0, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(ModelResponse.INVALID_PARAMS, game.buildDome(0, new Coordinates(3, 0)));
+        assertEquals(ModelResponse.ALLOW, game.buildBlock(0, new Coordinates(3, 0)));
+        assertEquals(ModelResponse.ALLOW, game.endTurn());
+
+        getCell(game, 3, 2).setLevel(DefaultAbilities.DEFAULT_DOME_LEVEL);
+        assertEquals(ModelResponse.INVALID_PARAMS, game.moveWorker(3, new Coordinates(2, 0)));
+        assertEquals(ModelResponse.ALLOW, game.moveWorker(2, new Coordinates(4, 3)));
+        assertEquals(ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(ModelResponse.ALLOW, game.buildDome(2, new Coordinates(3, 2)));
+        assertEquals(ModelResponse.ALLOW, game.endTurn());
+
+        assertEquals(ModelResponse.ALLOW, game.moveWorker(4, new Coordinates(3, 4)));
+        assertEquals(ModelResponse.INVALID_STATE, game.endTurn());
+        assertEquals(ModelResponse.ALLOW, game.buildBlock(4, new Coordinates(2, 4)));
+        assertEquals(ModelResponse.ALLOW, game.endTurn());
+
+        getCell(game, 1, 0).setLevel(2);
+        getCell(game, 1, 1).setLevel(2);
+        getCell(game, 2, 1).setLevel(2);
+        getCell(game, 2, 2).setLevel(2);
+        getCell(game, 3, 0).setLevel(2);
+        getCell(game, 2, 3).setLevel(2);
+        getCell(game, 2, 4).setLevel(2);
+        getCell(game, 3, 4).setLevel(2);
+        getCell(game, 4, 4).setLevel(2);
+        getCell(game, 4, 3).setLevel(2);
+        getCell(game, 4, 2).setLevel(2);
+        getCell(game, 3, 2).setLevel(2);
+        getCell(game, 3, 1).setLevel(2);
+        assertEquals(ModelResponse.ALLOW, game.endTurn());
+        game.logout(PLAYER_YOUNGEST_NAME);
+    }
+
+     private Cell getCell(Game game, int x, int y) {
         return game.getOriginalBoard().getCellFromCoords(x, y);
     }
 
@@ -196,6 +256,16 @@ class GameTest {
         List<Player> players = new ArrayList<>();
         players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
         players.add(new Player(PLAYER_OLDEST_NAME, 2));
+
+        this.game = new Game(new ModelEventProvider());
+        this.players = players;
+    }
+
+    private void constructSimpleGameThreePlayers() {
+        List<Player> players = new ArrayList<>();
+        players.add(new Player(PLAYER_YOUNGEST_NAME, 1));
+        players.add(new Player(PLAYER_MIDDLE_NAME, 2));
+        players.add(new Player(PLAYER_OLDEST_NAME, 3));
 
         this.game = new Game(new ModelEventProvider());
         this.players = players;
