@@ -1,11 +1,8 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.clientstates.inputstates.GetGamerData;
-import it.polimi.ingsw.client.clientstates.inputstates.GetGamerDataCli;
-import it.polimi.ingsw.client.clientstates.inputstates.GetGamerDataGui;
-import it.polimi.ingsw.client.clientstates.lobbystates.ChooseLobby;
-import it.polimi.ingsw.client.clientstates.lobbystates.ChooseLobbyCli;
-import it.polimi.ingsw.client.clientstates.lobbystates.ChooseLobbyGui;
+import it.polimi.ingsw.client.cli.CliFunctions;
+import it.polimi.ingsw.client.cli.InputHandler;
+import it.polimi.ingsw.client.gui.GuiFunctions;
 
 public class FactoryPattern {
 
@@ -15,20 +12,11 @@ public class FactoryPattern {
         this.gui = gui;
     }
 
-    public GetGamerData getGamerData() {
+    public AbstractFunctions UsableFunctions(InputHandler inputHandler) {
         if (gui) {
-            return new GetGamerDataGui();
+            return new GuiFunctions();
         }
-
-        return new GetGamerDataCli();
-    }
-
-    public ChooseLobby chooseLobby() {
-        if (gui) {
-            return new ChooseLobbyGui();
-        }
-
-        return new ChooseLobbyCli();
+        return new CliFunctions(inputHandler);
     }
 
 }

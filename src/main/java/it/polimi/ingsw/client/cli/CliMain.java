@@ -452,6 +452,7 @@ public class CliMain {
     }
 
     private void onMessage(String message) {
+        //Se messaggio di avvenuta connessione vado in login state
         if (message.equals(IClient.CONNECT_MESSAGE)) {
             state = CliState.LOGIN;
             out("Connection established");
@@ -460,6 +461,7 @@ public class CliMain {
 
         AbstractEvent event;
 
+        //Deserializzo l'evento
         try {
             event = serializer.deserialize(message);
         } catch (SerializationException exception) {
@@ -467,28 +469,35 @@ public class CliMain {
             return;
         }
 
+        //Se è una richiesta di ping rispondo
         if (event instanceof RequestPlayerPingEvent) {
             client.send(serializer.serialize(new PlayerPingEvent(player)));
             return;
         }
 
+        //Se è un response event rifiuto
         if (event instanceof AbstractResponseEvent) {
             invalid = true;
             return;
         }
 
+        //Se è un lobbyUpdate aggiorno la lobby. NextState = LobbyState
         if (event instanceof LobbyUpdateEvent) {
             rooms.clear();
             rooms.addAll(((LobbyUpdateEvent) event).getRooms());
 
             printLobby();
             state = CliState.LOBBY;
-        } else if (event instanceof LobbyRoomUpdateEvent) {
+        }
+        // Se è un roomUpdate aggiorno la room. Next state = RoomState
+        else if (event instanceof LobbyRoomUpdateEvent) {
             room = ((LobbyRoomUpdateEvent) event).getRoomInfo();
 
             printRoom();
             state = CliState.ROOM;
-        } else if (event instanceof LobbyGameStartEvent) {
+        }
+        //Se è un lobbyGameStart creo le info di celle, stampo la board vuota e vado in GameState
+        else if (event instanceof LobbyGameStartEvent) {
             for (int x = 0; x < Game.BOARD_COLUMNS; x++) {
                 for (int y = 0; y < Game.BOARD_ROWS; y++) {
                     map[x][y] = new CellInfo(x, y);
@@ -497,16 +506,22 @@ public class CliMain {
 
             printBoard();
             state = CliState.GAME;
-        } else if (event instanceof PlayerTurnStartEvent) {
+        }
+        //Se è uno start turn stampo i comandi possibili e creo il turno
+        else if (event instanceof PlayerTurnStartEvent) {
             availableCommands.clear();
 
             turn = ((PlayerTurnStartEvent) event).getPlayer().equals(player);
-        } else if (event instanceof AbstractRequestEvent) {
+        }
+        //Se è una richiesta
+        else if (event instanceof AbstractRequestEvent) {
+            //Se sto aspettando un comando azzero la lista dei comandi possibili
             if (sent) {
                 availableCommands.clear();
                 sent = false;
             }
-
+            //Se è una richiesta di spawn worker aggiungo spawx:x:y ad availableCommands.
+            //Controllo i parametri e mando al server
             if (event instanceof RequestWorkerSpawnEvent) {
                 availableCommands.add(new Command("spawn", "x:y",
                         args -> {
@@ -524,7 +539,9 @@ public class CliMain {
                             return true;
                         }
                 ));
-            } else if (event instanceof RequestWorkerMoveEvent) {
+            }
+            //Aggiungo move ai comandi
+            else if (event instanceof RequestWorkerMoveEvent) {
                 int worker = ((RequestWorkerMoveEvent) event).getWorker();
 
                 availableCommands.add(new Command("move" + worker, "x:y",
@@ -543,7 +560,9 @@ public class CliMain {
                             return true;
                         }
                 ));
-            } else if (event instanceof RequestWorkerBuildBlockEvent) {
+            }
+            //Aggiungo block ai comandi
+            else if (event instanceof RequestWorkerBuildBlockEvent) {
                 int worker = ((RequestWorkerBuildBlockEvent) event).getWorker();
 
                 availableCommands.add(new Command("block" + worker, "x:y",
@@ -562,7 +581,9 @@ public class CliMain {
                             return true;
                         }
                 ));
-            } else if (event instanceof RequestWorkerBuildDomeEvent) {
+            }
+            //Aggiungo dome ai comandi
+            else if (event instanceof RequestWorkerBuildDomeEvent) {
                 int worker = ((RequestWorkerBuildDomeEvent) event).getWorker();
 
                 availableCommands.add(new Command("dome" + worker, "x:y",
@@ -581,7 +602,9 @@ public class CliMain {
                             return true;
                         }
                 ));
-            } else if (event instanceof RequestPlayerEndTurnEvent) {
+            }
+            //Aggiungo end ai comandi
+            else if (event instanceof RequestPlayerEndTurnEvent) {
                 if (((RequestPlayerEndTurnEvent) event).getCanBeEnded()) {
                     availableCommands.add(new Command("end", null,
                             args -> {
@@ -601,34 +624,45 @@ public class CliMain {
         } else {
             availableCommands.clear();
 
+            //Posiziono un worker
             if (event instanceof WorkerSpawnEvent) {
                 WorkerSpawnEvent workerSpawnEvent = (WorkerSpawnEvent) event;
 
                 workers.put(workerSpawnEvent.getId(), new WorkerInfo(workerSpawnEvent.getId(), workerSpawnEvent.getPlayer(), workerSpawnEvent.getPosition()));
                 printBoard();
-            } else if (event instanceof WorkerMoveEvent) {
+            }
+            //Muovo un worker
+            else if (event instanceof WorkerMoveEvent) {
                 WorkerMoveEvent workerMoveEvent = (WorkerMoveEvent) event;
 
                 workers.get(workerMoveEvent.getId()).setPosition(((WorkerMoveEvent) event).getDestination());
                 printBoard();
-            } else if (event instanceof WorkerBuildBlockEvent) {
+            }
+            //Costruisco un block
+            else if (event instanceof WorkerBuildBlockEvent) {
                 WorkerBuildBlockEvent workerBuildBlockEvent = (WorkerBuildBlockEvent) event;
 
                 CellInfo cellInfo = getCellInfo(workerBuildBlockEvent.getDestination());
                 cellInfo.setLevel(cellInfo.getLevel() + 1);
                 printBoard();
-            } else if (event instanceof WorkerBuildDomeEvent) {
+            }
+            //Costruisco una dome
+            else if (event instanceof WorkerBuildDomeEvent) {
                 WorkerBuildDomeEvent workerBuildDomeEvent = (WorkerBuildDomeEvent) event;
 
                 CellInfo cellInfo = getCellInfo(workerBuildDomeEvent.getDestination());
                 cellInfo.setDoomed(true);
                 printBoard();
-            } else if (event instanceof PlayerLoseEvent) {
+            }
+            //Un giocatore perde
+            else if (event instanceof PlayerLoseEvent) {
                 if (((PlayerLoseEvent) event).getPlayer().equals(player)) {
                     state = CliState.SPECTATOR;
                     printBoard();
                 }
-            } else if (event instanceof PlayerWinEvent) {
+            }
+            //Un giocatore vince
+            else if (event instanceof PlayerWinEvent) {
                 PlayerWinEvent playerWinEvent = (PlayerWinEvent) event;
 
                 winner = playerWinEvent.getPlayer();
