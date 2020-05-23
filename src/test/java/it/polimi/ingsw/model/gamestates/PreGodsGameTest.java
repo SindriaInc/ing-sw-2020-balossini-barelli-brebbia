@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.info.GodInfo;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.decorators.AdditionalMove;
 import it.polimi.ingsw.model.abilities.decorators.BuildBeforeMove;
@@ -51,9 +52,10 @@ class PreGodsGameTest {
     void checkGetAvailableGods() {
         modelEventProvider.registerPlayerTurnStartEventObserver(event -> turnStartCount++);
 
-        modelEventProvider.registerPlayerRequestChallengerSelectGodsEventObserver(event -> {
+        modelEventProvider.registerRequestPlayerChallengerSelectGodsEventObserver(event -> {
             assertEquals(event.getSelectedGodsCount(), playerCount);
-            assertTrue(equalsNoOrder(event.getGods(), godsToStringList(gods)));
+            List<GodInfo> godInfos = godsToGodInfoList(gods);
+            assertTrue(equalsNoOrder(event.getGods(), godInfos));
             requestSelectCount++;
         });
 
@@ -69,9 +71,9 @@ class PreGodsGameTest {
 
         modelEventProvider.registerRequestPlayerChooseGodEventObserver(event -> {
             if (requestChooseCount == 0) {
-                assertTrue(equalsNoOrder(event.getAvailableGods(), selectedGods));
+                assertTrue(equalsNoOrder(godInfoToStringList(event.getAvailableGods()), selectedGods));
             } else if (requestChooseCount == 1) {
-                assertTrue(equalsNoOrder(event.getAvailableGods(), List.of(gods.get(0).getName())));
+                assertTrue(equalsNoOrder(godInfoToStringList(event.getAvailableGods()), List.of(gods.get(0).getName())));
             }
             requestChooseCount++;
         });
@@ -155,8 +157,12 @@ class PreGodsGameTest {
         assertEquals(preGodsGame.getCurrentPlayer(), preGodsGame.getPlayers().get(1));
     }
 
-    private List<String> godsToStringList(List<God> gods) {
-        return gods.stream().map(God::getName).collect(Collectors.toList());
+    private List<String> godInfoToStringList(List<GodInfo> gods) {
+        return gods.stream().map(GodInfo::getName).collect(Collectors.toList());
+    }
+
+    private List<GodInfo> godsToGodInfoList(List<God> gods) {
+        return gods.stream().map(god -> new GodInfo(god.getName(), god.getId(), god.getTitle(), god.getDescription(), god.getType())).collect(Collectors.toList());
     }
 
 }

@@ -27,10 +27,16 @@ public interface IModelEventProvider {
     void registerLobbyGameStartEventObserver(Observer<LobbyGameStartEvent> observer);
 
     /**
-     * Register the observer for PlayerRequestChallengerSelectGodsEvent in the related observable
+     * Register the observer for RequestPlayerPingEvent in the related observable
      * @param observer The Observer
      */
-    void registerPlayerRequestChallengerSelectGodsEventObserver(Observer<RequestPlayerChallengerSelectGodsEvent> observer);
+    void registerRequestPlayerPingEventObserver(Observer<RequestPlayerPingEvent> observer);
+
+    /**
+     * Register the observer for RequestPlayerChallengerSelectGodsEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerRequestPlayerChallengerSelectGodsEventObserver(Observer<RequestPlayerChallengerSelectGodsEvent> observer);
 
     /**
      * Register the observer for RequestPlayerChooseGodEvent in the related observable

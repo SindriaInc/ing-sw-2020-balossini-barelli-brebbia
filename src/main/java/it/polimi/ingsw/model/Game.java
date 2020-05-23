@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.IModelEventProvider;
 import it.polimi.ingsw.model.gamestates.*;
 

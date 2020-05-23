@@ -11,8 +11,6 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class RequestPlayerEndTurnEvent extends AbstractRequestEvent {
 
-    public static final String ATTRIBUTE_CAN_BE_ENDED = "canBeEnded";
-
     private final boolean canBeEnded;
 
     public RequestPlayerEndTurnEvent(String player, boolean canBeEnded) {

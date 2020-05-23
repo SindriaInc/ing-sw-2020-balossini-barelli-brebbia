@@ -2,57 +2,61 @@ package it.polimi.ingsw.client.cli;
 
 public class CliConstants {
 
-    public static final String COMMAND_STOP = "stop";
+    private static final String COLOR_PREFIX = "\u001b[";
+    private static final String COLOR_SUFFIX = "m";
+    private static final String BRIGHT_CODE = ";1";
 
-    public static final String COMMAND_JOIN = "join";
+    enum CliColor {
 
-    public static final String COMMAND_CREATE = "create";
+        BLACK("30", "40", "Black"),
+        RED("31", "41", "Red"),
+        GREEN("32", "42", "Green"),
+        YELLOW("33", "43", "Yellow"),
+        BLUE("34", "44", "Blue"),
+        MAGENTA("35", "45", "Magenta"),
+        CYAN("36", "46", "Cyan"),
+        WHITE("37", "47", "White");
 
-    public static final int SPACING = 7;
+        private final String foreground;
+        private final String background;
+        private final String name;
+
+        CliColor(String foreground, String background, String name) {
+            this.foreground = foreground;
+            this.background = background;
+            this.name = name;
+        }
+
+        public String getForeground() {
+            return COLOR_PREFIX + foreground + COLOR_SUFFIX;
+        }
+
+        public String getBackground() {
+            return COLOR_PREFIX + background + COLOR_SUFFIX;
+        }
+
+        public String getBrightBackground() {
+            return COLOR_PREFIX + background + BRIGHT_CODE + COLOR_SUFFIX;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+    }
 
     public static final int TERM_HEIGHT = 20;
 
-    public static final int TERM_WIDTH = 80;
+    public static final int TERM_WIDTH = 120;
 
     public static final String CLEAR = System.lineSeparator().repeat(TERM_HEIGHT);
 
-    public static final String SEPARATOR_HIGH = "=".repeat(TERM_WIDTH);
+    public static final int HEADER_SPACING = 1;
 
-    public static final String SEPARATOR_LOW = "-".repeat(TERM_WIDTH);
+    public static final int STATUS_SPACING = 2;
 
-//    public static String getCommandStop() {
-//        return COMMAND_STOP;
-//    }
-//
-//    public static String getCommandJoin() {
-//        return COMMAND_JOIN;
-//    }
-//
-//    public static String getCommandCreate() {
-//        return COMMAND_CREATE;
-//    }
-//
-//    public static int getSPACING() {
-//        return SPACING;
-//    }
-//
-//    public static int getTermHeight() {
-//        return TERM_HEIGHT;
-//    }
-//
-//    public static int getTermWidth() {
-//        return TERM_WIDTH;
-//    }
-//
-//    public static String getCLEAR() {
-//        return CLEAR;
-//    }
-//
-//    public static String getSeparatorHigh() {
-//        return SEPARATOR_HIGH;
-//    }
-//
-//    public static String getSeparatorLow() {
-//        return SEPARATOR_LOW;
-//    }
+    public static final CliColor[] PLAYER_COLORS = {CliColor.RED, CliColor.GREEN, CliColor.BLUE};
+
+    public static final String RESET = COLOR_PREFIX + "0" + COLOR_SUFFIX;
+
 }

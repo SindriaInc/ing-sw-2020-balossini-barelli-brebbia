@@ -1,11 +1,14 @@
 package it.polimi.ingsw.common;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Observable<T> {
 
-    private final List<Observer<T>> observers = new ArrayList<>();
+    /**
+     * The list of observers, kept in order of insertion
+     */
+    private final List<Observer<T>> observers = new LinkedList<>();
 
     /**
      * Registers an observer

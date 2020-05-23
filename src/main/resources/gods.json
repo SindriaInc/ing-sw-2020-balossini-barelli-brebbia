@@ -5,6 +5,7 @@
     "name":"Apollo",
     "title":"God of Music",
     "type":"Simple",
+    "symbol": "🎵",
     "effects":[
     	{
     		"name":"ForceSwapMove",
@@ -18,6 +19,7 @@
     "name":"Artemis",
     "title":"Goddess of the hunt",
     "type":"Simple",
+    "symbol":"🏹",
     "effects":[
     	{
     		"name":"AdditionalMove",
@@ -31,6 +33,7 @@
     "name":"Athena",
     "title":"Goddess of Wisdom",
     "type":"Simple",
+    "symbol":"🧠",
      "effects":[
     	{
     		"name":"BlockOnPlayerMoveUp",
@@ -44,6 +47,7 @@
     "name":"Atlas",
     "title":"Titan Shouldering the Heaven",
     "type":"Simple",
+    "symbol":"💪",
     "effects":[
     	{
     		"name":"BuildDomeOnAnyLevel",
@@ -57,6 +61,7 @@
     "name":"Demeter",
     "title":"Goddess of the Harvest",
     "type":"Simple",
+    "symbol":"🌾",
      "effects":[
     	{
     		"name":"AdditionalBuildOnDifferentCell",
@@ -70,6 +75,7 @@
     "name":"Hephaestus",
     "title":"God of Blacksmiths",
     "type":"Simple",
+    "symbol":"🔨",
      "effects":[
     	{
     		"name":"AdditionalBuildOnSameCell",
@@ -83,6 +89,7 @@
     "name":"Minotaur",
     "title":"Bull-headed monster",
     "type":"Simple",
+    "symbol":"♉",
     "effects":[
     	{
     		"name":"ForcePushMove",
@@ -96,6 +103,7 @@
     "name":"Pan",
     "title":"God of the Wild",
     "type":"Simple",
+    "symbol":"🌳",
     "effects":[
     	{
     		"name":"WinOnDeltaLevel",
@@ -109,9 +117,14 @@
     "name":"Prometheus",
     "title":"Titan Benefactor of Mankind",
     "type":"Simple",
+    "symbol":"🔥",
     "effects":[
     	{
     		"name":"BuildBeforeMove",
+    		"opponents":"false"
+    	},
+    	{
+    		"name":"BlockMoveUpAfterBuild",
     		"opponents":"false"
     	}
     ]
@@ -122,6 +135,7 @@
     "name":"Charon",
     "title":"Ferryman to the Underworld",
     "type":"Advanced",
+    "symbol":"⛵",
     "effects":[
     	{
     		"name":"ParkourCross",
@@ -135,6 +149,7 @@
     "name":"Hera",
     "title":"Goddess of Marriage",
     "type":"Advanced",
+    "symbol": "👰",
     "effects":[
     	{
     		"name":"NoWinOnPerimeter",
@@ -148,6 +163,7 @@
     "name":"Hestia",
     "title":"Goddess of Hearth and Home",
     "type":"Advanced",
+    "symbol":"🏠",
     "effects":[
     	{
     		"name":"AdditionalBuildNotOnPerimeter",
@@ -161,6 +177,7 @@
     "name":"Hypnus",
     "title":"God of Sleep",
     "type":"Advanced",
+    "symbol":"🌀",
     "effects":[
     	{
     		"name":"BlockMoveHigherWorker",
@@ -174,6 +191,7 @@
     "name":"Zeus",
     "title":"God of the Sky",
     "type":"Advanced",
+    "symbol":"🗲🗲",
      "effects":[
     	{
     		"name":"BuildBelow",

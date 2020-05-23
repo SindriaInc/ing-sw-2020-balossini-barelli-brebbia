@@ -5,16 +5,14 @@ import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 import it.polimi.ingsw.common.logging.reader.FileLogReader;
 import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.model.Deck;
+import it.polimi.ingsw.server.message.OutboundMessage;
 import it.polimi.ingsw.server.socket.SocketServer;
 
 import javax.naming.ConfigurationException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -145,8 +143,23 @@ public class ServerMain {
         Scanner scanner = new Scanner(System.in);
 
         try {
-            while (scanner.hasNext()) {
-                String input = scanner.next();
+            while (scanner.hasNextLine()) {
+                String input = scanner.nextLine();
+                String[] arguments = input.split(" ");
+
+                if (input.startsWith("send")) {
+                    if (arguments.length < 3) {
+                        logger.info("Usage: send <name> <message ...>");
+                        continue;
+                    }
+
+                    String name = arguments[1];
+                    String message = String.join(" ", Arrays.copyOfRange(arguments, 2, arguments.length));
+
+                    logger.info("Trying to send message to: " + name);
+                    server.send(new OutboundMessage(name, message));
+                    continue;
+                }
 
                 if (input.equals(COMMAND_STOP)) {
                     shutdown();

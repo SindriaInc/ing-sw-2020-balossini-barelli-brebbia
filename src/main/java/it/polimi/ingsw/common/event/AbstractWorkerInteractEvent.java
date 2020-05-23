@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.event;
 
-import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.info.Coordinates;
 
 /**
  * Abstract class for events which concern the worker interactions

@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.event.PlayerChooseGodEvent;
 import it.polimi.ingsw.common.event.PlayerTurnStartEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerChallengerSelectGodsEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerChooseGodEvent;
+import it.polimi.ingsw.common.info.GodInfo;
 import it.polimi.ingsw.model.*;
 
 import java.util.*;
@@ -196,10 +197,10 @@ public class PreGodsGame extends AbstractGameState {
      * If the selection has not been made the list will contain every god configured
      * Otherwise, the list will contain only the remaining gods that can be picked by the current player
      *
-     * @return The List of gods
+     * @return The gods available as a list of GodInfo
      */
-    private List<String> getAvailableGods() {
-        return toStringList(availableGods);
+    private List<GodInfo> getAvailableGods() {
+        return toGodInfoList(availableGods);
     }
 
     /**
@@ -243,6 +244,20 @@ public class PreGodsGame extends AbstractGameState {
         }
 
         return list;
+    }
+
+    private List<GodInfo> toGodInfoList(List<God> gods) {
+        List<GodInfo> list = new ArrayList<>();
+
+        for (God god : gods) {
+            list.add(toGodInfo(god));
+        }
+
+        return list;
+    }
+
+    private GodInfo toGodInfo(God god) {
+        return new GodInfo(god.getName(), god.getId(), god.getTitle(), god.getDescription(), god.getType());
     }
 
     private God getGodByName(String god) {

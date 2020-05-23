@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.event.PlayerTurnStartEvent;
 import it.polimi.ingsw.common.event.WorkerSpawnEvent;
 import it.polimi.ingsw.common.event.request.RequestWorkerSpawnEvent;

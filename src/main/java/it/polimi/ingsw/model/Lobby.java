@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.common.IPlayerChecker;
-import it.polimi.ingsw.common.RoomInfo;
+import it.polimi.ingsw.common.info.RoomInfo;
 import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;

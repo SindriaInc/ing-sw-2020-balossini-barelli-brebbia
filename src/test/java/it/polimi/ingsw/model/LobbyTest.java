@@ -1,12 +1,13 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.common.IPlayerChecker;
+import it.polimi.ingsw.common.event.request.RequestPlayerPingEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class LobbyTest {
 
@@ -18,8 +19,9 @@ class LobbyTest {
     private int lobbyRoomUpdateCount;
     private int lobbyGameStartEventCount;
 
-    @BeforeEach
+    private int pingCount;
 
+    @BeforeEach
     void setUp() {
         deck = new Deck(List.of());
         lobby = new Lobby(deck);
@@ -97,6 +99,19 @@ class LobbyTest {
     @Test
     void playerCheckerTest(){
         assertNotNull(lobby.getPlayerChecker());
+    }
+
+    @Test
+    void checkProvider() {
+        modelEventProvider.registerRequestPlayerPingEventObserver((event) -> {
+            pingCount++;
+        });
+
+        modelEventProvider.getRequestPlayerPingEventObservable().notifyObservers(
+                new RequestPlayerPingEvent("Example")
+        );
+
+        assertEquals(1, pingCount);
     }
 
 }

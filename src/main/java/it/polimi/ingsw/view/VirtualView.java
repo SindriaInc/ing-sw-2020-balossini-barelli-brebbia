@@ -4,10 +4,7 @@ import it.polimi.ingsw.common.IModelEventProvider;
 import it.polimi.ingsw.common.IPlayerChecker;
 import it.polimi.ingsw.common.IResponseEventProvider;
 import it.polimi.ingsw.common.Validator;
-import it.polimi.ingsw.common.event.AbstractEvent;
-import it.polimi.ingsw.common.event.PlayerLoginEvent;
-import it.polimi.ingsw.common.event.PlayerLogoutEvent;
-import it.polimi.ingsw.common.event.PlayerPingEvent;
+import it.polimi.ingsw.common.event.*;
 import it.polimi.ingsw.common.event.lobby.AbstractLobbyEvent;
 import it.polimi.ingsw.common.event.request.AbstractRequestEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerPingEvent;
@@ -86,6 +83,8 @@ public class VirtualView {
         eventSerializer = new GsonEventSerializer();
 
         // Register the VirtualView to listen for login, ping, and logout events
+        // Since these events got registered first, the VirtualView will be the first to read them
+        viewEventProvider.registerPlayerLoginEventObserver(this::onLogin);
         viewEventProvider.registerPlayerPingEventObserver(this::onPing);
         viewEventProvider.registerPlayerLogoutEventObserver(this::onLogout);
 
@@ -110,7 +109,7 @@ public class VirtualView {
         modelEventProvider.registerLobbyRoomUpdateEventObserver(this::onLobbyEvent);
         modelEventProvider.registerLobbyGameStartEventObserver(this::onLobbyEvent);
 
-        modelEventProvider.registerPlayerRequestChallengerSelectGodsEventObserver(this::onRequestEvent);
+        modelEventProvider.registerRequestPlayerChallengerSelectGodsEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestPlayerChooseGodEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestPlayerEndTurnEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestWorkerBuildBlockEventObserver(this::onRequestEvent);
@@ -149,8 +148,7 @@ public class VirtualView {
 
             if (System.currentTimeMillis() >= time + PING_TIMEOUT_MS) {
                 // Player timed out, create a custom PlayerLogoutEvent
-                disconnect(player);
-                new PlayerLogoutEvent(player).accept(getViewEventProvider());
+                dispatchLogout(player);
                 continue;
             }
 
@@ -162,12 +160,45 @@ public class VirtualView {
         lastPlayerPings.put(tempName, System.currentTimeMillis());
     }
 
+    private void onLogin(PlayerLoginEvent event) {
+        if (event.getSender().isEmpty()) {
+            return;
+        }
+
+        String sender = event.getSender().get();
+
+        if (IServer.isIdentified(sender)) {
+            throw new IllegalStateException("Player already logged in");
+        }
+
+        String player = event.getPlayer();
+
+        if (!playerNameValidator.isValid(player) || !playerChecker.isNameAvailable(player) || event.getAge() <= 0) {
+            // Invalid name or age
+            throw new IllegalArgumentException("Invalid player name or age");
+        }
+
+        server.identify(sender, player);
+
+        // Replace the temporary identifier with a new one
+        lastPlayerPings.remove(sender);
+        lastPlayerPings.put(player, System.currentTimeMillis());
+    }
+
     private void onPing(PlayerPingEvent event) {
+        if (event.getSender().isEmpty()) {
+            return;
+        }
+
         // Player replied to a ping event
-        lastPlayerPings.put(event.getPlayer(), System.currentTimeMillis());
+        lastPlayerPings.put(event.getSender().get(), System.currentTimeMillis());
     }
 
     private void onLogout(PlayerLogoutEvent event) {
+        if (!event.isValid()) {
+            return;
+        }
+
         // Player wants to disconnect
         disconnect(event.getPlayer());
     }
@@ -184,45 +215,27 @@ public class VirtualView {
             return;
         }
 
-        String player = message.getSourcePlayer();
+        String sender = message.getSourcePlayer();
+        event.setSender(sender);
 
-        if (!IServer.isIdentified(player)) {
-            // The player has not identified, the only packet that can be sent is a PlayerLoginEvent
-
-            try {
-                PlayerLoginEvent playerLoginEvent = (PlayerLoginEvent) event;
-                player = playerLoginEvent.getPlayer();
-
-                if (!playerNameValidator.isValid(player) || !playerChecker.isNameAvailable(player) || playerLoginEvent.getAge() <= 0) {
-                    // Invalid name or age
-                    sendInvalidResponse(message.getSourcePlayer());
-                    return;
-                }
-
-                server.identify(message.getSourcePlayer(), player);
-
-                // Replace the temporary identifier with a new one
-                lastPlayerPings.remove(message.getSourcePlayer());
-                lastPlayerPings.put(player, System.currentTimeMillis());
-            } catch (ClassCastException exception) {
+        if (IServer.isIdentified(sender)) {
+            if (!event.isValid()) {
                 // Bad client
-                Logger.getInstance().warning("Invalid event received while logging in: " + exception.getMessage());
-                sendInvalidResponse(message.getSourcePlayer());
+                Logger.getInstance().warning("Invalid player in event from " + event.getSender());
+                sendInvalidResponse(sender);
                 return;
             }
-        } else if (event.getSender().isEmpty() || !player.equals(event.getSender().get())) {
-            // Bad client
-            Logger.getInstance().warning("Invalid player in event: Got " + event.getSender() + ", expected " + message.getSourcePlayer());
-            sendInvalidResponse(message.getSourcePlayer());
-            return;
         }
 
         try {
             event.accept(getViewEventProvider());
         } catch (IllegalStateException exception) {
-            // Bad client, didn't send a view -> model event
-            Logger.getInstance().warning("Invalid event received from " + event.getSender().get() + ": " + event.getClass().getSimpleName());
-            onResponse(new ResponseInvalidEvent(player));
+            // Bad client, didn't send a view -> model event or sent a login after already logging in
+            Logger.getInstance().warning("Invalid event received from " + sender + ": " + event.getClass().getSimpleName());
+            onResponse(new ResponseInvalidEvent(sender));
+        } catch (IllegalArgumentException exception) {
+            // ClientConnector sent a login event with invalid parameters
+            onResponse(new ResponseInvalidParametersEvent(sender));
         }
     }
 
@@ -235,7 +248,7 @@ public class VirtualView {
 
         // Disconnect the player
         String player = outboundMessage.get().getDestinationPlayer();
-        disconnect(player);
+        dispatchLogout(player);
     }
 
     private void disconnect(String player) {
@@ -277,6 +290,12 @@ public class VirtualView {
 
     private void dispatchEvent(String player, String serialized) {
         server.send(new OutboundMessage(player, serialized));
+    }
+
+    private void dispatchLogout(String player) {
+        var event = new PlayerLogoutEvent(player);
+        event.setSender(player);
+        event.accept(getViewEventProvider());
     }
 
     private String serializedEvent(AbstractEvent event) {

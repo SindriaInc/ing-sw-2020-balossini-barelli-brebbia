@@ -4,8 +4,6 @@ import it.polimi.ingsw.common.event.AbstractPlayerEvent;
 import it.polimi.ingsw.controller.ResponseEventProvider;
 import it.polimi.ingsw.view.ViewEventProvider;
 
-import java.util.Optional;
-
 /**
  * Lobby events are events sent only by the model
  * They may be sent multiple times to update the state of the lobby or room, the client should update every time
@@ -14,11 +12,6 @@ public abstract class AbstractLobbyEvent extends AbstractPlayerEvent {
 
     public AbstractLobbyEvent(String player) {
         super(player);
-    }
-
-    @Override
-    public Optional<String> getSender() {
-        return Optional.empty();
     }
 
     public final void accept(ResponseEventProvider provider) {

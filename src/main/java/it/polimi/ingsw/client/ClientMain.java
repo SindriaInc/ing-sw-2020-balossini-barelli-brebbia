@@ -1,48 +1,64 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.cli.CliMain;
-import it.polimi.ingsw.client.cli.InputHandler;
+import it.polimi.ingsw.client.cli.CliClientViewer;
+import it.polimi.ingsw.client.gui.GuiClientViewer;
 import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientMain {
 
     public static final long SLEEP_PERIOD_MS = 100;
 
-    /**
-     * The factory pattern
-     */
-    private FactoryPattern factory;
-
-    /**
-     * The Client
-     */
-    private Client client;
-
-    /**
-     * The asynchronous input handler
-     */
-    private InputHandler inputHandler;
-
-    private final CliMain cliMain;
-
     public ClientMain(String... args) {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
         Logger logger = Logger.getInstance();
-        logger.addReader(new ConsoleLogReader(System.out));
         logger.filter("\"RequestPlayerPingEvent\"");
         logger.filter("\"PlayerPingEvent\"");
-        logger.start(Executors.newCachedThreadPool());
         logger.info("Initializing client...");
 
-        boolean gui = false;
+        // Launch the gui by default
+        boolean gui = true;
 
-        cliMain = new CliMain();
-        cliMain.init();
+        if (args.length > 0) {
+            if (args.length != 1) {
+                printAndQuit(executorService, "Invalid parameters, only one parameter is allowed: <cli|gui>");
+                return;
+            }
 
-//        this.factory = new FactoryPattern(gui);
-//        this.client = new Client(factory.UsableFunctions(inputHandler));
+            String type = args[0];
+
+            if (type.equals("cli")) {
+                gui = false;
+            } else if (type.equals("gui")) {
+                gui = true;
+            } else {
+                printAndQuit(executorService, "Invalid client type, allowed types: cli, gui");
+                return;
+            }
+        }
+
+        // The viewer should register its own log reader
+        // The viewer will initialize the client connector when ready
+        if (gui) {
+            new GuiClientViewer(executorService);
+        } else {
+            new CliClientViewer(executorService);
+        }
+
+        logger.start(executorService);
+    }
+
+    private void printAndQuit(ExecutorService executorService, String message) {
+        Logger logger = Logger.getInstance();
+        logger.addReader(new ConsoleLogReader(System.out));
+        logger.start(executorService);
+        logger.warning(message);
+        logger.shutdown();
+        executorService.shutdownNow();
     }
 
 }

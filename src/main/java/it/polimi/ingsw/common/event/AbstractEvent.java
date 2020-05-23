@@ -19,7 +19,17 @@ import java.util.Optional;
 public abstract class AbstractEvent {
 
     @Expose(serialize = false, deserialize = false)
+    private String sender = null;
+
+    @Expose(serialize = false, deserialize = false)
     private List<String> receivers = null;
+
+    /**
+     * Checks if the parameters of this event are valid related to the sender
+     */
+    public boolean isValid() {
+        return true;
+    }
 
     /**
      * Call the appropriate observer in the ModelEventProvider if present
@@ -49,7 +59,11 @@ public abstract class AbstractEvent {
     }
 
     public Optional<String> getSender() {
-        return Optional.empty();
+        return Optional.ofNullable(sender);
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public Optional<List<String>> getReceivers() {

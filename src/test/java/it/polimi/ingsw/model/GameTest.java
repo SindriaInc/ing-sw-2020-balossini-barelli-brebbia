@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import it.polimi.ingsw.model.abilities.decorators.*;
 import org.junit.jupiter.api.Test;

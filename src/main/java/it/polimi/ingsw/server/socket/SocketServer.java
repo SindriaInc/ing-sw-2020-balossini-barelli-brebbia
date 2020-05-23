@@ -171,6 +171,8 @@ public class SocketServer implements IServer {
             try {
                 Socket socket = serverSocket.accept();
                 Logger.getInstance().debug("Accepted a new socket from " + socket.getInetAddress().getHostAddress());
+                // Avoid the system delaying packets
+                socket.setTcpNoDelay(true);
 
                 String tempName = IServer.UNIDENTIFIED_PLAYER_PREFIX + nextPlayerId++;
 

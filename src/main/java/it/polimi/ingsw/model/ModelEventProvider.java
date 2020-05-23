@@ -27,7 +27,12 @@ public class ModelEventProvider implements IModelEventProvider {
     private final Observable<LobbyGameStartEvent> lobbyGameStartEventObservable = new Observable<>();
 
     /**
-     * Observable for RequestChallengerSelectGodsEvent
+     * Observable for RequestPlayerPingEvent
+     */
+    private final Observable<RequestPlayerPingEvent> requestPlayerPingEventObservable = new Observable<>();
+
+    /**
+     * Observable for RequestPlayerChallengerSelectGodsEvent
      */
     private final Observable<RequestPlayerChallengerSelectGodsEvent> requestPlayerChallengerSelectGodsEventObservable = new Observable<>();
 
@@ -142,10 +147,18 @@ public class ModelEventProvider implements IModelEventProvider {
     }
 
     /**
-     * @see IModelEventProvider#registerPlayerRequestChallengerSelectGodsEventObserver(Observer)
+     * @see IModelEventProvider#registerRequestPlayerPingEventObserver(Observer)
      */
     @Override
-    public void registerPlayerRequestChallengerSelectGodsEventObserver(Observer<RequestPlayerChallengerSelectGodsEvent> observer) {
+    public void registerRequestPlayerPingEventObserver(Observer<RequestPlayerPingEvent> observer) {
+        requestPlayerPingEventObservable.register(observer);
+    }
+
+    /**
+     * @see IModelEventProvider#registerRequestPlayerChallengerSelectGodsEventObserver(Observer)
+     */
+    @Override
+    public void registerRequestPlayerChallengerSelectGodsEventObserver(Observer<RequestPlayerChallengerSelectGodsEvent> observer) {
         requestPlayerChallengerSelectGodsEventObservable.register(observer);
     }
 
@@ -295,6 +308,10 @@ public class ModelEventProvider implements IModelEventProvider {
 
     public Observable<LobbyGameStartEvent> getLobbyGameStartEventObservable() {
         return lobbyGameStartEventObservable;
+    }
+
+    public Observable<RequestPlayerPingEvent> getRequestPlayerPingEventObservable() {
+        return requestPlayerPingEventObservable;
     }
 
     public Observable<RequestPlayerChallengerSelectGodsEvent> getRequestPlayerChallengerSelectGodsEventObservable() {

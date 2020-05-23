@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.event.request;
 
+import it.polimi.ingsw.common.info.GodInfo;
 import it.polimi.ingsw.model.ModelEventProvider;
 
 import java.util.List;
@@ -9,21 +10,18 @@ import java.util.List;
  */
 public class RequestPlayerChallengerSelectGodsEvent extends AbstractRequestEvent {
 
-    public static final String ATTRIBUTE_GODS = "gods";
-    public static final String ATTRIBUTE_SELECTED_GODS_COUNT = "selectedGodsCount";
-
-    private final List<String> gods;
+    private final List<GodInfo> gods;
 
     private final int selectedGodsCount;
 
-    public RequestPlayerChallengerSelectGodsEvent(String player, List<String> gods, int selectedGodsCount) {
+    public RequestPlayerChallengerSelectGodsEvent(String player, List<GodInfo> gods, int selectedGodsCount) {
         super(player);
 
         this.gods = gods;
         this.selectedGodsCount = selectedGodsCount;
     }
 
-    public List<String> getGods() {
+    public List<GodInfo> getGods() {
         return gods;
     }
 

@@ -91,7 +91,7 @@ public class SocketClient implements IClient {
                 Runnable pendingMessage = pendingMessages.take();
                 pendingMessage.run();
             } catch (InterruptedException ignored) {
-                // Client is shutting down
+                // ClientConnector is shutting down
             }
         }
     }

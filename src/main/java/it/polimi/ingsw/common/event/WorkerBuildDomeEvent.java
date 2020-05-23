@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.event;
 
-import it.polimi.ingsw.common.Coordinates;
+import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.model.ModelEventProvider;
 import it.polimi.ingsw.view.ViewEventProvider;
 

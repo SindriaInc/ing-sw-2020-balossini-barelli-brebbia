@@ -112,7 +112,6 @@ public class God {
         return abilities;
     }
 
-
     private IAbilities doApplyOpponentAbilities(IAbilities abilities, Player originalPlayer) throws ReflectiveOperationException {
         for (Map.Entry<Class<? extends AbilitiesDecorator>, Boolean> entry : effects.entrySet()) {
             // Skip non-opponent decorators

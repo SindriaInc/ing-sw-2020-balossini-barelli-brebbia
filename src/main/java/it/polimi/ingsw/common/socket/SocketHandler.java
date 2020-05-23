@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.socket;
 
+import it.polimi.ingsw.common.io.InboundHandler;
+import it.polimi.ingsw.common.io.OutboundHandler;
 import it.polimi.ingsw.common.logging.Logger;
 
 import java.io.IOException;
@@ -87,10 +89,11 @@ public class SocketHandler {
      * Schedules the packet to be sent later to the other entity
      */
     public void schedulePacket(String message) {
-        outboundHandler.schedulePacket(message);
+        outboundHandler.scheduleMessage(message);
     }
 
     private void onMessage(String message) {
+        Logger.getInstance().debug("Received message: " + message);
         inboundMessageConsumer.accept(this, message);
     }
 

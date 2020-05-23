@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.event.lobby;
 
-import it.polimi.ingsw.common.RoomInfo;
+import it.polimi.ingsw.common.info.RoomInfo;
 import it.polimi.ingsw.model.ModelEventProvider;
 
 /**

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.common.event.request;
 
+import it.polimi.ingsw.common.info.GodInfo;
 import it.polimi.ingsw.model.ModelEventProvider;
 
 import java.util.List;
@@ -9,17 +10,15 @@ import java.util.List;
  */
 public class RequestPlayerChooseGodEvent extends AbstractRequestEvent {
 
-    public static final String ATTRIBUTE_AVAILABLE_GODS = "availableGods";
+    private final List<GodInfo> availableGods;
 
-    private final List<String> availableGods;
-
-    public RequestPlayerChooseGodEvent(String player, List<String> availableGods) {
+    public RequestPlayerChooseGodEvent(String player, List<GodInfo> availableGods) {
         super(player);
 
         this.availableGods = availableGods;
     }
 
-    public List<String> getAvailableGods() {
+    public List<GodInfo> getAvailableGods() {
         return availableGods;
     }
 

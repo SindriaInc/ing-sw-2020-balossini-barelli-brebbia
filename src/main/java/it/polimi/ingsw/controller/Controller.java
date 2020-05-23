@@ -78,126 +78,99 @@ public class Controller {
     }
 
     private void onChallengerSelectGods(PlayerChallengerSelectGodsEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.selectGods(event.getGods()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().selectGods(event.getGods()));
     }
 
     private void onPlayerChooseGod(PlayerChooseGodEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.chooseGod(event.getGod()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().chooseGod(event.getGod()));
     }
 
     private void onWorkerSpawn(WorkerSpawnEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.spawnWorker(event.getPosition()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().spawnWorker(event.getPosition()));
     }
 
     private void onWorkerMove(WorkerMoveEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.moveWorker(event.getId(), event.getDestination()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().moveWorker(event.getId(), event.getDestination()));
     }
 
     private void onWorkerBuildBlock(WorkerBuildBlockEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.buildBlock(event.getId(), event.getDestination()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().buildBlock(event.getId(), event.getDestination()));
     }
 
     private void onWorkerBuildDome(WorkerBuildDomeEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.buildDome(event.getId(), event.getDestination()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().buildDome(event.getId(), event.getDestination()));
     }
 
     private void onWorkerForce(WorkerForceEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.forceWorker(event.getId(), event.getTarget(), event.getDestination()));
+        dispatchResponseFromModel(event.getPlayer(), game.get().forceWorker(event.getId(), event.getTarget(), event.getDestination()));
     }
 
     private void onPlayerEndTurn(PlayerEndTurnEvent event) {
-        Game game = getGameOrNull(event.getPlayer());
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
 
-        if (game == null) {
+        if (game.isEmpty()) {
             return;
         }
 
-        if (!checkOrDispatchResponse(game, event.getPlayer())) {
-            return;
-        }
-
-        dispatchResponseFromModel(event.getPlayer(), game.endTurn());
+        dispatchResponseFromModel(event.getPlayer(), game.get().endTurn());
     }
 
-    private Game getGameOrNull(String player) {
+    private Optional<Game> getGameOrDispatchResponse(String player) {
         Optional<Game> optionalGame = lobby.getGame(player);
 
         if (optionalGame.isEmpty()) {
-            dispatchInvalidState(player);
-            return null;
+            new ResponseInvalidStateEvent(player).accept(responseEventProvider);
+            return Optional.empty();
         }
 
-        return optionalGame.get();
+        if (!optionalGame.get().getCurrentPlayer().getName().equals(player)) {
+            new ResponseInvalidPlayerEvent(player).accept(responseEventProvider);
+            return Optional.empty();
+        }
+
+        return optionalGame;
     }
 
     private boolean checkOrDispatchResponse(Game game, String player) {
@@ -207,10 +180,6 @@ public class Controller {
 
         new ResponseInvalidPlayerEvent(player).accept(responseEventProvider);
         return false;
-    }
-
-    private void dispatchInvalidState(String player) {
-        new ResponseInvalidStateEvent(player).accept(responseEventProvider);
     }
 
     private void dispatchResponseFromModel(String player, ModelResponse response) {
