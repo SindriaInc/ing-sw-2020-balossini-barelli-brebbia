@@ -21,7 +21,4 @@ class DeckTest {
         assertEquals(deck.getGods(), new ArrayList<>());
     }
 
-
-    // TODO: Test deck loading
-
 }

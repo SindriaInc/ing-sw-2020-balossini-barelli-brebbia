@@ -52,12 +52,19 @@ public class OngoingGame extends AbstractGameState {
         Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
         player.doMove(turn.get(), cell);
+        notifyMovements(player.getName(), turn.get());
 
         this.turn = turn.get();
 
         var event = new WorkerMoveEvent(player.getName(), worker, destination);
         setReceivers(event);
         event.accept(getModelEventProvider());
+
+        if (player.checkHasWon(turn.get())) {
+            // The current player has won, remove every opponent
+            getOpponents(player).forEach(super::removePlayer);
+            return ModelResponse.ALLOW;
+        }
 
         generateRequests(getCurrentPlayer());
         return ModelResponse.ALLOW;
@@ -84,6 +91,7 @@ public class OngoingGame extends AbstractGameState {
         Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
         player.doBuildBlock(turn.get(), cell);
+        notifyMovements(player.getName(), turn.get());
 
         this.turn = turn.get();
 
@@ -116,6 +124,7 @@ public class OngoingGame extends AbstractGameState {
         Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
         player.doBuildDome(turn.get(), cell);
+        notifyMovements(player.getName(), turn.get());
 
         this.turn = turn.get();
 
@@ -153,6 +162,7 @@ public class OngoingGame extends AbstractGameState {
         Cell cell = getBoard().getCell(destination);
         Player player = getCurrentPlayer();
         player.doForce(turn.get(), modelTarget, cell);
+        notifyMovements(player.getName(), turn.get());
 
         this.turn = turn.get();
 
@@ -170,7 +180,6 @@ public class OngoingGame extends AbstractGameState {
             return ModelResponse.INVALID_STATE;
         }
 
-        Player endingPlayer = getCurrentPlayer();
         Turn turn = this.turn;
         this.turn = null;
 
@@ -181,18 +190,12 @@ public class OngoingGame extends AbstractGameState {
         }
 
         if (hasCompletedMandatoryInteractions(turn)) {
-            if (!endingPlayer.checkHasWon(turn)) {
-                playerIndex = (playerIndex + 1) % getPlayers().size();
+            playerIndex = (playerIndex + 1) % getPlayers().size();
 
-                var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
-                setReceivers(event);
-                event.accept(getModelEventProvider());
-                generateRequests(getCurrentPlayer());
-                return ModelResponse.ALLOW;
-            }
-
-            // The current player has won, remove every opponent
-            getOpponents(endingPlayer).forEach(super::removePlayer);
+            var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());
+            setReceivers(event);
+            event.accept(getModelEventProvider());
+            generateRequests(getCurrentPlayer());
             return ModelResponse.ALLOW;
         }
 
@@ -340,7 +343,7 @@ public class OngoingGame extends AbstractGameState {
     private List<Coordinates> getAvailable(Predicate<Cell> filter) {
         List<Cell> cells = new ArrayList<>();
 
-        getBoard().getCells().parallelStream().forEach(cell -> {
+        getBoard().getCells().forEach(cell -> {
             if (filter.test(cell)) {
                 cells.add(cell);
             }
@@ -420,11 +423,27 @@ public class OngoingGame extends AbstractGameState {
         }
     }
 
+    private void notifyMovements(String player, Turn turn) {
+        List<Worker> movedWorkers = turn.getMovedWorkers();
+
+        for (Worker worker : movedWorkers) {
+            var event = new WorkerMoveEvent(player, worker.getId(), toCoordinates(worker.getCell()));
+            setReceivers(event);
+            event.accept(getModelEventProvider());
+        }
+
+        turn.clearMovedWorkers();
+    }
+
+    private Coordinates toCoordinates(Cell cell) {
+        return new Coordinates(cell.getX(), cell.getY());
+    }
+
     private List<Coordinates> toCoordinatesList(List<Cell> cells) {
         List<Coordinates> coordinates = new ArrayList<>();
 
         for (Cell cell : cells) {
-            coordinates.add(new Coordinates(cell.getX(), cell.getY()));
+            coordinates.add(toCoordinates(cell));
         }
 
         return coordinates;

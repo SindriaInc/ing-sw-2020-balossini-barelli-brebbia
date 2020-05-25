@@ -98,6 +98,13 @@ public class Turn {
      */
     private final List<Worker> bannedWinWorkers = new ArrayList<>();
 
+
+    /**
+     * List of workers who were moved in the last action, in addition to the worker used in this turn
+     * This list is used to notify about forces added by decorators
+     */
+    private final List<Worker> movedWorkers = new ArrayList<>();
+
     /**
      * Instantiates a Turn
      * @param worker The Worker used during the Turn
@@ -186,6 +193,10 @@ public class Turn {
                 .collect(Collectors.toList());
     }
 
+    public List<Worker> getMovedWorkers() {
+        return List.copyOf(movedWorkers);
+    }
+
     public void addMovement(Cell cell) {
         actions.add(new Action(ActionType.MOVEMENT, null, cell));
     }
@@ -204,6 +215,14 @@ public class Turn {
 
     public void addBannedWinWorker(Worker worker) {
         bannedWinWorkers.add(worker);
+    }
+
+    public void addMovedWorker(Worker worker) {
+        movedWorkers.add(worker);
+    }
+
+    public void clearMovedWorkers() {
+        movedWorkers.clear();
     }
 
     public Cell getStartingCell() {

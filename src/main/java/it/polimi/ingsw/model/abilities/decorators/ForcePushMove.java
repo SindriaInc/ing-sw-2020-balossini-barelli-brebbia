@@ -40,6 +40,7 @@ public class ForcePushMove extends AbstractForceMove {
         }
 
         forcedWorker.force(destination.get());
+        turn.addMovedWorker(forcedWorker);
     }
 
     private Optional<Cell> findDestinationCell(Turn turn, Cell cell) {

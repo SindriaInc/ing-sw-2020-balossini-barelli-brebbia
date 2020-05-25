@@ -99,6 +99,10 @@ public class GameData extends AbstractData {
         return Optional.ofNullable(chooseGodData);
     }
 
+    public Optional<InteractData> getSpawnData() {
+        return Optional.ofNullable(spawnData);
+    }
+
     public Optional<WorkersInteractData> getMoveData() {
         return Optional.ofNullable(moveData);
     }
@@ -135,6 +139,15 @@ public class GameData extends AbstractData {
         }
 
         return Optional.of(column[y]);
+    }
+
+    public GameData withMessage(String lastMessage) {
+        return new GameData(lastMessage, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
+                selectGodsData, chooseGodData,
+                spawnData, moveData,
+                buildBlockData, buildDomeData,
+                forceData, canBeEnded
+        );
     }
 
     public GameData withCellInfo(Coordinates coordinates, CellInfo cellInfo) {

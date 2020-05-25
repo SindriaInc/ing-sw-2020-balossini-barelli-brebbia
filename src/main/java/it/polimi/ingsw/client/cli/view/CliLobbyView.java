@@ -135,7 +135,7 @@ public class CliLobbyView extends AbstractCliView {
     private String buildRoom(int sideLineLen, int largestNameLength, RoomInfo roomInfo) {
         StringBuilder output = new StringBuilder();
 
-        int count = roomInfo.getOtherPlayers().size() + 1;
+        int count = roomInfo.getPlayersCount();
         int max = roomInfo.getMaxPlayers();
         String simple = roomInfo.isSimpleGame() ? "Y" : "N";
 

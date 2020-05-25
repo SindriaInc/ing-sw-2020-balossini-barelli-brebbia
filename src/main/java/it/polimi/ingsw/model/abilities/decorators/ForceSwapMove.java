@@ -18,6 +18,7 @@ public class ForceSwapMove extends AbstractForceMove {
     @Override
     public void doForceInMovePhase(Turn turn, Worker forcedWorker) {
         forcedWorker.force(turn.getWorker().getCell());
+        turn.addMovedWorker(forcedWorker);
     }
 
 }

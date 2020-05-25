@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.client.data.request.*;
 import it.polimi.ingsw.common.event.*;
 import it.polimi.ingsw.common.event.request.*;
+import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
 import it.polimi.ingsw.common.info.CellInfo;
 import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.info.WorkerInfo;
@@ -18,6 +19,12 @@ public class GameState extends AbstractClientState {
      * The data used by this state
      */
     private GameData data;
+
+    /**
+     * The data before the last view event was sent
+     * This is used to restore requests after an invalid message is sent to the server
+     */
+    private GameData dataSnapshot;
 
     public GameState(ClientConnector clientConnector, String name, List<String> otherPlayers, boolean simpleGame) {
         super(clientConnector);
@@ -50,7 +57,10 @@ public class GameState extends AbstractClientState {
         getModelEventProvider().registerWorkerForceEventObserver(this::onForce);
         getModelEventProvider().registerPlayerLoseEventObserver(this::onLose);
         getModelEventProvider().registerPlayerWinEventObserver(this::onWin);
-        // TODO: Register model events and responses
+
+        getResponseEventProvider().registerResponseInvalidParametersEventObserver(this::onResponse);
+        getResponseEventProvider().registerResponseInvalidPlayerEventObserver(this::onResponse);
+        getResponseEventProvider().registerResponseInvalidStateEventObserver(this::onResponse);
 
         updateView();
     }
@@ -62,6 +72,11 @@ public class GameState extends AbstractClientState {
     private void onPlayerTurnStart(PlayerTurnStartEvent event) {
         // The turn start event is sent before requests, the view will be updated after the requests arrive
         data = data.withTurnPlayer(event.getPlayer());
+
+        if (!event.getPlayer().equals(data.getName())) {
+            // It's another player's turn, no requests will be sent; The view can be updated
+            updateView();
+        }
     }
 
     /*
@@ -71,31 +86,37 @@ public class GameState extends AbstractClientState {
     private void onRequestSelectGods(RequestPlayerChallengerSelectGodsEvent event) {
         // The gods phase does not use turn logic
         data = data.withSelectGods(new SelectGodsData(event.getGods(), event.getSelectedGodsCount()));
+        dataSnapshot = null;
         updateView();
     }
 
     private void onRequestChooseGod(RequestPlayerChooseGodEvent event) {
         // The gods phase does not use turn logic
         data = data.withChooseGod(new ChooseGodData(event.getAvailableGods()));
+        dataSnapshot = null;
         updateView();
     }
 
     private void onRequestSpawn(RequestWorkerSpawnEvent event) {
         // The spawn phase does not use turn logic
         data = data.withSpawn(new InteractData(event.getAvailablePositions()));
+        dataSnapshot = null;
         updateView();
     }
 
     private void onRequestMove(RequestWorkerMoveEvent event) {
         data = data.withMove(extractData(event));
+        dataSnapshot = null;
     }
 
     private void onRequestBuildBlock(RequestWorkerBuildBlockEvent event) {
         data = data.withBuildBlock(extractData(event));
+        dataSnapshot = null;
     }
 
     private void onRequestBuildDome(RequestWorkerBuildDomeEvent event) {
         data = data.withBuildDome(extractData(event));
+        dataSnapshot = null;
     }
 
     private void onRequestForce(RequestWorkerForceEvent event) {
@@ -111,11 +132,13 @@ public class GameState extends AbstractClientState {
         otherInteractData = new WorkersOtherInteractData(otherInteractions);
 
         data = data.withForce(otherInteractData);
+        dataSnapshot = null;
     }
 
     private void onRequestEndTurn(RequestPlayerEndTurnEvent event) {
         // Called after each other request event has been called
         data = data.withEndTurn(event.getCanBeEnded());
+        dataSnapshot = null;
         updateView();
     }
 
@@ -127,6 +150,7 @@ public class GameState extends AbstractClientState {
         // TODO: Show something?
 
         data = data.withNoRequests();
+        dataSnapshot = null;
         updateView();
     }
 
@@ -141,6 +165,7 @@ public class GameState extends AbstractClientState {
         } else {
             data = data.withNoRequests();
         }
+        dataSnapshot = null;
 
         updateView();
     }
@@ -152,6 +177,7 @@ public class GameState extends AbstractClientState {
         data = new GameData(null, data.getName(), data.getOtherPlayers(),
                 data.isInGodsPhase(), data.isSpectating(), data.getMap(), workers)
                 .withTurnPlayer(data.getTurnPlayer().orElse(null));
+        dataSnapshot = null;
         updateView();
     }
 
@@ -169,6 +195,7 @@ public class GameState extends AbstractClientState {
 
         CellInfo updatedCell = new CellInfo(cell.get().getLevel() + 1, cell.get().isDoomed());
         data = data.withCellInfo(event.getDestination(), updatedCell);
+        dataSnapshot = null;
         updateView();
     }
 
@@ -181,6 +208,7 @@ public class GameState extends AbstractClientState {
 
         CellInfo updatedCell = new CellInfo(cell.get().getLevel(), true);
         data = data.withCellInfo(event.getDestination(), updatedCell);
+        dataSnapshot = null;
         updateView();
     }
 
@@ -210,49 +238,72 @@ public class GameState extends AbstractClientState {
     }
 
     /*
+     * Response methods
+     */
+
+    private void onResponse(AbstractResponseEvent event) {
+        String message = "Invalid action, please specify correct parameters";
+
+        if (dataSnapshot != null) {
+            data = dataSnapshot.withMessage(message);
+            dataSnapshot = null;
+        } else {
+            data = data.withMessage(message);
+        }
+
+        updateView();
+    }
+
+    /*
      * View interaction methods
      */
 
     public void acceptSelectGods(List<String> selectedGods) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new PlayerChallengerSelectGodsEvent(getData().getName(), selectedGods));
     }
 
     public void acceptChooseGod(String chooseGod) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new PlayerChooseGodEvent(getData().getName(), chooseGod));
     }
 
     public void acceptSpawn(int x, int y) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new WorkerSpawnEvent(getData().getName(), 0, new Coordinates(x, y)));
     }
 
     public void acceptMove(int worker, int x, int y) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new WorkerMoveEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
     public void acceptBuildBlock(int worker, int x, int y) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new WorkerBuildBlockEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
     public void acceptBuildDome(int worker, int x, int y) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new WorkerBuildDomeEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
     public void acceptForce(int worker, int target, int x, int y) {
-        data = data.withNoRequests();
+        clearData();
         updateView();
         getClientConnector().send(new WorkerForceEvent(getData().getName(), worker, target, new Coordinates(x, y)));
+    }
+
+    public void acceptEnd() {
+        clearData();
+        updateView();
+        getClientConnector().send(new PlayerEndTurnEvent(getData().getName()));
     }
 
     /*
@@ -261,6 +312,11 @@ public class GameState extends AbstractClientState {
 
     private void updateView() {
         getClientConnector().getViewer().viewGame(this);
+    }
+
+    private void clearData() {
+        dataSnapshot = data;
+        data = data.withNoRequests();
     }
 
     private void updatePosition(int worker, Coordinates position) {
@@ -280,6 +336,7 @@ public class GameState extends AbstractClientState {
         data = new GameData(null, data.getName(), data.getOtherPlayers(),
                 data.isInGodsPhase(), data.isSpectating(), data.getMap(), updatedWorkers)
                 .withTurnPlayer(data.getTurnPlayer().orElse(null));
+        dataSnapshot = null;
     }
 
     private WorkersInteractData extractData(AbstractRequestWorkerInteractEvent event) {

@@ -3,19 +3,25 @@ package it.polimi.ingsw.client.gui;
 import it.polimi.ingsw.client.AbstractClientViewer;
 import it.polimi.ingsw.client.ClientConnector;
 import it.polimi.ingsw.client.clientstates.*;
-import it.polimi.ingsw.client.gui.view.GuiInputView;
-import it.polimi.ingsw.client.gui.view.GuiLoginView;
+import it.polimi.ingsw.client.gui.view.*;
+import it.polimi.ingsw.common.logging.Logger;
+import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.concurrent.ExecutorService;
 
-// TODO: Implement
 public class GuiClientViewer extends AbstractClientViewer {
 
     private GuiClientStage stage;
 
+    private AbstractGuiView currentView;
+
     public GuiClientViewer(ExecutorService executorService) {
+        Logger.getInstance().addReader(new ConsoleLogReader(System.out));
+
         Platform.startup(() -> {
             stage = new GuiClientStage(new Stage());
             stage.init();
@@ -27,27 +33,51 @@ public class GuiClientViewer extends AbstractClientViewer {
 
     @Override
     public void viewInput(InputState state) {
-        stage.setScene(new GuiInputView(state).generateView());
+        updateScene(new GuiInputView(state));
     }
 
     @Override
     public void viewLogin(LoginState state) {
-        stage.setScene(new GuiLoginView(state).generateView());
+        updateScene(new GuiLoginView(state));
     }
 
     @Override
     public void viewLobby(LobbyState state) {
-        // TODO: Implement lobby state in GUI
+        updateScene(new GuiLobbyView(state));
     }
 
     @Override
     public void viewRoom(RoomState state) {
-        // TODO: Implement room state in GUI
+        updateScene(new GuiRoomView(state));
     }
 
     @Override
     public void viewGame(GameState state) {
-        // TODO: Implement game state in GUI
+        updateScene(new GuiGameView(state));
+    }
+
+    @Override
+    public void viewEnd(EndState state) {
+        updateScene(new GuiEndView(state));
+    }
+
+    private void updateScene(AbstractGuiView view) {
+        // Only update the view instance if a different state is passed
+        if (currentView == null || !currentView.getState().equals(view.getState())) {
+            currentView = view;
+        }
+
+        Platform.runLater(() -> {
+            Parent root = currentView.generateView();
+
+            if (!stage.hasScene()) {
+                // Initialize the window
+                stage.setScene(new Scene(root, GuiConstants.DEFAULT_WIDTH, GuiConstants.DEFAULT_HEIGHT));
+                return;
+            }
+
+            stage.setRoot(root);
+        });
     }
 
 }

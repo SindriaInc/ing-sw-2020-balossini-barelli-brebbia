@@ -28,7 +28,7 @@ public class RoomState extends AbstractClientState {
     }
 
     private void onLobbyRoomUpdate(LobbyRoomUpdateEvent event) {
-        data = new RoomData(null, data.getName(), data.getRoom());
+        data = new RoomData(null, data.getName(), event.getRoomInfo());
         updateView();
     }
 

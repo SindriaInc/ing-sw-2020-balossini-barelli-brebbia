@@ -51,7 +51,7 @@ public class PreGodsGame extends AbstractGameState {
         this.availableGods.addAll(gods);
         this.maxWorkers = maxWorkers;
 
-        Player challenger = getPlayers().get(new Random().nextInt(getPlayers().size()));
+        Player challenger = getPlayers().get(0);
         phase = Phase.CHALLENGER_SELECT_GODS;
 
         List<Player> sortedPlayers = new LinkedList<>();

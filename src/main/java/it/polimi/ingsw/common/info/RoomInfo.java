@@ -36,6 +36,10 @@ public class RoomInfo {
         return simpleGame;
     }
 
+    public int getPlayersCount() {
+        return otherPlayers.size() + 1;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {

@@ -11,19 +11,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class LobbyTest {
 
-    private Deck deck;
     private Lobby lobby;
     private ModelEventProvider modelEventProvider;
 
+    private int pingCount;
     private int lobbyUpdateCount;
     private int lobbyRoomUpdateCount;
     private int lobbyGameStartEventCount;
 
-    private int pingCount;
-
     @BeforeEach
+
     void setUp() {
-        deck = new Deck(List.of());
+        Deck deck = new Deck(List.of());
         lobby = new Lobby(deck);
         modelEventProvider = lobby.getModelEventProvider();
     }
@@ -73,24 +72,39 @@ class LobbyTest {
         modelEventProvider.registerLobbyUpdateEventObserver(event -> lobbyUpdateCount++);
         modelEventProvider.registerLobbyRoomUpdateEventObserver(event -> lobbyRoomUpdateCount++);
         modelEventProvider.registerLobbyGameStartEventObserver(event -> lobbyGameStartEventCount++);
-        //AssertCount not verified
+        assertEquals(lobbyUpdateCount, 0);
+        assertEquals(lobbyRoomUpdateCount, 0);
+        assertEquals(lobbyGameStartEventCount, 0);
         lobby.login("Mario", 89);
+        assertEquals(lobbyUpdateCount, 1);
         lobby.login("Laura", 45);
+        assertEquals(lobbyUpdateCount, 3);
         lobby.login("Dario", 23);
+        assertEquals(lobbyUpdateCount, 6);
         lobby.login("Giulia", 16);
+        assertEquals(lobbyUpdateCount, 10);
         lobby.login("Giorgio", 45);
+        assertEquals(lobbyUpdateCount, 15);
         lobby.login("Paolo", 5);
+        assertEquals(lobbyUpdateCount, 21);
         lobby.login("Luca", 90);
+        assertEquals(lobbyUpdateCount, 28);
         assertEquals(ModelResponse.ALLOW, lobby.logout("Mario"));
+        assertEquals(lobbyUpdateCount, 34);
         lobby.createRoom("Dario", 3, true);
+        assertEquals(lobbyRoomUpdateCount, 1);
         lobby.joinRoom("Laura", "Dario");
+        assertEquals(lobbyRoomUpdateCount, 3);
         assertEquals(ModelResponse.ALLOW, lobby.logout("Dario"));
+        assertEquals(lobbyRoomUpdateCount, 4);
         assertEquals(ModelResponse.INVALID_STATE, lobby.createRoom("Laura", 2, true));// The player was moved to a new room
         assertEquals(ModelResponse.ALLOW, lobby.joinRoom("Giulia", "Laura"));
-        lobby.joinRoom("Giulia", "Laura");
+        assertEquals(lobbyRoomUpdateCount, 6);
         assertEquals(ModelResponse.ALLOW, lobby.logout("Giulia"));
         lobby.joinRoom("Giorgio", "Laura");
+        assertEquals(lobbyRoomUpdateCount, 8);
         lobby.joinRoom("Luca", "Laura");
+        assertEquals(lobbyRoomUpdateCount, 11);
         assertEquals(ModelResponse.INVALID_PARAMS, lobby.joinRoom("Paolo", "Laura"));
         assertEquals(ModelResponse.INVALID_PARAMS, lobby.login("Luca",3));
         assertEquals(ModelResponse.ALLOW, lobby.logout("Luca"));
@@ -103,9 +117,7 @@ class LobbyTest {
 
     @Test
     void checkProvider() {
-        modelEventProvider.registerRequestPlayerPingEventObserver((event) -> {
-            pingCount++;
-        });
+        modelEventProvider.registerRequestPlayerPingEventObserver((event) -> pingCount++);
 
         modelEventProvider.getRequestPlayerPingEventObservable().notifyObservers(
                 new RequestPlayerPingEvent("Example")

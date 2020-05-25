@@ -18,10 +18,15 @@ public class EndState extends AbstractClientState {
         super(clientConnector);
 
         data = new EndData(name, winner, map, workers);
+        updateView();
     }
 
     public EndData getData() {
         return data;
+    }
+
+    private void updateView() {
+        getClientConnector().getViewer().viewEnd(this);
     }
 
 }

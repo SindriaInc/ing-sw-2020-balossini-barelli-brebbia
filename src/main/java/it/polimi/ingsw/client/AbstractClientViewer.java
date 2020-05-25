@@ -38,4 +38,10 @@ public abstract class AbstractClientViewer {
      */
     public abstract void viewGame(GameState state);
 
+    /**
+     * Shows the game end, displaying the winner
+     * @param state The end state
+     */
+    public abstract void viewEnd(EndState state);
+
 }

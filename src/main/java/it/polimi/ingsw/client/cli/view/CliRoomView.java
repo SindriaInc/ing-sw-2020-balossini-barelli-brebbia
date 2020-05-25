@@ -26,7 +26,7 @@ public class CliRoomView extends AbstractCliView {
         output.append("> Logged in as ").append(name).append(System.lineSeparator());
         output.append(separator());
 
-        int count = room.getOtherPlayers().size() + 1;
+        int count = room.getPlayersCount();
         int max = room.getMaxPlayers();
 
         output.append("You are in the room: ").append(room.getOwner()).append(System.lineSeparator());
