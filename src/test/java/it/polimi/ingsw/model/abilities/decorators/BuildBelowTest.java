@@ -30,21 +30,30 @@ class BuildBelowTest {
 
         abilities = new BuildBelow(new DefaultAbilities());
         turn = new Turn(worker, otherWorkers, (cell) -> board.getNeighborings(cell), cell -> board.isPerimeterSpace(cell));
-        turn.addMovement(board.getCellFromCoords(1, 1));
     }
 
     /**
      * Check that a worker with this ability can build below itself
-     * Check that he can't build if his level is greater equal than tha max build level
+     * Check that he can't build if his level is greater equal than than max build level
+     * Check that he can't build a second time
      */
     @Test
     void checkBuildBelow() {
+
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
+
+        turn.addMovement(board.getCellFromCoords(1, 1));
+
         assertTrue(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
 
         board.getCellFromCoords(0, 0).setLevel(DEFAULT_MAX_BUILD_LEVEL);
         assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
 
         board.getCellFromCoords(0, 0).setLevel(DEFAULT_MAX_BUILD_LEVEL-1);
+        turn.addBlockPlaced(board.getCellFromCoords(0, 0));
         assertFalse(abilities.checkHasWon(turn));
+
+        board.getCellFromCoords(0, 0).setLevel(0);
+        assertFalse(abilities.checkCanBuildBlock(turn, board.getCellFromCoords(0,0)));
     }
 }

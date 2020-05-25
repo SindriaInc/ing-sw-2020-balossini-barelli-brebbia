@@ -28,6 +28,10 @@ public class CliClientViewer extends AbstractClientViewer {
 
     private static final String SIDE_FILE = "side-bolt.txt";
 
+    private static final String WIN_FILE = "win.txt";
+
+    private static final String LOSE_FILE = "lose.txt";
+
     private static final String INVALID_COMMAND = "Invalid command, please type one of the available commands: ";
 
     private final ExecutorService executorService;
@@ -51,6 +55,16 @@ public class CliClientViewer extends AbstractClientViewer {
     private final String[] side;
 
     /**
+     * The win banner
+     */
+    private final String[] win;
+
+    /**
+     * The lose banner
+     */
+    private final String[] lose;
+
+    /**
      * The last printed view
      */
     private String lastOutput = "";
@@ -67,18 +81,26 @@ public class CliClientViewer extends AbstractClientViewer {
 
         String[] header;
         String[] side;
+        String[] win;
+        String[] lose;
         try {
             header = loadLinesAsset(HEADER_FILE);
             side = loadLinesAsset(SIDE_FILE);
+            win = loadLinesAsset(WIN_FILE);
+            lose = loadLinesAsset(LOSE_FILE);
         } catch (IOException exception) {
             header = null;
             side = null;
+            win = null;
+            lose = null;
             Logger.getInstance().exception(exception);
             Logger.getInstance().severe("Unable to initialize the client, shutting down");
         }
 
         this.header = header;
         this.side = side;
+        this.win = win;
+        this.lose = lose;
 
         // Initialize the connector after everything has loaded
         new ClientConnector(this);
@@ -147,7 +169,7 @@ public class CliClientViewer extends AbstractClientViewer {
 
     @Override
     public void viewRoom(RoomState state) {
-        AbstractCliView abstractView = new CliRoomView(state, TERM_WIDTH);
+        AbstractCliView abstractView = new CliRoomView(state, side, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
@@ -159,7 +181,7 @@ public class CliClientViewer extends AbstractClientViewer {
 
     @Override
     public void viewEnd(EndState state) {
-        AbstractCliView abstractView = new CliEndView(state, TERM_WIDTH);
+        AbstractCliView abstractView = new CliEndView(state, win, lose, TERM_WIDTH);
         updateView(state, abstractView);
     }
 

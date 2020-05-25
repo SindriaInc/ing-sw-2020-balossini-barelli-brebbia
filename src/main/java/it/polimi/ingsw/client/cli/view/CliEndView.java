@@ -3,6 +3,8 @@ package it.polimi.ingsw.client.cli.view;
 import it.polimi.ingsw.client.cli.CliCommand;
 import it.polimi.ingsw.client.cli.CliConstants;
 import it.polimi.ingsw.client.clientstates.EndState;
+import it.polimi.ingsw.client.clientstates.RoomState;
+import it.polimi.ingsw.common.info.RoomInfo;
 
 import java.util.List;
 
@@ -10,10 +12,16 @@ public class CliEndView extends AbstractCliView {
 
     private final EndState state;
 
-    public CliEndView(EndState state, int lineLength) {
+    private final String[] win;
+
+    private final String[] lose;
+
+    public CliEndView(EndState state, String[] win, String[] lose, int lineLength) {
         super(lineLength);
 
         this.state = state;
+        this.win = win;
+        this.lose = lose;
     }
 
     @Override
@@ -25,10 +33,15 @@ public class CliEndView extends AbstractCliView {
         output.append(separator());
         output.append(System.lineSeparator().repeat(CliConstants.STATUS_SPACING));
         if (name.equals(winner)) {
-            output.append("Congratulations! You've won").append(System.lineSeparator());
+            output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
+            output.append(buildHeader(win));
+            output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
         } else {
-            output.append(winner).append(" has won the game").append(System.lineSeparator());
+            output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
+            output.append(buildHeader(lose));
+            output.append(System.lineSeparator().repeat(2)).append(center(state.getData().getWinner() + " has won the game"));
         }
+        output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
         output.append(System.lineSeparator().repeat(CliConstants.STATUS_SPACING));
         output.append(separator());
 
