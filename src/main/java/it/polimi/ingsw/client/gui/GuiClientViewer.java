@@ -9,6 +9,7 @@ import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.concurrent.ExecutorService;
@@ -17,12 +18,16 @@ public class GuiClientViewer extends AbstractClientViewer {
 
     private GuiClientStage stage;
 
+    private GuiAssets assets;
+
     private AbstractGuiView currentView;
 
     public GuiClientViewer(ExecutorService executorService) {
         Logger.getInstance().addReader(new ConsoleLogReader(System.out));
 
         Platform.startup(() -> {
+            assets = new GuiAssets();
+
             stage = new GuiClientStage(new Stage());
             stage.init();
 
@@ -33,32 +38,32 @@ public class GuiClientViewer extends AbstractClientViewer {
 
     @Override
     public void viewInput(InputState state) {
-        updateScene(new GuiInputView(state));
+        updateScene(new GuiInputView(state, assets));
     }
 
     @Override
     public void viewLogin(LoginState state) {
-        updateScene(new GuiLoginView(state));
+        updateScene(new GuiLoginView(state, assets));
     }
 
     @Override
     public void viewLobby(LobbyState state) {
-        updateScene(new GuiLobbyView(state));
+        updateScene(new GuiLobbyView(state, assets));
     }
 
     @Override
     public void viewRoom(RoomState state) {
-        updateScene(new GuiRoomView(state));
+        updateScene(new GuiRoomView(state, assets));
     }
 
     @Override
     public void viewGame(GameState state) {
-        updateScene(new GuiGameView(state));
+        updateScene(new GuiGameView(state, assets));
     }
 
     @Override
     public void viewEnd(EndState state) {
-        updateScene(new GuiEndView(state));
+        updateScene(new GuiEndView(state, assets));
     }
 
     private void updateScene(AbstractGuiView view) {
@@ -68,15 +73,14 @@ public class GuiClientViewer extends AbstractClientViewer {
         }
 
         Platform.runLater(() -> {
-            Parent root = currentView.generateView();
-
             if (!stage.hasScene()) {
-                // Initialize the window
-                stage.setScene(new Scene(root, GuiConstants.DEFAULT_WIDTH, GuiConstants.DEFAULT_HEIGHT));
-                return;
+                StackPane splashScreen = new StackPane();
+                stage.setScene(new Scene(splashScreen, GuiConstants.DEFAULT_WIDTH, GuiConstants.DEFAULT_HEIGHT));
             }
 
+            Parent root = currentView.generateView(stage.widthProperty(), stage.heightProperty());
             stage.setRoot(root);
+            root.layout();
         });
     }
 

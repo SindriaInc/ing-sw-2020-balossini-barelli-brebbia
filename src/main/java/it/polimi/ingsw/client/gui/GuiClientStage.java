@@ -1,11 +1,9 @@
 package it.polimi.ingsw.client.gui;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class GuiClientStage {
@@ -45,6 +43,14 @@ public class GuiClientStage {
 
     public void setRoot(Parent root) {
         scene.setRoot(root);
+    }
+
+    public ReadOnlyDoubleProperty widthProperty() {
+        return scene.widthProperty();
+    }
+
+    public ReadOnlyDoubleProperty heightProperty() {
+        return scene.heightProperty();
     }
 
 }

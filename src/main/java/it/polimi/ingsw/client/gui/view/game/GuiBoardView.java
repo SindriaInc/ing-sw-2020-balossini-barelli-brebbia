@@ -6,9 +6,11 @@ import it.polimi.ingsw.client.data.request.InteractData;
 import it.polimi.ingsw.client.data.request.WorkersInteractData;
 import it.polimi.ingsw.client.data.request.WorkersOtherInteractData;
 import it.polimi.ingsw.client.gui.GuiConstants;
+import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.common.info.CellInfo;
 import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.info.WorkerInfo;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -23,12 +25,12 @@ public class GuiBoardView extends AbstractGameView {
 
     private Consumer<Coordinates> actionConsumer = (ignored) -> {};
 
-    public GuiBoardView(GameState state) {
-        super(state);
+    public GuiBoardView(GameState state, GuiAssets images) {
+        super(state, images);
     }
 
     @Override
-    public Parent generateView() {
+    public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = getState().getData();
 
         Optional<String> turn = data.getTurnPlayer();

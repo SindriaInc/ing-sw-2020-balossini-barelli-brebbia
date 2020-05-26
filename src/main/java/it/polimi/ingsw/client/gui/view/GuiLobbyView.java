@@ -3,9 +3,11 @@ package it.polimi.ingsw.client.gui.view;
 import it.polimi.ingsw.client.clientstates.AbstractClientState;
 import it.polimi.ingsw.client.clientstates.LobbyState;
 import it.polimi.ingsw.client.gui.GuiConstants;
+import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.view.component.RoomBox;
 import it.polimi.ingsw.client.gui.view.dialog.CreateRoomDialog;
 import it.polimi.ingsw.common.info.RoomInfo;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -26,11 +28,13 @@ public class GuiLobbyView extends AbstractGuiView {
 
     private final LobbyState state;
 
-    public GuiLobbyView(LobbyState state) {
+    public GuiLobbyView(LobbyState state, GuiAssets assets) {
+        super(assets);
+
         this.state = state;
     }
 
-    public Parent generateView() {
+    public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         List<RoomInfo> rooms = state.getData().getRooms();
 
         ListView<RoomBox> roomsView = new ListView<>();

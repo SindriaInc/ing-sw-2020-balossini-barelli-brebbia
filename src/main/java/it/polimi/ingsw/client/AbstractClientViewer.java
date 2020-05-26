@@ -8,6 +8,8 @@ import it.polimi.ingsw.client.clientstates.*;
  */
 public abstract class AbstractClientViewer {
 
+    public static final String ASSETS_DIRECTORY = "assets/";
+
     /**
      * Shows the initial connection view, asking for ip and port
      * @param state The input state
