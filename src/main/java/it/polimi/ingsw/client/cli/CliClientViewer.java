@@ -22,8 +22,6 @@ public class CliClientViewer extends AbstractClientViewer {
 
     private static final String SPECIAL_COMMAND_PREFIX = "!";
 
-    private static final String ASSETS_DIRECTORY = "assets/";
-
     private static final String HEADER_FILE = "header-santorini.txt";
 
     private static final String SIDE_FILE = "side-bolt.txt";

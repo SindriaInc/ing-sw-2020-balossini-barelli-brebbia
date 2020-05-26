@@ -1,13 +1,16 @@
 package it.polimi.ingsw.client.gui.view.game;
 
 import it.polimi.ingsw.client.clientstates.GameState;
+import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.view.AbstractGuiView;
 
 public abstract class AbstractGameView extends AbstractGuiView {
 
     private GameState state;
 
-    public AbstractGameView(GameState state) {
+    public AbstractGameView(GameState state, GuiAssets images) {
+        super(images);
+
         this.state = state;
     }
 

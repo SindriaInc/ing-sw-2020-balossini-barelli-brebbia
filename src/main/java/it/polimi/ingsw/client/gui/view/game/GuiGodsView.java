@@ -5,11 +5,13 @@ import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.client.data.request.ChooseGodData;
 import it.polimi.ingsw.client.data.request.SelectGodsData;
 import it.polimi.ingsw.client.gui.GuiConstants;
+import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.view.component.GodBox;
 import it.polimi.ingsw.common.info.GodInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,12 +32,12 @@ public class GuiGodsView extends AbstractGameView {
 
     private final ObservableList<String> selectedGods = FXCollections.observableList(new ArrayList<>());
 
-    public GuiGodsView(GameState state) {
-        super(state);
+    public GuiGodsView(GameState state, GuiAssets images) {
+        super(state, images);
     }
 
     @Override
-    public Parent generateView() {
+    public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = getState().getData();
 
         selectedGods.clear();

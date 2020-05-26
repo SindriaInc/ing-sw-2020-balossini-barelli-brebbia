@@ -2,10 +2,10 @@ package it.polimi.ingsw.client.gui.view;
 
 import it.polimi.ingsw.client.clientstates.AbstractClientState;
 import it.polimi.ingsw.client.clientstates.EndState;
-import it.polimi.ingsw.client.clientstates.RoomState;
 import it.polimi.ingsw.client.data.EndData;
 import it.polimi.ingsw.client.gui.GuiConstants;
-import it.polimi.ingsw.common.info.RoomInfo;
+import it.polimi.ingsw.client.gui.GuiAssets;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
@@ -15,11 +15,13 @@ public class GuiEndView extends AbstractGuiView {
 
     private final EndState state;
 
-    public GuiEndView(EndState state) {
+    public GuiEndView(EndState state, GuiAssets images) {
+        super(images);
+
         this.state = state;
     }
 
-    public Parent generateView() {
+    public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         EndData data = state.getData();
 
         String winner = data.getWinner();
