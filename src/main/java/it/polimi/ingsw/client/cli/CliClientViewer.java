@@ -6,6 +6,7 @@ import it.polimi.ingsw.client.cli.view.*;
 import it.polimi.ingsw.client.clientstates.*;
 import it.polimi.ingsw.common.io.InboundHandler;
 import it.polimi.ingsw.common.io.OutboundHandler;
+import it.polimi.ingsw.common.io.PrintableOutboundHandler;
 import it.polimi.ingsw.common.logging.Logger;
 
 import java.io.*;
@@ -71,7 +72,7 @@ public class CliClientViewer extends AbstractClientViewer {
         this.executorService = executorService;
 
         InboundHandler inboundHandler = new InboundHandler(System.in, this::onInput);
-        cliOutboundHandler = new OutboundHandler(System.out, (ignored) -> {});
+        cliOutboundHandler = new PrintableOutboundHandler(System.out, (ignored) -> {});
 
         executorService.submit(inboundHandler);
         executorService.submit(cliOutboundHandler);

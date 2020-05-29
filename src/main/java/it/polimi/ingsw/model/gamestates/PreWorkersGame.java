@@ -37,7 +37,7 @@ public class PreWorkersGame extends AbstractGameState {
         this.maxWorkers = maxWorkers;
 
         if (!alreadySorted) {
-            List<Player> sortedPlayers = new LinkedList<>(getPlayers());
+            List<Player> sortedPlayers = new ArrayList<>(getPlayers());
             sortedPlayers.sort(Comparator.comparingInt(Player::getAge));
             sortPlayers(sortedPlayers);
         }
