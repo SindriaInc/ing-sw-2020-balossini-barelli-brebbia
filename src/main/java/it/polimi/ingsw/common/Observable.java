@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Observable<T> {
@@ -8,7 +8,7 @@ public class Observable<T> {
     /**
      * The list of observers, kept in order of insertion
      */
-    private final List<Observer<T>> observers = new LinkedList<>();
+    private final List<Observer<T>> observers = new ArrayList<>();
 
     /**
      * Registers an observer

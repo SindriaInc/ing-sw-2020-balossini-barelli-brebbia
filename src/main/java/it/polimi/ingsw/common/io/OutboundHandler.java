@@ -44,13 +44,7 @@ public class OutboundHandler implements Runnable {
                 continue;
             }
 
-            PrintWriter out = new PrintWriter(outputStream);
-            out.write(message + System.lineSeparator());
-            out.flush();
-
-            if (out.checkError()) {
-                errorMessageConsumer.accept(message);
-            }
+            print(message);
         }
     }
 
@@ -66,6 +60,20 @@ public class OutboundHandler implements Runnable {
      */
     public void scheduleMessage(String message) {
         pendingMessages.addLast(message);
+    }
+
+    /**
+     * Prints the message using the output stream
+     * @param message The message
+     */
+    protected void print(String message) {
+        PrintWriter out = new PrintWriter(outputStream);
+        out.write(message + System.lineSeparator());
+        out.flush();
+
+        if (out.checkError()) {
+            errorMessageConsumer.accept(message);
+        }
     }
 
 }

@@ -60,13 +60,12 @@ public class FieldsPresentation extends AbstractPresentation {
         logo.fitWidthProperty().bind(Bindings.createDoubleBinding(() -> {
             double ratio = logo.getImage().getWidth() / logo.getImage().getHeight();
             double logoWidth = width.doubleValue() - (width.doubleValue() / 2);
-
-            if (logoWidth > GuiConstants.LOGO_MAX_WIDTH) {
-                return (double) GuiConstants.LOGO_MAX_WIDTH;
-            }
-
             double logoHeight = logoWidth / ratio;
             double maxHeight = height.doubleValue() - 170;
+
+            if (logoWidth > GuiConstants.LOGO_MAX_WIDTH) {
+                logoWidth = GuiConstants.LOGO_MAX_WIDTH;
+            }
 
             if (logoHeight > maxHeight) {
                 return maxHeight * ratio;

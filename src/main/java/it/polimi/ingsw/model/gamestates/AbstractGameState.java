@@ -1,11 +1,13 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.event.AbstractEvent;
-import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.common.info.Coordinates;
+import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.model.ModelEventProvider;
+import it.polimi.ingsw.model.ModelResponse;
+import it.polimi.ingsw.model.Player;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,18 +26,17 @@ public abstract class AbstractGameState {
 
     /**
      * List of the players in the game
-     * The order of the players is preserved
      *
      * When a player loses it gets removed from this list
      */
-    private final List<Player> activePlayers = new LinkedList<>();
+    private final List<Player> activePlayers = new ArrayList<>();
 
     /**
      * List of the players spectating
      *
      * When a player loses it gets added into this list
      */
-    private final List<Player> spectatorPlayers = new LinkedList<>();
+    private final List<Player> spectatorPlayers = new ArrayList<>();
 
     public AbstractGameState(ModelEventProvider provider, Board board, List<Player> players) {
         this.modelEventProvider = provider;

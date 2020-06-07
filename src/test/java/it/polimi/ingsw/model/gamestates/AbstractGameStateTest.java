@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,7 +67,7 @@ class AbstractGameStateTest {
 
     @Test
     void testRemove() {
-        List<Player> current = new LinkedList<>(players);
+        List<Player> current = new ArrayList<>(players);
         current.remove(1);
 
         abstractGameState.removePlayer(players.get(1));
@@ -77,7 +76,7 @@ class AbstractGameStateTest {
 
     @Test
     void testSort() {
-        List<Player> sorted = new LinkedList<>(players);
+        List<Player> sorted = new ArrayList<>(players);
         Collections.reverse(sorted);
 
         abstractGameState.sortPlayers(sorted);

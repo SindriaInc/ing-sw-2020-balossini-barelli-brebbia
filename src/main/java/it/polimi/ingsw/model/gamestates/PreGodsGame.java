@@ -54,7 +54,7 @@ public class PreGodsGame extends AbstractGameState {
         Player challenger = getPlayers().get(0);
         phase = Phase.CHALLENGER_SELECT_GODS;
 
-        List<Player> sortedPlayers = new LinkedList<>();
+        List<Player> sortedPlayers = new ArrayList<>();
         for (Player player : getPlayers()) {
             if (player.equals(challenger)) {
                 continue;

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -88,16 +87,13 @@ public class Turn {
 
     /**
      * List of actions done by the worker
-     * The list is guaranteed to be sorted by insertion order
      */
-    private final List<Action> actions = new LinkedList<>();
-
+    private final List<Action> actions = new ArrayList<>();
 
     /**
      * List of workers that can not win on this turn
      */
     private final List<Worker> bannedWinWorkers = new ArrayList<>();
-
 
     /**
      * List of workers who were moved in the last action, in addition to the worker used in this turn
