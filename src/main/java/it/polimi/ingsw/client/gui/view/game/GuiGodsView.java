@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.gui.view.game;
 import it.polimi.ingsw.client.clientstates.GameState;
 import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.client.data.request.ChooseGodData;
+import it.polimi.ingsw.client.data.request.SelectFirstData;
 import it.polimi.ingsw.client.data.request.SelectGodsData;
 import it.polimi.ingsw.client.gui.GuiConstants;
 import it.polimi.ingsw.client.gui.GuiAssets;
@@ -21,6 +22,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
@@ -44,6 +46,36 @@ public class GuiGodsView extends AbstractGameView {
 
         Optional<SelectGodsData> selectGodsData = data.getSelectGodsData();
         Optional<ChooseGodData> chooseGodData = data.getChooseGodData();
+        Optional<SelectFirstData> selectFirstData = data.getSelectFirstData();
+
+        if (selectFirstData.isPresent()) {
+            Text action = new Text("You're the Challenger!\nSelect the first player to spawn workers");
+
+            List<Button> buttons = new ArrayList<>();
+
+            for (String player : selectFirstData.get().getAvailablePlayers()) {
+                Button button = new Button();
+                button.setText(player);
+                button.setOnAction((event) -> onSelectFirst(player));
+                buttons.add(button);
+            }
+
+            // Presentation
+
+            GridPane pane = new GridPane();
+            pane.add(action, 0, 0);
+
+            int index = 1;
+            for (Button button : buttons) {
+                button.setMaxWidth(Integer.MAX_VALUE);
+                pane.add(button, 0, index++);
+            }
+
+            pane.setVgap(GuiConstants.DEFAULT_SPACING);
+            pane.setMinWidth(GuiConstants.INFO_MIN_SIZE);
+            pane.setAlignment(Pos.CENTER);
+            return pane;
+        }
 
         Text action = new Text();
 
@@ -134,6 +166,10 @@ public class GuiGodsView extends AbstractGameView {
         }
 
         selectedGods.add(name);
+    }
+
+    private void onSelectFirst(String player) {
+        getState().acceptSelectFirst(player);
     }
 
 }

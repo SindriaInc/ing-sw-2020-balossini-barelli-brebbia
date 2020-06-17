@@ -46,6 +46,7 @@ public class Controller {
         provider.registerPlayerJoinRoomEventObserver(this::onPlayerJoinRoom);
         provider.registerPlayerChallengerSelectGodsEventObserver(this::onChallengerSelectGods);
         provider.registerPlayerChooseGodEventObserver(this::onPlayerChooseGod);
+        provider.registerPlayerChallengerSelectFirstEventObserver(this::onChallengerSelectFirst);
         provider.registerWorkerSpawnEventObserver(this::onWorkerSpawn);
         provider.registerWorkerMoveEventObserver(this::onWorkerMove);
         provider.registerWorkerBuildBlockEventObserver(this::onWorkerBuildBlock);
@@ -95,6 +96,16 @@ public class Controller {
         }
 
         dispatchResponseFromModel(event.getPlayer(), game.get().chooseGod(event.getGod()));
+    }
+
+    private void onChallengerSelectFirst(PlayerChallengerSelectFirstEvent event) {
+        Optional<Game> game = getGameOrDispatchResponse(event.getPlayer());
+
+        if (game.isEmpty()) {
+            return;
+        }
+
+        dispatchResponseFromModel(event.getPlayer(), game.get().selectFirst(event.getFirst()));
     }
 
     private void onWorkerSpawn(WorkerSpawnEvent event) {
@@ -171,15 +182,6 @@ public class Controller {
         }
 
         return optionalGame;
-    }
-
-    private boolean checkOrDispatchResponse(Game game, String player) {
-        if (game.getCurrentPlayer().getName().equals(player)) {
-            return true;
-        }
-
-        new ResponseInvalidPlayerEvent(player).accept(responseEventProvider);
-        return false;
     }
 
     private void dispatchResponseFromModel(String player, ModelResponse response) {

@@ -42,6 +42,11 @@ public class ModelEventProvider implements IModelEventProvider {
     private final Observable<RequestPlayerChooseGodEvent> requestPlayerChooseGodEventObservable = new Observable<>();
 
     /**
+     * Observable for RequestPlayerChallengerSelectFirstEvent
+     */
+    private final Observable<RequestPlayerChallengerSelectFirstEvent> requestPlayerChallengerSelectFirstEventObservable = new Observable<>();
+
+    /**
      * Observable for RequestPlayerEndTurnEvent
      */
     private final Observable<RequestPlayerEndTurnEvent> requestPlayerEndTurnEventObservable = new Observable<>();
@@ -72,7 +77,7 @@ public class ModelEventProvider implements IModelEventProvider {
     private final Observable<RequestWorkerSpawnEvent> requestWorkerSpawnEventObservable = new Observable<>();
 
     /**
-     * Observable for ChallengerSelectGodsEvent
+     * Observable for PlayerChallengerSelectGodsEvent
      */
     private final Observable<PlayerChallengerSelectGodsEvent> playerChallengerSelectGodsEventObservable = new Observable<>();
 
@@ -81,6 +86,10 @@ public class ModelEventProvider implements IModelEventProvider {
      */
     private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
 
+    /**
+     * Observable for PlayerChallengerSelectFirstEvent
+     */
+    private final Observable<PlayerChallengerSelectFirstEvent> playerChallengerSelectFirstEventObservable = new Observable<>();
 
     /**
      * Observable for PlayerLoseEvent
@@ -171,6 +180,14 @@ public class ModelEventProvider implements IModelEventProvider {
     }
 
     /**
+     * @see IModelEventProvider#registerRequestPlayerChallengerSelectFirstEventObserver(Observer)
+     */
+    @Override
+    public void registerRequestPlayerChallengerSelectFirstEventObserver(Observer<RequestPlayerChallengerSelectFirstEvent> observer) {
+        requestPlayerChallengerSelectFirstEventObservable.register(observer);
+    }
+
+    /**
      * @see IModelEventProvider#registerRequestPlayerEndTurnEventObserver(Observer)
      */
     @Override
@@ -232,6 +249,14 @@ public class ModelEventProvider implements IModelEventProvider {
     @Override
     public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
         playerChooseGodEventObservable.register(observer);
+    }
+
+    /**
+     * @see IModelEventProvider#registerPlayerChallengerSelectFirstEventObserver(Observer)
+     */
+    @Override
+    public void registerPlayerChallengerSelectFirstEventObserver(Observer<PlayerChallengerSelectFirstEvent> observer) {
+        playerChallengerSelectFirstEventObservable.register(observer);
     }
 
     /**
@@ -322,6 +347,10 @@ public class ModelEventProvider implements IModelEventProvider {
         return requestPlayerChooseGodEventObservable;
     }
 
+    public Observable<RequestPlayerChallengerSelectFirstEvent> getRequestPlayerChallengerSelectFirstEventObservable() {
+        return requestPlayerChallengerSelectFirstEventObservable;
+    }
+
     public Observable<RequestPlayerEndTurnEvent> getRequestPlayerEndTurnEventObservable() {
         return requestPlayerEndTurnEventObservable;
     }
@@ -352,6 +381,10 @@ public class ModelEventProvider implements IModelEventProvider {
 
     public Observable<PlayerChooseGodEvent> getPlayerChooseGodEventObservable() {
         return playerChooseGodEventObservable;
+    }
+
+    public Observable<PlayerChallengerSelectFirstEvent> getPlayerChallengerSelectFirstEventObservable() {
+        return playerChallengerSelectFirstEventObservable;
     }
 
     public Observable<PlayerLoseEvent> getPlayerLoseEventObservable() {

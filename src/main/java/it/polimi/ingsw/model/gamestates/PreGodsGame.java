@@ -1,21 +1,27 @@
 package it.polimi.ingsw.model.gamestates;
 
+import it.polimi.ingsw.common.event.PlayerChallengerSelectFirstEvent;
 import it.polimi.ingsw.common.event.PlayerChallengerSelectGodsEvent;
 import it.polimi.ingsw.common.event.PlayerChooseGodEvent;
 import it.polimi.ingsw.common.event.PlayerTurnStartEvent;
+import it.polimi.ingsw.common.event.request.RequestPlayerChallengerSelectFirstEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerChallengerSelectGodsEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerChooseGodEvent;
 import it.polimi.ingsw.common.info.GodInfo;
 import it.polimi.ingsw.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PreGodsGame extends AbstractGameState {
 
     private enum Phase {
 
         CHALLENGER_SELECT_GODS,
-        PLAYER_SELECT_GOD
+        PLAYER_SELECT_GOD,
+        CHALLENGER_SELECT_FIRST
 
     }
 
@@ -44,6 +50,12 @@ public class PreGodsGame extends AbstractGameState {
      * The current phase of the state
      */
     private Phase phase;
+
+    /**
+     * The first player index (refers to getPlayers())
+     * The value is null until the challenger has selected the player that will start choosing workers
+     */
+    private Integer firstIndex;
 
     public PreGodsGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers, List<God> gods) {
         super(provider, board, players);
@@ -144,18 +156,53 @@ public class PreGodsGame extends AbstractGameState {
 
         if (next != null) {
             generateChooseRequests(next);
+        } else {
+            // Every player has chosen a god, ask the challenger to select the player
+
+            phase = Phase.CHALLENGER_SELECT_FIRST;
+
+            List<String> players = getPlayers().stream().map(Player::getName).collect(Collectors.toList());
+            new RequestPlayerChallengerSelectFirstEvent(getCurrentPlayer().getName(), players)
+                    .accept(getModelEventProvider());
         }
 
         return ModelResponse.ALLOW;
     }
 
     @Override
-    public Player getCurrentPlayer() {
-        if (isDone()) {
-            return null;
+    public ModelResponse selectFirst(String player) {
+        if (phase != Phase.CHALLENGER_SELECT_FIRST) {
+            // Unable to select gods in this phase
+            return ModelResponse.INVALID_STATE;
         }
 
-        if (phase == Phase.CHALLENGER_SELECT_GODS) {
+        Integer optionalIndex = null;
+
+        int index = 0;
+        for (Player other : getPlayers()) {
+            if (other.getName().equals(player)) {
+                optionalIndex = index++;
+            }
+        }
+
+        if (optionalIndex == null) {
+            // Invalid player selected
+            return ModelResponse.INVALID_PARAMS;
+        }
+
+        // The first player has been chosen correctly, nextState must return PreWorkersGame now
+        firstIndex = optionalIndex;
+
+        var event = new PlayerChallengerSelectFirstEvent(getCurrentPlayer().getName(), player);
+        setReceivers(event);
+        event.accept(getModelEventProvider());
+
+        return ModelResponse.ALLOW;
+    }
+
+    @Override
+    public Player getCurrentPlayer() {
+        if (phase == Phase.CHALLENGER_SELECT_GODS || phase == Phase.CHALLENGER_SELECT_FIRST) {
             return getPlayers().get(challengerIndex);
         }
 
@@ -163,6 +210,11 @@ public class PreGodsGame extends AbstractGameState {
 
         if (currentPlayer.getGod().isEmpty()) {
             return currentPlayer;
+        }
+
+        if (playerIndex + 1 >= getPlayers().size()) {
+            // No other player needs to choose a god
+            return null;
         }
 
         playerIndex++;
@@ -175,21 +227,18 @@ public class PreGodsGame extends AbstractGameState {
             return this;
         }
 
-        return new PreWorkersGame(getModelEventProvider(), getBoard(), getPlayers(), maxWorkers, true);
+        // Generate the new list of players, starting from the first player instead of the challenger
+        List<Player> players = new ArrayList<>();
+        for (int i = 0; i < getPlayers().size(); i++) {
+            Player next = getPlayers().get((i + firstIndex) % getPlayers().size());
+            players.add(next);
+        }
+
+        return new PreWorkersGame(getModelEventProvider(), getBoard(), players, maxWorkers, true);
     }
 
     private boolean isDone() {
-        if (phase == Phase.CHALLENGER_SELECT_GODS) {
-            return false;
-        }
-
-        for (Player player : getPlayers()) {
-            if (player.getGod().isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
+        return firstIndex != null;
     }
 
     /**

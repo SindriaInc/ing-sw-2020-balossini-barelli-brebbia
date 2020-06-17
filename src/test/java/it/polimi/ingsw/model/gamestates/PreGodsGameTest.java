@@ -28,8 +28,10 @@ class PreGodsGameTest {
 
     private int requestSelectCount;
     private int requestChooseCount;
+    private int requestFirstCount;
     private int selectCount;
     private int chooseCount;
+    private int firstCount;
     private int turnStartCount;
 
     @BeforeEach
@@ -57,6 +59,11 @@ class PreGodsGameTest {
             List<GodInfo> godInfos = godsToGodInfoList(gods);
             assertTrue(equalsNoOrder(event.getGods(), godInfos));
             requestSelectCount++;
+        });
+
+        modelEventProvider.registerRequestPlayerChallengerSelectFirstEventObserver(event -> {
+            assertEquals(event.getPlayers().size(), playerCount);
+            requestFirstCount++;
         });
 
         List<String> selectedGods = List.of(gods.get(0).getName(), gods.get(1).getName());
@@ -98,12 +105,30 @@ class PreGodsGameTest {
         assertEquals(turnStartCount, 3);
         assertEquals(requestChooseCount, 2);
         assertEquals(chooseCount, 1);
+        assertEquals(requestFirstCount, 0);
         preGodsGame.chooseGod(gods.get(0).getName());
+
+        modelEventProvider.registerPlayerChallengerSelectFirstEventObserver(event -> {
+            firstCount++;
+        });
+
+        assertEquals(chooseCount, 2);
+        assertEquals(requestChooseCount, 2);
+        assertEquals(selectCount, 1);
+        assertEquals(requestSelectCount, 1);
+        assertEquals(requestFirstCount, 1);
+        assertEquals(firstCount, 0);
+        assertEquals(preGodsGame, preGodsGame.nextState());
+        preGodsGame.selectFirst(preGodsGame.getPlayers().get(0).getName());
+        assertEquals(firstCount, 1);
+
         // Goes into the next state
         assertEquals(chooseCount, 2);
         assertEquals(requestChooseCount, 2);
         assertEquals(selectCount, 1);
         assertEquals(requestSelectCount, 1);
+        assertEquals(requestFirstCount, 1);
+        assertEquals(firstCount, 1);
         assertNotEquals(preGodsGame, preGodsGame.nextState());
     }
 
@@ -136,16 +161,26 @@ class PreGodsGameTest {
 
         preGodsGame.selectGods(List.of(gods.get(0).getName(), gods.get(1).getName()));
 
+        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.chooseGod("NotOneOfTheGods"));
+
         preGodsGame.chooseGod(gods.get(1).getName());
 
         assertEquals(preGodsGame, preGodsGame.nextState());
         assertEquals(preGodsGame.getPlayers().get(1), preGodsGame.getCurrentPlayer());
 
+        assertEquals(ModelResponse.INVALID_STATE, preGodsGame.selectFirst(preGodsGame.getPlayers().get(0).getName()));
+
         preGodsGame.chooseGod(gods.get(0).getName());
+
+        assertEquals(preGodsGame, preGodsGame.nextState());
+
+        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.selectFirst("NotOneOfThePlayers"));
+
+        preGodsGame.selectFirst(preGodsGame.getPlayers().get(0).getName());
 
         assertNotEquals(preGodsGame, preGodsGame.nextState());
 
-        assertEquals(ModelResponse.INVALID_PARAMS, preGodsGame.chooseGod(god4.getName()));
+        assertEquals(ModelResponse.INVALID_STATE, preGodsGame.chooseGod(god4.getName()));
     }
 
     /**
