@@ -52,6 +52,10 @@ public abstract class AbstractGameState {
         return ModelResponse.INVALID_STATE;
     }
 
+    public ModelResponse selectFirst(String first) {
+        return ModelResponse.INVALID_STATE;
+    }
+
     public ModelResponse spawnWorker(Coordinates position) {
         return ModelResponse.INVALID_STATE;
     }

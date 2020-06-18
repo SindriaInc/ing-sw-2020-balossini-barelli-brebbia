@@ -60,16 +60,6 @@ public class Game {
     }
 
     /**
-     * Obtain a copy of the game Board
-     * @return The Board
-     *
-     * <strong>This method has no side effect</strong>
-     */
-    public Board getBoard() {
-        return copyOfBoard(currentState.getBoard());
-    }
-
-    /**
      * Obtain the current player that is able to interact with the game
      * If Game#isEnded returns true, this method returns the winner
      * Calling this method repeatedly should not result in a different player unless other methods got called
@@ -97,6 +87,17 @@ public class Game {
      */
     public ModelResponse chooseGod(String god) {
         ModelResponse response = currentState.chooseGod(god);
+        updateState();
+        return response;
+    }
+
+    /**
+     * Select the first player that will be able to spawn workers
+     * @param first The first player
+     * @return the response - If the arguments pass the related check, the response will be ALLOW
+     */
+    public ModelResponse selectFirst(String first) {
+        ModelResponse response = currentState.selectFirst(first);
         updateState();
         return response;
     }
@@ -193,21 +194,6 @@ public class Game {
 
     private void updateState() {
         currentState = currentState.nextState();
-    }
-
-    private Board copyOfBoard(Board original) {
-        Board copy = new Board(original.getRows(), original.getColumns());
-
-        for (Cell cell : copy.getCells()) {
-            applyCopy(cell, original.getCellFromCoords(cell.getX(), cell.getY()));
-        }
-
-        return copy;
-    }
-
-    private void applyCopy(Cell cell, Cell original) {
-        cell.setLevel(original.getLevel());
-        cell.setDoomed(original.isDoomed());
     }
 
 }

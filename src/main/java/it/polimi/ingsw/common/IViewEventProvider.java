@@ -29,7 +29,7 @@ public interface IViewEventProvider {
     void registerPlayerJoinRoomEventObserver(Observer<PlayerJoinRoomEvent> observer);
 
     /**
-     * Register the observer for ChallengerSelectGodsEvent in the related observable
+     * Register the observer for PlayerChallengerSelectGodsEvent in the related observable
      * @param observer The Observer
      */
     void registerPlayerChallengerSelectGodsEventObserver(Observer<PlayerChallengerSelectGodsEvent> observer);
@@ -39,6 +39,12 @@ public interface IViewEventProvider {
      * @param observer The Observer
      */
     void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer);
+
+    /**
+     * Register the observer for PlayerChallengerSelectFirstEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerChallengerSelectFirstEventObserver(Observer<PlayerChallengerSelectFirstEvent> observer);
 
     /**
      * Register the observer for PlayerEndTurnEvent in the related observable

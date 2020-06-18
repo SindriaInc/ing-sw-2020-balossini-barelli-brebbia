@@ -27,9 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class VirtualView {
 
-    private static final long PING_SCHEDULE_MS = 10000;
+    public static final long PING_SCHEDULE_MS = 10000;
 
-    private static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
+    public static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
 
     /**
      * The server instance, handling player connections and sending/receiving packets
@@ -111,6 +111,7 @@ public class VirtualView {
 
         modelEventProvider.registerRequestPlayerChallengerSelectGodsEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestPlayerChooseGodEventObserver(this::onRequestEvent);
+        modelEventProvider.registerRequestPlayerChallengerSelectFirstEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestPlayerEndTurnEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestWorkerBuildBlockEventObserver(this::onRequestEvent);
         modelEventProvider.registerRequestWorkerBuildDomeEventObserver(this::onRequestEvent);
@@ -120,6 +121,7 @@ public class VirtualView {
 
         modelEventProvider.registerPlayerChallengerSelectGodsEventObserver(this::onEvent);
         modelEventProvider.registerPlayerChooseGodEventObserver(this::onEvent);
+        modelEventProvider.registerPlayerChallengerSelectFirstEventObserver(this::onEvent);
         modelEventProvider.registerPlayerLoseEventObserver(this::onEvent);
         modelEventProvider.registerPlayerTurnStartEventObserver(this::onEvent);
         modelEventProvider.registerPlayerWinEventObserver(this::onEvent);

@@ -32,10 +32,6 @@ public abstract class AbstractClientState {
         // Initialize new event providers, this way the clientConnector will only send events to the current state
         responseEventProvider = new ResponseEventProvider();
         modelEventProvider = new ModelEventProvider();
-        modelEventProvider.registerRequestPlayerPingEventObserver(event -> {
-            // Reply to ping request events
-            clientConnector.send(new PlayerPingEvent(event.getPlayer()));
-        });
     }
 
     public ClientConnector getClientConnector() {

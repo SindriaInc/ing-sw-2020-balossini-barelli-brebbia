@@ -41,6 +41,7 @@ class AbstractGameStateTest {
     void testDefaults() {
         assertEquals(ModelResponse.INVALID_STATE, abstractGameState.selectGods(List.of()));
         assertEquals(ModelResponse.INVALID_STATE, abstractGameState.chooseGod(null));
+        assertEquals(ModelResponse.INVALID_STATE, abstractGameState.selectFirst(null));
         assertEquals(ModelResponse.INVALID_STATE, abstractGameState.spawnWorker(null));
         assertEquals(ModelResponse.INVALID_STATE, abstractGameState.moveWorker(0, null));
         assertEquals(ModelResponse.INVALID_STATE, abstractGameState.buildBlock(0, null));

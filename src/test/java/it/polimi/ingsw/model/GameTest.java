@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class GameTest {
 
@@ -25,22 +24,6 @@ class GameTest {
 
     private int requestSpawnCount;
     private int winCount;
-
-    /**
-     * Check that there is no access to the inner model
-     */
-    @Test
-    void checkGetBoard() {
-        constructSimpleGame();
-        game.init(players, deck, true);
-
-        Board board = game.getBoard();
-        board.getCellFromCoords(0, 0).setLevel(1);
-        board.getCellFromCoords(0, 0).setDoomed(true);
-
-        assertEquals(0, game.getBoard().getCellFromCoords(0, 0).getLevel());
-        assertFalse(game.getBoard().getCellFromCoords(0, 0).isDoomed());
-    }
 
     /**
      * Check that the simple game rule throws an exception for the God choice in a simple game
@@ -91,6 +74,8 @@ class GameTest {
         assertEquals(requestSpawnCount, 0);
         game.chooseGod(gods.get(2).getName());
 
+        game.selectFirst(players.get(0).getName());
+
         // Check that we are in the next state
         assertEquals(requestSpawnCount, 1);
     }
@@ -110,6 +95,8 @@ class GameTest {
         game.chooseGod(gods.get(0).getName()); // BuildBeforeMove
         game.chooseGod(gods.get(1).getName()); // WinOnDeltaLevel
         game.chooseGod(gods.get(2).getName()); // ParkourCross
+
+        game.selectFirst(players.get(0).getName());
 
         game.spawnWorker(new Coordinates(1, 0)); // Worker 0
         game.spawnWorker(new Coordinates(3, 3)); // Worker 1

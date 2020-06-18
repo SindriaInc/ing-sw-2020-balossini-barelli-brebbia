@@ -22,6 +22,7 @@ public class GameData extends AbstractData {
     private final String turnPlayer;
     private final SelectGodsData selectGodsData;
     private final ChooseGodData chooseGodData;
+    private final SelectFirstData selectFirstData;
     private final InteractData spawnData;
     private final WorkersInteractData moveData;
     private final WorkersInteractData buildBlockData;
@@ -32,7 +33,7 @@ public class GameData extends AbstractData {
     public GameData(String lastMessage, String name, List<String> otherPlayers, boolean inGodsPhase, boolean spectating,
                     CellInfo[][] map, List<WorkerInfo> workers) {
         this(lastMessage, name, otherPlayers, inGodsPhase, spectating, map, workers, null,
-                null, null,
+                null, null, null,
                 null, null,
                 null, null,
                 null, null);
@@ -40,7 +41,7 @@ public class GameData extends AbstractData {
 
     private GameData(String lastMessage, String name, List<String> otherPlayers, boolean inGodsPhase, boolean spectating,
                      CellInfo[][] map, List<WorkerInfo> workers, String turnPlayer,
-                     SelectGodsData selectGodsData, ChooseGodData chooseGodData,
+                     SelectGodsData selectGodsData, ChooseGodData chooseGodData, SelectFirstData selectFirstData,
                      InteractData spawnData, WorkersInteractData moveData,
                      WorkersInteractData buildBlockData, WorkersInteractData buildDomeData,
                      WorkersOtherInteractData forceData, Boolean canBeEnded) {
@@ -54,6 +55,7 @@ public class GameData extends AbstractData {
         this.workers = workers;
         this.turnPlayer = turnPlayer;
         this.selectGodsData = selectGodsData;
+        this.selectFirstData = selectFirstData;
         this.chooseGodData = chooseGodData;
         this.spawnData = spawnData;
         this.moveData = moveData;
@@ -97,6 +99,10 @@ public class GameData extends AbstractData {
 
     public Optional<ChooseGodData> getChooseGodData() {
         return Optional.ofNullable(chooseGodData);
+    }
+
+    public Optional<SelectFirstData> getSelectFirstData() {
+        return Optional.ofNullable(selectFirstData);
     }
 
     public Optional<InteractData> getSpawnData() {
@@ -143,7 +149,7 @@ public class GameData extends AbstractData {
 
     public GameData withMessage(String lastMessage) {
         return new GameData(lastMessage, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -159,7 +165,7 @@ public class GameData extends AbstractData {
         map[coordinates.getX()][coordinates.getY()] = cellInfo;
 
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -168,7 +174,7 @@ public class GameData extends AbstractData {
 
     public GameData withTurnPlayer(String turnPlayer) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -177,7 +183,7 @@ public class GameData extends AbstractData {
 
     public GameData withSelectGods(SelectGodsData selectGodsData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -186,7 +192,16 @@ public class GameData extends AbstractData {
 
     public GameData withChooseGod(ChooseGodData chooseGodData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
+                spawnData, moveData,
+                buildBlockData, buildDomeData,
+                forceData, canBeEnded
+        );
+    }
+
+    public GameData withSelectFirst(SelectFirstData selectFirstData) {
+        return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -195,7 +210,7 @@ public class GameData extends AbstractData {
 
     public GameData withSpawn(InteractData spawnData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -204,7 +219,7 @@ public class GameData extends AbstractData {
 
     public GameData withMove(WorkersInteractData moveData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -213,7 +228,7 @@ public class GameData extends AbstractData {
 
     public GameData withBuildBlock(WorkersInteractData buildBlockData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -222,7 +237,7 @@ public class GameData extends AbstractData {
 
     public GameData withBuildDome(WorkersInteractData buildDomeData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -231,7 +246,7 @@ public class GameData extends AbstractData {
 
     public GameData withForce(WorkersOtherInteractData forceData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -240,7 +255,7 @@ public class GameData extends AbstractData {
 
     public GameData withEndTurn(Boolean canBeEnded) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                selectGodsData, chooseGodData,
+                selectGodsData, chooseGodData, selectFirstData,
                 spawnData, moveData,
                 buildBlockData, buildDomeData,
                 forceData, canBeEnded
@@ -249,7 +264,7 @@ public class GameData extends AbstractData {
 
     public GameData withNoRequests() {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
-                null, null,
+                null, null, null,
                 null, null,
                 null, null,
                 null, null

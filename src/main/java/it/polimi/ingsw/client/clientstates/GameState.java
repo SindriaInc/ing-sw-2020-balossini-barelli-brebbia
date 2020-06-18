@@ -40,6 +40,7 @@ public class GameState extends AbstractClientState {
 
         getModelEventProvider().registerRequestPlayerChallengerSelectGodsEventObserver(this::onRequestSelectGods);
         getModelEventProvider().registerRequestPlayerChooseGodEventObserver(this::onRequestChooseGod);
+        getModelEventProvider().registerRequestPlayerChallengerSelectFirstEventObserver(this::onRequestSelectFirst);
         getModelEventProvider().registerRequestWorkerSpawnEventObserver(this::onRequestSpawn);
         getModelEventProvider().registerRequestWorkerMoveEventObserver(this::onRequestMove);
         getModelEventProvider().registerRequestWorkerBuildBlockEventObserver(this::onRequestBuildBlock);
@@ -50,6 +51,7 @@ public class GameState extends AbstractClientState {
         getModelEventProvider().registerPlayerTurnStartEventObserver(this::onPlayerTurnStart);
         getModelEventProvider().registerPlayerChallengerSelectGodsEventObserver(this::onSelectGods);
         getModelEventProvider().registerPlayerChooseGodEventObserver(this::onChooseGod);
+        getModelEventProvider().registerPlayerChallengerSelectFirstEventObserver(this::onSelectFirst);
         getModelEventProvider().registerWorkerSpawnEventObserver(this::onSpawn);
         getModelEventProvider().registerWorkerMoveEventObserver(this::onMove);
         getModelEventProvider().registerWorkerBuildBlockEventObserver(this::onBuildBlock);
@@ -93,6 +95,13 @@ public class GameState extends AbstractClientState {
     private void onRequestChooseGod(RequestPlayerChooseGodEvent event) {
         // The gods phase does not use turn logic
         data = data.withChooseGod(new ChooseGodData(event.getAvailableGods()));
+        dataSnapshot = null;
+        updateView();
+    }
+
+    private void onRequestSelectFirst(RequestPlayerChallengerSelectFirstEvent event) {
+        // The gods phase does not use turn logic
+        data = data.withSelectFirst(new SelectFirstData(event.getPlayers()));
         dataSnapshot = null;
         updateView();
     }
@@ -157,16 +166,19 @@ public class GameState extends AbstractClientState {
     private void onChooseGod(PlayerChooseGodEvent event) {
         // TODO: Show something?
 
-        if (event.getPlayer().equals(data.getName())) {
-            // Leave the gods phase
-            data = new GameData(null, data.getName(), data.getOtherPlayers(),
-                    false, data.isSpectating(), data.getMap(), data.getWorkers())
-                    .withTurnPlayer(data.getTurnPlayer().orElse(null));
-        } else {
-            data = data.withNoRequests();
-        }
+        data = data.withNoRequests();
         dataSnapshot = null;
+        updateView();
+    }
 
+    private void onSelectFirst(PlayerChallengerSelectFirstEvent event) {
+        // TODO: Show something?
+
+        // Leave the gods phase
+        data = new GameData(null, data.getName(), data.getOtherPlayers(),
+                false, data.isSpectating(), data.getMap(), data.getWorkers())
+                .withTurnPlayer(data.getTurnPlayer().orElse(null));
+        dataSnapshot = null;
         updateView();
     }
 
@@ -268,6 +280,12 @@ public class GameState extends AbstractClientState {
         clearData();
         updateView();
         getClientConnector().send(new PlayerChooseGodEvent(getData().getName(), chooseGod));
+    }
+
+    public void acceptSelectFirst(String first) {
+        clearData();
+        updateView();
+        getClientConnector().send(new PlayerChallengerSelectFirstEvent(getData().getName(), first));
     }
 
     public void acceptSpawn(int x, int y) {

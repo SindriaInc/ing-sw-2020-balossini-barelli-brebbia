@@ -1,12 +1,19 @@
 package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.client.clientstates.InputState;
 import it.polimi.ingsw.client.clientstates.AbstractClientState;
+import it.polimi.ingsw.client.clientstates.InputState;
 import it.polimi.ingsw.client.message.ErrorMessage;
 import it.polimi.ingsw.common.event.AbstractEvent;
+import it.polimi.ingsw.common.event.PlayerPingEvent;
 import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.serializer.GsonEventSerializer;
 import it.polimi.ingsw.common.serializer.SerializationException;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static it.polimi.ingsw.view.VirtualView.PING_SCHEDULE_MS;
+import static it.polimi.ingsw.view.VirtualView.PING_TIMEOUT_MS;
 
 // TODO: Implement server timeout logic
 public class ClientConnector {
@@ -22,6 +29,11 @@ public class ClientConnector {
     private final AbstractClientViewer viewer;
 
     /**
+     * The timer that manages server timeouts
+     */
+    private final Timer timer;
+
+    /**
      * The current state of client, implementing the available interactions
      */
     private AbstractClientState currentClientState;
@@ -31,9 +43,25 @@ public class ClientConnector {
      */
     private IClient connection;
 
+    /**
+     * The epoch of the last server ping, or null if not connected to a server
+     */
+    private Long lastPing = null;
+
     public ClientConnector(AbstractClientViewer viewer) {
         this.viewer = viewer;
-        this.currentClientState = new InputState(this);
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                onTimeoutCheck();
+            }
+
+        }, 0, PING_SCHEDULE_MS);
+
+        updateState(new InputState(this));
     }
 
     public AbstractClientViewer getViewer() {
@@ -49,6 +77,23 @@ public class ClientConnector {
 
     public void updateState(AbstractClientState state) {
         this.currentClientState = state;
+
+        state.getModelEventProvider().registerRequestPlayerPingEventObserver(event -> {
+            // Reply to ping request events
+            send(new PlayerPingEvent(event.getPlayer()));
+            lastPing = System.currentTimeMillis();
+        });
+    }
+
+    /**
+     * Send an event to server
+     */
+    public void send(AbstractEvent event) {
+        if (connection == null) {
+            throw new IllegalStateException("Tried to send an event while no connection is present");
+        }
+
+        connection.send(serializer.serialize(event));
     }
 
     public void shutdown() {
@@ -90,15 +135,18 @@ public class ClientConnector {
         // TODO: Handle message sending errors
     }
 
-    /**
-     * Send an event to server
-     */
-    public void send(AbstractEvent event) {
-        if (connection == null) {
-            throw new IllegalStateException("Tried to send an event while no connection is present");
+    private void onTimeoutCheck() {
+        if (lastPing == null) {
+            return;
         }
 
-        connection.send(serializer.serialize(event));
+        if (System.currentTimeMillis() <= lastPing + PING_TIMEOUT_MS) {
+            return;
+        }
+
+        // The server connection has timed out
+        // TODO: Display a message
+        updateState(new InputState(this));
     }
 
 }

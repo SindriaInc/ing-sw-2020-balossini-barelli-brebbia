@@ -27,6 +27,7 @@ public class CliGodsView extends AbstractGameView {
 
     private static final String SELECT_FAIL = "Please, type the name of the gods you want to select (Example: select Athena Hera Zeus)";
     private static final String CHOOSE_FAIL = "Please, type the name of the gos you want to chose (Example: choose Atlas)";
+    private static final String FIRST_FAIL = "Please, type the name of the player that will start (Example: first NicePlayer1)";
 
     private final GameState state;
 
@@ -38,13 +39,29 @@ public class CliGodsView extends AbstractGameView {
 
     @Override
     public String generateView() {
+        GameData data = getState().getData();
+
         List<GodInfo> gods;
         StringBuilder output = new StringBuilder();
 
-        if (state.getData().getSelectGodsData().isPresent()) {
-            gods = state.getData().getSelectGodsData().get().getAvailableGods();
-        } else if (state.getData().getChooseGodData().isPresent()) {
-            gods = state.getData().getChooseGodData().get().getAvailableGods();
+        if (data.getSelectFirstData().isPresent()) {
+            output.append(separator()).append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
+            output.append(center("You are the challenger!")).append(System.lineSeparator());
+            output.append(center("Select the first player to spawn workers.")).append(System.lineSeparator().repeat(AFTER_TABLE_HEADER));
+
+            for (String player : data.getSelectFirstData().get().getAvailablePlayers()) {
+                output.append(center(player)).append(System.lineSeparator());
+            }
+
+            output.append(System.lineSeparator().repeat(AFTER_TABLE_HEADER));
+            output.append(separator()).append(System.lineSeparator());
+            return output.toString();
+        }
+
+        if (data.getSelectGodsData().isPresent()) {
+            gods = data.getSelectGodsData().get().getAvailableGods();
+        } else if (data.getChooseGodData().isPresent()) {
+            gods = data.getChooseGodData().get().getAvailableGods();
         } else {
             return "Waiting for your turn...";
         }
@@ -115,21 +132,20 @@ public class CliGodsView extends AbstractGameView {
         output.append(separator()).append(System.lineSeparator());
 
         return output.toString();
-
     }
 
     @Override
     public List<CliCommand> generateCommands() {
         GameData data = getState().getData();
 
-        if (state.getData().getTurnPlayer().isPresent() &&
-                state.getData().getTurnPlayer().get().equals(state.getData().getName()) &&
-                !state.getData().isSpectating()) {
+        if (data.getTurnPlayer().isPresent() &&
+                data.getTurnPlayer().get().equals(data.getName()) &&
+                !data.isSpectating()) {
             if (data.getSelectGodsData().isPresent()) {
                 String[] args;
-                if (state.getData().getOtherPlayers().size() + 1 == 2) {
+                if (data.getOtherPlayers().size() + 1 == 2) {
                     args = new String[]{"<God1>", "<God 2>"};
-                } else if (state.getData().getOtherPlayers().size() + 1 == 3) {
+                } else if (data.getOtherPlayers().size() + 1 == 3) {
                     args = new String[]{"<God1>", "<God 2>", "<God 3>"};
                 } else {
                     args = new String[]{"<God1>", "<God 2>", "<God 3>", "<God 4>"};
@@ -142,6 +158,10 @@ public class CliGodsView extends AbstractGameView {
                 return List.of(
                         new CliCommand("choose", new String[]{"<GodID>"}, "Choose a god", this::onChoose)
                 );
+            } else if (data.getSelectFirstData().isPresent()) {
+                return List.of(
+                        new CliCommand("first", new String[]{"<player>"}, "Select the first player", this::onFirst)
+                );
             }
         }
 
@@ -149,7 +169,9 @@ public class CliGodsView extends AbstractGameView {
     }
 
     private Optional<String> onSelect(String[] arguments) {
-        if (arguments.length != state.getData().getOtherPlayers().size() + 1) {
+        GameData data = getState().getData();
+
+        if (arguments.length != data.getOtherPlayers().size() + 1) {
             return Optional.of(SELECT_FAIL);
         }
 
@@ -171,10 +193,23 @@ public class CliGodsView extends AbstractGameView {
         }
 
         if (arguments[0].length() <= 0) {
-            return  Optional.of(CHOOSE_FAIL);
+            return Optional.of(CHOOSE_FAIL);
         }
 
         state.acceptChooseGod(arguments[0]);
+
+        return Optional.empty();
+    }
+
+    private Optional<String> onFirst(String[] arguments) {
+        GameData data = getState().getData();
+
+        if (arguments.length != 1) {
+            return Optional.of(FIRST_FAIL);
+        }
+
+        String player = arguments[0];
+        state.acceptSelectFirst(player);
 
         return Optional.empty();
     }

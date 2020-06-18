@@ -29,7 +29,7 @@ public class ViewEventProvider implements IViewEventProvider {
     private final Observable<PlayerJoinRoomEvent> playerJoinRoomEventObservable = new Observable<>();
 
     /**
-     * Observable for RequestChallengerSelectGodsEvent
+     * Observable for PlayerChallengerSelectGodsEvent
      */
     private final Observable<PlayerChallengerSelectGodsEvent> playerChallengerSelectGodsEventObservable = new Observable<>();
 
@@ -37,6 +37,11 @@ public class ViewEventProvider implements IViewEventProvider {
      * Observable for PlayerChooseGodEvent
      */
     private final Observable<PlayerChooseGodEvent> playerChooseGodEventObservable = new Observable<>();
+
+    /**
+     * Observable for PlayerChallengerSelectFirstEvent
+     */
+    private final Observable<PlayerChallengerSelectFirstEvent> playerChallengerSelectFirstEventObservable = new Observable<>();
 
     /**
      * Observable for PlayerEndTurnEvent
@@ -73,66 +78,113 @@ public class ViewEventProvider implements IViewEventProvider {
      */
     private final Observable<WorkerSpawnEvent> workerSpawnEventObservable = new Observable<>();
 
+    /**
+     * @see IViewEventProvider#registerPlayerLoginEventObserver(Observer)
+     */
     @Override
     public void registerPlayerLoginEventObserver(Observer<PlayerLoginEvent> observer) {
         playerLoginEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerLogoutEventObserver(Observer)
+     */
     @Override
     public void registerPlayerLogoutEventObserver(Observer<PlayerLogoutEvent> observer) {
         playerLogoutEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerCreateRoomEventObserver(Observer)
+     */
     @Override
     public void registerPlayerCreateRoomEventObserver(Observer<PlayerCreateRoomEvent> observer) {
         playerCreateRoomEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerJoinRoomEventObserver(Observer)
+     */
     @Override
     public void registerPlayerJoinRoomEventObserver(Observer<PlayerJoinRoomEvent> observer) {
         playerJoinRoomEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerChallengerSelectGodsEventObserver(Observer)
+     */
     @Override
     public void registerPlayerChallengerSelectGodsEventObserver(Observer<PlayerChallengerSelectGodsEvent> observer) {
         playerChallengerSelectGodsEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerChooseGodEventObserver(Observer)
+     */
     @Override
     public void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer) {
         playerChooseGodEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerChallengerSelectFirstEventObserver(Observer)
+     */
+    @Override
+    public void registerPlayerChallengerSelectFirstEventObserver(Observer<PlayerChallengerSelectFirstEvent> observer) {
+        playerChallengerSelectFirstEventObservable.register(observer);
+    }
+
+    /**
+     * @see IViewEventProvider#registerPlayerEndTurnEventObserver(Observer)
+     */
     @Override
     public void registerPlayerEndTurnEventObserver(Observer<PlayerEndTurnEvent> observer) {
         playerEndTurnEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerPlayerPingEventObserver(Observer)
+     */
     @Override
     public void registerPlayerPingEventObserver(Observer<PlayerPingEvent> observer) {
         playerPingEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerWorkerBuildBlockEventObserver(Observer)
+     */
     @Override
     public void registerWorkerBuildBlockEventObserver(Observer<WorkerBuildBlockEvent> observer) {
         workerBuildBlockEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerWorkerBuildDomeEventObserver(Observer)
+     */
     @Override
     public void registerWorkerBuildDomeEventObserver(Observer<WorkerBuildDomeEvent> observer) {
         workerBuildDomeEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerWorkerForceEventObserver(Observer)
+     */
     @Override
     public void registerWorkerForceEventObserver(Observer<WorkerForceEvent> observer) {
         workerForceEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerWorkerMoveEventObserver(Observer)
+     */
     @Override
     public void registerWorkerMoveEventObserver(Observer<WorkerMoveEvent> observer) {
         workerMoveEventObservable.register(observer);
     }
 
+    /**
+     * @see IViewEventProvider#registerWorkerSpawnEventObserver(Observer)
+     */
     @Override
     public void registerWorkerSpawnEventObserver(Observer<WorkerSpawnEvent> observer) {
         workerSpawnEventObservable.register(observer);
@@ -160,6 +212,10 @@ public class ViewEventProvider implements IViewEventProvider {
 
     public Observable<PlayerChooseGodEvent> getPlayerChooseGodEventObservable() {
         return playerChooseGodEventObservable;
+    }
+
+    public Observable<PlayerChallengerSelectFirstEvent> getPlayerChallengerSelectFirstEventObservable() {
+        return playerChallengerSelectFirstEventObservable;
     }
 
     public Observable<PlayerEndTurnEvent> getPlayerEndTurnEventObservable() {

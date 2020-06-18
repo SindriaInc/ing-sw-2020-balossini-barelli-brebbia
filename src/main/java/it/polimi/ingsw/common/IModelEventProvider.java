@@ -45,6 +45,12 @@ public interface IModelEventProvider {
     void registerRequestPlayerChooseGodEventObserver(Observer<RequestPlayerChooseGodEvent> observer);
 
     /**
+     * Register the observer for RequestPlayerChallengerSelectFirstEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerRequestPlayerChallengerSelectFirstEventObserver(Observer<RequestPlayerChallengerSelectFirstEvent> observer);
+
+    /**
      * Register the observer for RequestPlayerEndTurnEvent in the related observable
      * @param observer The Observer
      */
@@ -91,6 +97,12 @@ public interface IModelEventProvider {
      * @param observer The Observer
      */
     void registerPlayerChooseGodEventObserver(Observer<PlayerChooseGodEvent> observer);
+
+    /**
+     * Register the observer for PlayerChallengerSelectFirstEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerPlayerChallengerSelectFirstEventObserver(Observer<PlayerChallengerSelectFirstEvent> observer);
 
     /**
      * Register the observer for PlayerLoseEvent in the related observable
