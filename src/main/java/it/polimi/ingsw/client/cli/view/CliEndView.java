@@ -32,6 +32,7 @@ public class CliEndView extends AbstractCliView {
         StringBuilder output = new StringBuilder();
         output.append(separator());
         output.append(System.lineSeparator().repeat(CliConstants.STATUS_SPACING));
+
         if (name.equals(winner)) {
             output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
             output.append(buildHeader(win));
@@ -39,7 +40,9 @@ public class CliEndView extends AbstractCliView {
         } else {
             output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
             output.append(buildHeader(lose));
-            output.append(System.lineSeparator().repeat(2)).append(center(state.getData().getWinner() + " has won the game"));
+
+            if (state.getData().getWinner()==null) {winner="An opponent disconnected. Nobody";}
+            output.append(System.lineSeparator().repeat(2)).append(center(winner + " has won the game"));
         }
         output.append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
         output.append(System.lineSeparator().repeat(CliConstants.STATUS_SPACING));

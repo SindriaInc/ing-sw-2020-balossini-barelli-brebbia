@@ -15,6 +15,8 @@ import static it.polimi.ingsw.client.cli.CliConstants.*;
 
 public class CliGodsView extends AbstractGameView {
 
+    private static final int ADDITIONAL_SPACE_FOR_WAIT = 10;
+
     private static final String GODS_HEADER = "    ID  NAME         TYPE       TITLE                 DESCRIPTION";
     private static final String PADDING = "    ";
     private static final int OS_ID = 4;
@@ -63,7 +65,13 @@ public class CliGodsView extends AbstractGameView {
         } else if (data.getChooseGodData().isPresent()) {
             gods = data.getChooseGodData().get().getAvailableGods();
         } else {
-            return "Waiting for your turn...";
+            output.append(separator())
+                    .append(System.lineSeparator().repeat(ADDITIONAL_SPACE_FOR_WAIT))
+                    .append(center("Waiting for your turn...")).append(System.lineSeparator())
+                    .append(System.lineSeparator().repeat(ADDITIONAL_SPACE_FOR_WAIT))
+                    .append(separator()).append(System.lineSeparator());
+
+            return output.toString();
         }
 
         output.append(separator()).append(System.lineSeparator().repeat(CliConstants.HEADER_SPACING));
@@ -144,11 +152,11 @@ public class CliGodsView extends AbstractGameView {
             if (data.getSelectGodsData().isPresent()) {
                 String[] args;
                 if (data.getOtherPlayers().size() + 1 == 2) {
-                    args = new String[]{"<God1>", "<God 2>"};
+                    args = new String[]{"<God1>", "<God2>"};
                 } else if (data.getOtherPlayers().size() + 1 == 3) {
-                    args = new String[]{"<God1>", "<God 2>", "<God 3>"};
+                    args = new String[]{"<God1>", "<God2>", "<God3>"};
                 } else {
-                    args = new String[]{"<God1>", "<God 2>", "<God 3>", "<God 4>"};
+                    args = new String[]{"<God1>", "<God2>", "<God3>", "<God4>"};
                 }
 
                 return List.of(
@@ -156,7 +164,7 @@ public class CliGodsView extends AbstractGameView {
                 );
             } else if (data.getChooseGodData().isPresent()) {
                 return List.of(
-                        new CliCommand("choose", new String[]{"<GodID>"}, "Choose a god", this::onChoose)
+                        new CliCommand("choose", new String[]{"<God>"}, "Choose a god", this::onChoose)
                 );
             } else if (data.getSelectFirstData().isPresent()) {
                 return List.of(

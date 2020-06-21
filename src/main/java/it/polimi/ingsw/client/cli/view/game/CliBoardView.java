@@ -13,6 +13,10 @@ import java.util.Optional;
 
 public class CliBoardView extends AbstractGameView {
 
+    public static final String RESET = "\u001B[0m";
+    public static final String COLOR_BACKGROUND = "\u001B[45m";
+    public static final String COLOR = "\u001B[35m";
+
     private static final String BOARD_ROOF = "┌---┬---┬---┬---┬---┐";
     private static final String BOARD_FLOORS = "├---┼---┼---┼---┼---┤";
     private static final String BOARD_BASEMENT = "└---┴---┴---┴---┴---┘";
@@ -54,6 +58,14 @@ public class CliBoardView extends AbstractGameView {
 
         output.append(" ".repeat(BOARD_PADDING)).append(BOARD_ROOF).append(System.lineSeparator());
 
+        List<String> otherPlayers = new ArrayList<>();
+        otherPlayers.addAll(List.copyOf(state.getData().getOtherPlayers()));
+        if (state.getData().getTurnPlayer().isPresent() && !otherPlayers.contains(state.getData().getTurnPlayer().get())) {
+            otherPlayers.add(state.getData().getTurnPlayer().get());
+        }
+        if (otherPlayers.contains(state.getData().getName())) {
+            otherPlayers.remove(state.getData().getName());
+        }
         // Scan top to bottom to easily print in the correct order
         for (int y = Game.BOARD_ROWS - 1; y >= 0; y--) {
 
@@ -66,8 +78,6 @@ public class CliBoardView extends AbstractGameView {
                 output.append(getBlocksChar(cellInfo.getLevel()));
                 if (cellInfo.isDoomed()) {
                     output.append(DOME);
-                } else if (workerInfo != null) {
-                    output.append(getPawn(workerInfo.getId()));
                 } else if ((state.getData().getMoveData().isPresent()
                         && state.getData().getMoveData().get().getAvailableInteractions().values().stream().anyMatch(data -> data.getAvailableCoordinates().contains(coords)))
                         || (state.getData().getBuildBlockData().isPresent()
@@ -77,7 +87,14 @@ public class CliBoardView extends AbstractGameView {
                         || (state.getData().getForceData().isPresent()
                         && state.getData().getForceData().get().getAvailableOtherInteractions().values().stream().anyMatch(data -> data.getAvailableInteractions().values().contains(coords)))
                 ) {
-                    output.append(POSSIBLE_INTERACTION);
+                    if (workerInfo != null) {
+                        output.append(COLOR_BACKGROUND).append(getPawn(workerInfo.getId())).append(RESET);
+                    }
+                    else {
+                        output.append(COLOR).append(POSSIBLE_INTERACTION).append(RESET);
+                    }
+                } else if (workerInfo != null) {
+                    output.append(getPawn(workerInfo.getId()));
                 } else {
                     output.append(" ");
                 }
@@ -86,45 +103,43 @@ public class CliBoardView extends AbstractGameView {
             }
 
             if (y == 3) {
+                output.append(" ".repeat(SPACING * 2)).append("Your workers(").append(getPlayersPawn(state.getData().getName())).append(") : ");
+
                 if (!hasSpawned()) {
-                    output.append(" ".repeat(SPACING * 2)).append("No workers spawned");
+                    output.append("No workers spawned");
                 } else {
-                    output.append(" ".repeat(SPACING * 2)).append("Your workers: ").append(getPlayersPawn());
-                }
-            }
-
-            if (y == 2 && hasSpawned()) {
-                for (WorkerInfo worker : state.getData().getWorkers()) {
-                    if (worker.getOwner().equals(state.getData().getName())) {
-                        output.append(" ".repeat(SPACING * 2)).append("Worker ").append(worker.getId()).append(": ").append(worker.getPosition().toString());
-                        break;
-                    }
-                }
-            }
-
-            output.append(" ".repeat(SPACING * Game.BOARD_COLUMNS)).append(System.lineSeparator());
-
-            output.append(" ".repeat(BOARD_PADDING));
-            if (y != 0) {
-                output.append(BOARD_FLOORS);
-
-                if (y == 2 && hasSpawned()) {
-                    boolean first=true;
                     for (WorkerInfo worker : state.getData().getWorkers()) {
                         if (worker.getOwner().equals(state.getData().getName())) {
-
-                            if (!first) {
-                                output.append(" ".repeat(SPACING * 2)).append("Worker ").append(worker.getId())
-                                        .append(": ").append(worker.getPosition().toString());
-                            } else {
-                                first = false;
-                            }
+                            output.append("Worker").append(worker.getId()).append(" (").append(worker.getPosition().toString()).append(") ");
                         }
                     }
                 }
+            }
 
-                output.append(System.lineSeparator());
+            if (y <= 2 && otherPlayers.size()>0) {
 
+                output.append(" ".repeat(SPACING * 2)).append(otherPlayers.get(0)).append("'s workers(").append(getPlayersPawn(otherPlayers.get(0))).append(") : ");
+
+                boolean hasWorkers = false;
+                for (WorkerInfo worker : state.getData().getWorkers()) {
+                    if (worker.getOwner().equals(otherPlayers.get(0))) {
+                        output.append("Worker").append(worker.getId()).append(" (").append(worker.getPosition().toString()).append(") ");
+                        hasWorkers = true;
+                    }
+                }
+
+                if (!hasWorkers) {
+                    output.append("No workers spawned");
+                }
+
+                otherPlayers.remove(0);
+            }
+
+            output.append(System.lineSeparator());
+
+            output.append(" ".repeat(BOARD_PADDING));
+            if (y != 0) {
+                output.append(BOARD_FLOORS).append(System.lineSeparator());
             } else {
                 output.append(BOARD_BASEMENT).append(System.lineSeparator());
             }
@@ -165,7 +180,7 @@ public class CliBoardView extends AbstractGameView {
                 commands.add(new CliCommand("dome", new String[]{"<worker>", "<x>", "<y>"}, "Dome ", this::onBuildDome));
             }
             if (state.getData().getForceData().isPresent()) {
-                commands.add(new CliCommand("force", new String[]{"<worker>", "<x>", "<y>"}, "Force an opponent's worker in another cell", this::onForce));
+                commands.add(new CliCommand("force", new String[]{"<worker>", "<forced worker>", "<x>", "<y>"}, "Force an opponent's worker in another cell", this::onForce));
             }
             if (state.getData().getCanBeEnded().isPresent() && state.getData().getCanBeEnded().get()) {
                 commands.add(new CliCommand("end", new String[]{}, "End ", this::onEndTurn));
@@ -309,13 +324,13 @@ public class CliBoardView extends AbstractGameView {
         return WORKER4;
     }
 
-    private String getPlayersPawn() {
+    private String getPlayersPawn(String player) {
         for (WorkerInfo worker : state.getData().getWorkers()) {
-            if (worker.getOwner().equals(state.getData().getName())) {
+            if (worker.getOwner().equals(player)) {
                 return getPawn(worker.getId());
             }
         }
-        return "You haven't spawned your workers yet";
+        return " ";
     }
 
     private boolean hasSpawned() {
