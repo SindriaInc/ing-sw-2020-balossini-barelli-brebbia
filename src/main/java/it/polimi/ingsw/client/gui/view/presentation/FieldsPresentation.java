@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.gui.view.presentation;
 
 import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.GuiConstants;
+import it.polimi.ingsw.client.gui.view.component.IntegerField;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Pos;
@@ -22,18 +23,18 @@ public class FieldsPresentation extends AbstractPresentation {
 
     public StackPane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
                                           Map<Label, TextField> inputs,
-                                          Button action
+                                          Button action, ImageView buttonImage, StackPane connect
     ) {
         for (Map.Entry<Label, TextField> entry : inputs.entrySet()) {
             style(entry.getKey());
             style(entry.getValue());
         }
 
-        style(action);
-
         action.setMaxWidth(Double.MAX_VALUE);
 
-        ImageView logo = new ImageView(getAssets().getImage(GuiAssets.Images.LOGO));
+        style(buttonImage, action, connect);
+
+        ImageView logo = new ImageView(getAssets().getImage(GuiAssets.Images.LOGO_SUNSET));
         logo.setPreserveRatio(true);
 
         GridPane pane = new GridPane();
@@ -50,10 +51,10 @@ public class FieldsPresentation extends AbstractPresentation {
             row++;
         }
 
-        pane.add(action, 1, 3);
-        GridPane.setFillWidth(action, true);
+        pane.add(connect, 1, 3);
+        GridPane.setFillWidth(connect, true);
 
-        ImageView background = new ImageView(getAssets().getImage(GuiAssets.Images.BACKGROUND_MAIN));
+        ImageView background = new ImageView(getAssets().getImage(GuiAssets.Images.BACKGROUND_MAIN_SUNSET));
         StackPane root = new StackPane(background, pane);
         bindCover(root, background);
 
