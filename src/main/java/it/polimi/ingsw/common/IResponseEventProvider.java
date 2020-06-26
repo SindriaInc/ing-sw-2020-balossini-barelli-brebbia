@@ -1,10 +1,17 @@
 package it.polimi.ingsw.common;
 
+import it.polimi.ingsw.common.event.response.ResponseInvalidLoginEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
 
 public interface IResponseEventProvider {
+
+    /**
+     * Register the observer for ResponseInvalidLoginEvent in the related observable
+     * @param observer The Observer
+     */
+    void registerResponseInvalidLoginEventObserver(Observer<ResponseInvalidLoginEvent> observer);
 
     /**
      * Register the observer for ResponseInvalidParametersEvent in the related observable

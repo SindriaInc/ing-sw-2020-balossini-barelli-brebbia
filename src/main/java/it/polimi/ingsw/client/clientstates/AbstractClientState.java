@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.clientstates;
 
 import it.polimi.ingsw.client.ClientConnector;
-import it.polimi.ingsw.common.event.PlayerPingEvent;
 import it.polimi.ingsw.controller.ResponseEventProvider;
 import it.polimi.ingsw.model.ModelEventProvider;
 
@@ -47,7 +46,7 @@ public abstract class AbstractClientState {
     }
 
     public void shutdown() {
-        // TODO: Implement
+        clientConnector.shutdown();
     }
 
 }

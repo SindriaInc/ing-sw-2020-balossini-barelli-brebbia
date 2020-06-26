@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client.gui;
 
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,22 +9,25 @@ public class GuiClientStage {
 
     private final Stage stage;
 
+    private final GuiAssets assets;
+
     private Scene scene;
 
-    public GuiClientStage(Stage stage) {
+    public GuiClientStage(Stage stage, GuiAssets assets) {
         this.stage = stage;
+        this.assets = assets;
     }
 
-    public void init() {
+    public void init(Runnable onClose) {
         stage.setTitle("Santorini");
 
         stage.setOnCloseRequest(event -> {
-            Platform.exit();
-            System.exit(0);
+            onClose.run();
         });
 
         stage.setMinWidth(GuiConstants.MIN_WIDTH);
         stage.setMinHeight(GuiConstants.MIN_HEIGHT);
+        stage.getIcons().add(assets.getImage(GuiAssets.Images.ICON));
     }
 
     public boolean hasScene() {
@@ -39,6 +41,9 @@ public class GuiClientStage {
         if (!stage.isShowing()) {
             stage.show();
         }
+
+        // Add the shared stylesheet
+        scene.getStylesheets().add(assets.getStyle(GuiAssets.Styles.DEFAULT));
     }
 
     public void setRoot(Parent root) {

@@ -15,7 +15,6 @@ import java.util.TimerTask;
 import static it.polimi.ingsw.view.VirtualView.PING_SCHEDULE_MS;
 import static it.polimi.ingsw.view.VirtualView.PING_TIMEOUT_MS;
 
-// TODO: Implement server timeout logic
 public class ClientConnector {
 
     /**
@@ -96,8 +95,13 @@ public class ClientConnector {
         connection.send(serializer.serialize(event));
     }
 
+    /**
+     * Handle the client shutdown
+     */
     public void shutdown() {
-        // TODO: Implement client shutdown
+        connection.shutdown();
+        timer.cancel();
+        viewer.shutdown();
     }
 
     /**
@@ -132,7 +136,10 @@ public class ClientConnector {
      * @param error The error
      */
     private void onServerError(ErrorMessage error) {
-        // TODO: Handle message sending errors
+        connection.shutdown();
+        lastPing = null;
+        connection = null;
+        updateState(new InputState(this, "An unexpected server error has occurred"));
     }
 
     private void onTimeoutCheck() {
@@ -145,8 +152,10 @@ public class ClientConnector {
         }
 
         // The server connection has timed out
-        // TODO: Display a message
-        updateState(new InputState(this));
+        connection.shutdown();
+        lastPing = null;
+        connection = null;
+        updateState(new InputState(this, "The connection to the server has timed out"));
     }
 
 }

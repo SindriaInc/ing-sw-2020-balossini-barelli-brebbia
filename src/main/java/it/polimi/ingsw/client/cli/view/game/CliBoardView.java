@@ -2,10 +2,10 @@ package it.polimi.ingsw.client.cli.view.game;
 
 import it.polimi.ingsw.client.cli.CliCommand;
 import it.polimi.ingsw.client.clientstates.GameState;
+import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.common.info.CellInfo;
 import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.info.WorkerInfo;
-import it.polimi.ingsw.model.Game;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +51,7 @@ public class CliBoardView extends AbstractGameView {
 
     @Override
     public String generateView() {
+        GameData data = state.getData();
 
         StringBuilder output = new StringBuilder();
 
@@ -58,34 +59,31 @@ public class CliBoardView extends AbstractGameView {
 
         output.append(" ".repeat(BOARD_PADDING)).append(BOARD_ROOF).append(System.lineSeparator());
 
-        List<String> otherPlayers = new ArrayList<>();
-        otherPlayers.addAll(List.copyOf(state.getData().getOtherPlayers()));
-        if (state.getData().getTurnPlayer().isPresent() && !otherPlayers.contains(state.getData().getTurnPlayer().get())) {
-            otherPlayers.add(state.getData().getTurnPlayer().get());
+        List<String> otherPlayers = new ArrayList<>(List.copyOf(data.getOtherPlayers()));
+        if (data.getTurnPlayer().isPresent() && !otherPlayers.contains(data.getTurnPlayer().get())) {
+            otherPlayers.add(data.getTurnPlayer().get());
         }
-        if (otherPlayers.contains(state.getData().getName())) {
-            otherPlayers.remove(state.getData().getName());
-        }
+        otherPlayers.remove(data.getName());
         // Scan top to bottom to easily print in the correct order
-        for (int y = Game.BOARD_ROWS - 1; y >= 0; y--) {
+        for (int y = data.getMap()[0].length - 1; y >= 0; y--) {
 
             output.append(" ".repeat(BOARD_PADDING)).append("|");
-            for (int x = 0; x < Game.BOARD_COLUMNS; x++) {
-                CellInfo cellInfo = state.getData().getCellInfo(x, y).get();
+            for (int x = 0; x < data.getMap().length - 1; x++) {
+                CellInfo cellInfo = data.getMap()[x][y];
                 WorkerInfo workerInfo = getWorkerByCoords(x, y);
                 Coordinates coords = new Coordinates(x, y);
 
                 output.append(getBlocksChar(cellInfo.getLevel()));
                 if (cellInfo.isDoomed()) {
                     output.append(DOME);
-                } else if ((state.getData().getMoveData().isPresent()
-                        && state.getData().getMoveData().get().getAvailableInteractions().values().stream().anyMatch(data -> data.getAvailableCoordinates().contains(coords)))
-                        || (state.getData().getBuildBlockData().isPresent()
-                        && state.getData().getBuildBlockData().get().getAvailableInteractions().values().stream().anyMatch(data -> data.getAvailableCoordinates().contains(coords)))
-                        || (state.getData().getBuildDomeData().isPresent()
-                        && state.getData().getBuildDomeData().get().getAvailableInteractions().values().stream().anyMatch(data -> data.getAvailableCoordinates().contains(coords)))
-                        || (state.getData().getForceData().isPresent()
-                        && state.getData().getForceData().get().getAvailableOtherInteractions().values().stream().anyMatch(data -> data.getAvailableInteractions().values().contains(coords)))
+                } else if ((data.getMoveData().isPresent()
+                        && data.getMoveData().get().getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords)))
+                        || (data.getBuildBlockData().isPresent()
+                        && data.getBuildBlockData().get().getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords)))
+                        || (data.getBuildDomeData().isPresent()
+                        && data.getBuildDomeData().get().getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords)))
+                        || (data.getForceData().isPresent()
+                        && data.getForceData().get().getAvailableOtherInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableInteractions().values().contains(coords)))
                 ) {
                     if (workerInfo != null) {
                         output.append(COLOR_BACKGROUND).append(getPawn(workerInfo.getId())).append(RESET);
@@ -103,13 +101,13 @@ public class CliBoardView extends AbstractGameView {
             }
 
             if (y == 3) {
-                output.append(" ".repeat(SPACING * 2)).append("Your workers(").append(getPlayersPawn(state.getData().getName())).append(") : ");
+                output.append(" ".repeat(SPACING * 2)).append("Your workers(").append(getPlayersPawn(data.getName())).append(") : ");
 
                 if (!hasSpawned()) {
                     output.append("No workers spawned");
                 } else {
-                    for (WorkerInfo worker : state.getData().getWorkers()) {
-                        if (worker.getOwner().equals(state.getData().getName())) {
+                    for (WorkerInfo worker : data.getWorkers()) {
+                        if (worker.getOwner().equals(data.getName())) {
                             output.append("Worker").append(worker.getId()).append(" (").append(worker.getPosition().toString()).append(") ");
                         }
                     }
@@ -121,7 +119,7 @@ public class CliBoardView extends AbstractGameView {
                 output.append(" ".repeat(SPACING * 2)).append(otherPlayers.get(0)).append("'s workers(").append(getPlayersPawn(otherPlayers.get(0))).append(") : ");
 
                 boolean hasWorkers = false;
-                for (WorkerInfo worker : state.getData().getWorkers()) {
+                for (WorkerInfo worker : data.getWorkers()) {
                     if (worker.getOwner().equals(otherPlayers.get(0))) {
                         output.append("Worker").append(worker.getId()).append(" (").append(worker.getPosition().toString()).append(") ");
                         hasWorkers = true;
@@ -149,7 +147,7 @@ public class CliBoardView extends AbstractGameView {
 
         output.append(separator()).append(System.lineSeparator());
 
-        Optional<String> lastMessage = state.getData().getLastMessage();
+        Optional<String> lastMessage = data.getLastMessage();
         lastMessage.ifPresent(string -> output.append(center(string)).append(System.lineSeparator()));
 
         return output.toString();

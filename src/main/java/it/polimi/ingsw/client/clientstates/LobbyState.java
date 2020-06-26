@@ -19,10 +19,10 @@ public class LobbyState extends AbstractClientState {
      */
     private LobbyData data;
 
-    public LobbyState(ClientConnector clientConnector, String player, List<RoomInfo> rooms) {
+    public LobbyState(ClientConnector clientConnector, String player, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers) {
         super(clientConnector);
 
-        this.data = new LobbyData(null, player, rooms);
+        this.data = new LobbyData(null, player, rooms, minGamePlayers, maxGamePlayers);
 
         getModelEventProvider().registerLobbyUpdateEventObserver(this::onLobbyUpdate);
         getModelEventProvider().registerLobbyRoomUpdateEventObserver(this::onLobbyRoomUpdate);
@@ -49,7 +49,8 @@ public class LobbyState extends AbstractClientState {
     }
 
     private void onLobbyUpdate(LobbyUpdateEvent event) {
-        data = new LobbyData(data.getLastMessage().orElse(null), data.getName(), event.getRooms());
+        data = new LobbyData(data.getLastMessage().orElse(null),
+                data.getName(), event.getRooms(), event.getMinGamePlayers(), event.getMaxGamePlayers());
         updateView();
     }
 
@@ -58,7 +59,8 @@ public class LobbyState extends AbstractClientState {
     }
 
     private void onResponse(AbstractResponseEvent event) {
-        data = new LobbyData("Couldn't join or create the room, are the parameters correct?", data.getName(), data.getRooms());
+        data = new LobbyData("Couldn't join or create the room, are the parameters correct?",
+                data.getName(), data.getRooms(), data.getMinGamePlayers(), data.getMaxGamePlayers());
         updateView();
     }
 

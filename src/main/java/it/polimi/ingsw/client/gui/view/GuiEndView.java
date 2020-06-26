@@ -17,6 +17,9 @@ import javafx.scene.text.TextAlignment;
 
 public class GuiEndView extends AbstractGuiView {
 
+    private static final double COMPONENTS_HEIGHT = 200;
+    private static final double MAX_GAMEOVER_HEIGHT = 600;
+
     private final EndState state;
 
     public GuiEndView(EndState state, GuiAssets images) {
@@ -73,7 +76,11 @@ public class GuiEndView extends AbstractGuiView {
             double ratio = message.getImage().getWidth() / message.getImage().getHeight();
             double messageWidth = width.doubleValue() - (width.doubleValue() / 4);
             double messageHeight = messageWidth / ratio;
-            double maxHeight = height.doubleValue() - 110;
+            double maxHeight = height.doubleValue() - COMPONENTS_HEIGHT;
+
+            if (messageHeight > MAX_GAMEOVER_HEIGHT && maxHeight > MAX_GAMEOVER_HEIGHT) {
+                return MAX_GAMEOVER_HEIGHT * ratio;
+            }
 
             if (messageHeight > maxHeight) {
                 return maxHeight * ratio;

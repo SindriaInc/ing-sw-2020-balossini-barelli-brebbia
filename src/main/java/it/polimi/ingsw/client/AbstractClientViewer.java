@@ -46,4 +46,9 @@ public abstract class AbstractClientViewer {
      */
     public abstract void viewEnd(EndState state);
 
+    /**
+     * Handle the client shutdown
+     */
+    public abstract void shutdown();
+
 }

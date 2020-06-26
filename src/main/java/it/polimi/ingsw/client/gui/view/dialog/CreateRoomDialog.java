@@ -9,7 +9,7 @@ import javafx.util.Pair;
 
 public class CreateRoomDialog extends Dialog<Pair<Integer, Boolean>> {
 
-    public CreateRoomDialog() {
+    public CreateRoomDialog(int minGamePlayers, int maxGamePlayers) {
         setTitle("Create a new room...");
 
         TextField maxPlayers = new TextField();
@@ -37,7 +37,17 @@ public class CreateRoomDialog extends Dialog<Pair<Integer, Boolean>> {
 
         // Disable the ok button if max players is not set
         BooleanProperty disableProperty = getDialogPane().lookupButton(ButtonType.OK).disableProperty();
-        disableProperty.bind(Bindings.createBooleanBinding(() -> parseInteger(maxPlayers.getText()) == null, maxPlayers.textProperty()));
+        disableProperty.bind(Bindings.createBooleanBinding(() -> {
+            Integer max = parseInteger(maxPlayers.getText());
+
+            if (max == null) {
+                // Disable if there's no number
+                return true;
+            }
+
+            // Disable if the number is too high or too low
+            return max < minGamePlayers || max > maxGamePlayers;
+        }, maxPlayers.textProperty()));
 
         // Return "max players" and "is simple" when the dialog is closed
         setResultConverter(button -> {

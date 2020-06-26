@@ -12,6 +12,7 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class AbstractPresentation {
 
@@ -51,10 +52,10 @@ public class AbstractPresentation {
     }
 
     /**
-     * Style a label
+     * Style an input label on the left of an input box
      * @param component The label
      */
-    public void style(Label component) {
+    public void styleInputLabel(Label component) {
         CornerRadii corner = new CornerRadii(
                 GuiConstants.INPUT_CORNER_RADII,
                 0,
@@ -84,10 +85,36 @@ public class AbstractPresentation {
 
         component.setMinHeight(GuiConstants.INPUT_HEIGHT);
         component.setBackground(new Background(new BackgroundFill(Color.WHITE, corner, Insets.EMPTY)));
+        component.setFont(assets.getFont());
     }
 
     /**
      * Style a button
+     * @param component The field
+     */
+    public void style(Button component) {
+        CornerRadii corner = new CornerRadii(
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                false
+        );
+
+        Background sleeping = new Background(new BackgroundFill(Color.WHITE, corner, Insets.EMPTY));
+        Background hover = new Background(new BackgroundFill(Color.rgb(220, 220, 255), corner, Insets.EMPTY));
+        Background click = new Background(new BackgroundFill(Color.rgb(204, 204, 255), corner, Insets.EMPTY));
+
+        component.setMinHeight(GuiConstants.INPUT_HEIGHT);
+        component.setBackground(sleeping);
+        component.setOnMouseEntered(event -> component.setBackground(hover));
+        component.setOnMouseExited(event -> component.setBackground(sleeping));
+        component.setOnMousePressed(event -> component.setBackground(click));
+        component.setFont(assets.getFont());
+    }
+
+    /**
+     * Style a button with a background image
      * @param button The field
      * @param buttonImage The field background
      */
@@ -110,6 +137,22 @@ public class AbstractPresentation {
         colorAdjust.setBrightness(+0.25);
         pane.setOnMouseEntered(event -> buttonImage.setEffect(colorAdjust));
         pane.setOnMouseExited(event -> buttonImage.setEffect(null));
+    }
+
+    /**
+     * Style a text component
+     * @param component The text
+     */
+    public void style(Text component) {
+        component.setFont(assets.getFont());
+    }
+
+    /**
+     * Style a big text component
+     * @param component The text
+     */
+    public void styleTitle(Text component) {
+        component.setFont(assets.getTitleFont());
     }
 
 }

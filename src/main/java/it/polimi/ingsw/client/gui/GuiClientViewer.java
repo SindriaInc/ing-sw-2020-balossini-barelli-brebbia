@@ -28,8 +28,8 @@ public class GuiClientViewer extends AbstractClientViewer {
         Platform.startup(() -> {
             assets = new GuiAssets();
 
-            stage = new GuiClientStage(new Stage());
-            stage.init();
+            stage = new GuiClientStage(new Stage(), assets);
+            stage.init(this::shutdown);
 
             // Initialize the client after the application has loaded
             new ClientConnector(this);
@@ -64,6 +64,12 @@ public class GuiClientViewer extends AbstractClientViewer {
     @Override
     public void viewEnd(EndState state) {
         updateScene(new GuiEndView(state, assets));
+    }
+
+    @Override
+    public void shutdown() {
+        Platform.exit();
+        System.exit(0);
     }
 
     private void updateScene(AbstractGuiView view) {
