@@ -30,6 +30,10 @@ public class GuiClientStage {
         stage.getIcons().add(assets.getImage(GuiAssets.Images.ICON));
     }
 
+    public void closeWindows() {
+        stage.close();
+    }
+
     public boolean hasScene() {
         return scene != null;
     }

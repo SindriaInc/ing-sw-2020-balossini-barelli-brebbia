@@ -52,6 +52,14 @@ public class AbstractPresentation {
     }
 
     /**
+     * Style a simple label
+     * @param label The label
+     */
+    public void style(Label label) {
+        label.setFont(getAssets().getFont());
+    }
+
+    /**
      * Style an input label on the left of an input box
      * @param component The label
      */

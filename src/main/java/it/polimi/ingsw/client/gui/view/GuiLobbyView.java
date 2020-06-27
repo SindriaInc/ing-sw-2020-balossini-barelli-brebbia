@@ -9,14 +9,11 @@ import it.polimi.ingsw.client.gui.view.dialog.CreateRoomDialog;
 import it.polimi.ingsw.client.gui.view.presentation.LobbyPresentation;
 import it.polimi.ingsw.common.info.RoomInfo;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +21,8 @@ import java.util.stream.Collectors;
 public class GuiLobbyView extends AbstractGuiView {
 
     private final LobbyState state;
+
+    private CreateRoomDialog dialog;
 
     public GuiLobbyView(LobbyState state, GuiAssets assets) {
         super(assets);
@@ -41,8 +40,9 @@ public class GuiLobbyView extends AbstractGuiView {
         Button create = new Button();
         create.setText("Create a new room");
         create.setOnAction(event -> {
-            CreateRoomDialog dialog = new CreateRoomDialog(data.getMinGamePlayers(), data.getMaxGamePlayers());
+            dialog = new CreateRoomDialog(data.getMinGamePlayers(), data.getMaxGamePlayers());
             Optional<Pair<Integer, Boolean>> result = dialog.showAndWait();
+            dialog = null;
 
             if (result.isEmpty()) {
                 return;
@@ -63,6 +63,13 @@ public class GuiLobbyView extends AbstractGuiView {
     @Override
     public AbstractClientState getState() {
         return state;
+    }
+
+    @Override
+    public void closeWindows() {
+        if (dialog != null) {
+            dialog.close();
+        }
     }
 
     private void onJoin(String owner) {

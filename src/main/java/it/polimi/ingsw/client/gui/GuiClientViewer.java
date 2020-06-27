@@ -73,12 +73,17 @@ public class GuiClientViewer extends AbstractClientViewer {
     }
 
     private void updateScene(AbstractGuiView view) {
-        // Only update the view instance if a different state is passed
-        if (currentView == null || !currentView.getState().equals(view.getState())) {
-            currentView = view;
-        }
-
         Platform.runLater(() -> {
+            // Close previously open dialogs
+            if (currentView != null) {
+                currentView.closeWindows();
+            }
+
+            // Only update the view instance if a different state is passed
+            if (currentView == null || !currentView.getState().equals(view.getState())) {
+                currentView = view;
+            }
+
             if (!stage.hasScene()) {
                 StackPane splashScreen = new StackPane();
                 stage.setScene(new Scene(splashScreen, GuiConstants.DEFAULT_WIDTH, GuiConstants.DEFAULT_HEIGHT));
