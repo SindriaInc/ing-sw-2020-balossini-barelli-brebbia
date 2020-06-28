@@ -83,7 +83,8 @@ public class CliBoardView extends AbstractGameView {
                         || (data.getBuildDomeData().isPresent()
                         && data.getBuildDomeData().get().getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords)))
                         || (data.getForceData().isPresent()
-                        && data.getForceData().get().getAvailableOtherInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableInteractions().values().contains(coords)))
+                        && data.getForceData().get().getAvailableOtherInteractions().values().stream().anyMatch(
+                            interact -> interact.getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords))))
                 ) {
                     if (workerInfo != null) {
                         output.append(COLOR_BACKGROUND).append(getPawn(workerInfo.getId())).append(RESET);

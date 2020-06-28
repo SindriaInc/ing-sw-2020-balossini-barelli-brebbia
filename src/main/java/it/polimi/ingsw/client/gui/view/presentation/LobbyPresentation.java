@@ -23,7 +23,7 @@ public class LobbyPresentation extends AbstractPreGamePresentation {
                                      List<RoomBox> rooms,
                                      Button action
     ) {
-        style(action);
+        styleRoom(action);
 
         StackPane center = new StackPane();
         StackPane bottom = new StackPane(action);
@@ -52,16 +52,16 @@ public class LobbyPresentation extends AbstractPreGamePresentation {
 
         for (RoomBox roomBox : rooms) {
             roomBox.minWidthProperty().bind(width.subtract(GuiConstants.DEFAULT_SPACING * 4));
-            Color boxBackground = Color.rgb(224, 224, 224);
-            roomBox.setBackground(new Background(new BackgroundFill(boxBackground, new CornerRadii(2), new Insets(GuiConstants.DEFAULT_SPACING / 2d))));
-            roomBox.setPadding(new Insets(GuiConstants.DEFAULT_SPACING * 2));
+            //Color boxBackground = Color.rgb(224, 224, 224);
+            //roomBox.setBackground(new Background(new BackgroundFill(boxBackground, new CornerRadii(2), new Insets(GuiConstants.DEFAULT_SPACING / 2d))));
+            roomBox.setPadding(new Insets(GuiConstants.DEFAULT_SPACING / 2));
             roomBox.setSpacing(GuiConstants.DEFAULT_SPACING);
             roomBox.getLabelBox().setSpacing(GuiConstants.DEFAULT_SPACING * 3);
 
             style(roomBox.getName());
             style(roomBox.getPlayers());
             style(roomBox.getSimple());
-            style(roomBox.getButton());
+            styleRoom(roomBox.getButton());
 
             roomsContainer.getChildren().add(roomBox);
         }

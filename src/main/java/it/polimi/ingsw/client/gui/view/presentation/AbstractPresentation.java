@@ -8,7 +8,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -140,10 +141,13 @@ public class AbstractPresentation {
 
         buttonImage.setPreserveRatio(true);
         buttonImage.setFitHeight(GuiConstants.INPUT_BUTTON_HEIGHT);
-
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(+0.25);
-        pane.setOnMouseEntered(event -> buttonImage.setEffect(colorAdjust));
+        
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(15.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.25, 0.25, 0.25));
+        pane.setOnMouseEntered(event -> buttonImage.setEffect(dropShadow));
         pane.setOnMouseExited(event -> buttonImage.setEffect(null));
     }
 
@@ -161,6 +165,35 @@ public class AbstractPresentation {
      */
     public void styleTitle(Text component) {
         component.setFont(assets.getTitleFont());
+    }
+
+    /**
+     * Style "Create Room" button
+     * @param component The field
+     */
+    public void styleRoom(Button component) {
+        CornerRadii corner = new CornerRadii(
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                false
+        );
+
+        Image img = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
+        BackgroundSize bgSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
+        BackgroundImage backgroundImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize);
+        Background background = new Background(backgroundImage);
+        component.setBackground(background);
+
+        component.setFont(assets.getFont());
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(15.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.2, 0.2, 0.2));
+        component.setOnMouseEntered(event -> component.setEffect(dropShadow));
+        component.setOnMouseExited(event -> component.setEffect(null));
     }
 
 }
