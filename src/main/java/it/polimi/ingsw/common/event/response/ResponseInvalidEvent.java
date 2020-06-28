@@ -1,9 +1,10 @@
 package it.polimi.ingsw.common.event.response;
 
 /**
- * Event sent when the player sends an invalid event
+ * Event sent when the player sends an invalid event (Bad client)
  * 
- * This event is handled by the VirtualView and therefore does not pass through the ResponseEventProvider
+ * This event is handled by the VirtualView and should never be triggered by a valid client,
+ * therefore it does not pass through the ResponseEventProvider
  */
 public class ResponseInvalidEvent extends AbstractResponseEvent {
 

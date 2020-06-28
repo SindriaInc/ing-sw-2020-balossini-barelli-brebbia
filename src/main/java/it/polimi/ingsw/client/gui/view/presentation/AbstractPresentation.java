@@ -8,10 +8,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class AbstractPresentation {
 
@@ -51,10 +53,18 @@ public class AbstractPresentation {
     }
 
     /**
-     * Style a label
+     * Style a simple label
+     * @param label The label
+     */
+    public void style(Label label) {
+        label.setFont(getAssets().getFont());
+    }
+
+    /**
+     * Style an input label on the left of an input box
      * @param component The label
      */
-    public void style(Label component) {
+    public void styleInputLabel(Label component) {
         CornerRadii corner = new CornerRadii(
                 GuiConstants.INPUT_CORNER_RADII,
                 0,
@@ -84,10 +94,36 @@ public class AbstractPresentation {
 
         component.setMinHeight(GuiConstants.INPUT_HEIGHT);
         component.setBackground(new Background(new BackgroundFill(Color.WHITE, corner, Insets.EMPTY)));
+        component.setFont(assets.getFont());
     }
 
     /**
      * Style a button
+     * @param component The field
+     */
+    public void style(Button component) {
+        CornerRadii corner = new CornerRadii(
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                false
+        );
+
+        Background sleeping = new Background(new BackgroundFill(Color.WHITE, corner, Insets.EMPTY));
+        Background hover = new Background(new BackgroundFill(Color.rgb(220, 220, 255), corner, Insets.EMPTY));
+        Background click = new Background(new BackgroundFill(Color.rgb(204, 204, 255), corner, Insets.EMPTY));
+
+        component.setMinHeight(GuiConstants.INPUT_HEIGHT);
+        component.setBackground(sleeping);
+        component.setOnMouseEntered(event -> component.setBackground(hover));
+        component.setOnMouseExited(event -> component.setBackground(sleeping));
+        component.setOnMousePressed(event -> component.setBackground(click));
+        component.setFont(assets.getFont());
+    }
+
+    /**
+     * Style a button with a background image
      * @param button The field
      * @param buttonImage The field background
      */
@@ -105,11 +141,59 @@ public class AbstractPresentation {
 
         buttonImage.setPreserveRatio(true);
         buttonImage.setFitHeight(GuiConstants.INPUT_BUTTON_HEIGHT);
-
-        ColorAdjust colorAdjust = new ColorAdjust();
-        colorAdjust.setBrightness(+0.25);
-        pane.setOnMouseEntered(event -> buttonImage.setEffect(colorAdjust));
+        
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(15.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.25, 0.25, 0.25));
+        pane.setOnMouseEntered(event -> buttonImage.setEffect(dropShadow));
         pane.setOnMouseExited(event -> buttonImage.setEffect(null));
+    }
+
+    /**
+     * Style a text component
+     * @param component The text
+     */
+    public void style(Text component) {
+        component.setFont(assets.getFont());
+    }
+
+    /**
+     * Style a big text component
+     * @param component The text
+     */
+    public void styleTitle(Text component) {
+        component.setFont(assets.getTitleFont());
+    }
+
+    /**
+     * Style "Create Room" button
+     * @param component The field
+     */
+    public void styleRoom(Button component) {
+        CornerRadii corner = new CornerRadii(
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                GuiConstants.INPUT_CORNER_RADII,
+                false
+        );
+
+        Image img = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
+        BackgroundSize bgSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
+        BackgroundImage backgroundImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize);
+        Background background = new Background(backgroundImage);
+        component.setBackground(background);
+
+        component.setFont(assets.getFont());
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(15.0);
+        dropShadow.setOffsetX(3.0);
+        dropShadow.setOffsetY(3.0);
+        dropShadow.setColor(Color.color(0.2, 0.2, 0.2));
+        component.setOnMouseEntered(event -> component.setEffect(dropShadow));
+        component.setOnMouseExited(event -> component.setEffect(null));
     }
 
 }

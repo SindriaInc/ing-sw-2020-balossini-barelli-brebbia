@@ -2,9 +2,9 @@ package it.polimi.ingsw.client.gui.view.presentation;
 
 import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.GuiConstants;
-import it.polimi.ingsw.client.gui.view.component.IntegerField;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class FieldsPresentation extends AbstractPresentation {
 
+    private static final double COMPONENTS_HEIGHT = 170;
+
     public FieldsPresentation(GuiAssets assets) {
         super(assets);
     }
@@ -26,7 +28,7 @@ public class FieldsPresentation extends AbstractPresentation {
                                           Button action, ImageView buttonImage, StackPane connect
     ) {
         for (Map.Entry<Label, TextField> entry : inputs.entrySet()) {
-            style(entry.getKey());
+            styleInputLabel(entry.getKey());
             style(entry.getValue());
         }
 
@@ -43,6 +45,7 @@ public class FieldsPresentation extends AbstractPresentation {
 
         pane.add(logo, 0, 0);
         GridPane.setColumnSpan(logo, 2);
+        GridPane.setHalignment(logo, HPos.CENTER);
 
         int row = 1;
         for (Map.Entry<Label, TextField> entry : inputs.entrySet()) {
@@ -62,7 +65,7 @@ public class FieldsPresentation extends AbstractPresentation {
             double ratio = logo.getImage().getWidth() / logo.getImage().getHeight();
             double logoWidth = width.doubleValue() - (width.doubleValue() / 2);
             double logoHeight = logoWidth / ratio;
-            double maxHeight = height.doubleValue() - 170;
+            double maxHeight = height.doubleValue() - COMPONENTS_HEIGHT;
 
             if (logoWidth > GuiConstants.LOGO_MAX_WIDTH) {
                 logoWidth = GuiConstants.LOGO_MAX_WIDTH;

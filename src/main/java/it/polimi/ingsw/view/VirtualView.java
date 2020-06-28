@@ -10,6 +10,7 @@ import it.polimi.ingsw.common.event.request.AbstractRequestEvent;
 import it.polimi.ingsw.common.event.request.RequestPlayerPingEvent;
 import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidEvent;
+import it.polimi.ingsw.common.event.response.ResponseInvalidLoginEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.serializer.GsonEventSerializer;
@@ -27,7 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class VirtualView {
 
-    public static final long PING_SCHEDULE_MS = 10000;
+    private static final int MIN_NAME_LENGTH = 3;
+    private static final int MAX_NAME_LENGTH = 20;
+    private static final String PLAYER_NAME = "^[a-zA-Z0-9_-][a-zA-Z0-9_ .-]{" + (MIN_NAME_LENGTH - 2) + "," + (MAX_NAME_LENGTH - 2) + "}[a-zA-Z0-9_-]$";
+
+    public static final long PING_SCHEDULE_MS = 1000;
 
     public static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
 
@@ -65,7 +70,7 @@ public class VirtualView {
     /**
      * The player name validator, used to check for invalid characters
      */
-    private final Validator playerNameValidator = new Validator(Validator.PLAYER_NAME);
+    private final Validator playerNameValidator = new Validator(PLAYER_NAME);
 
     public VirtualView(IServer server, IPlayerChecker playerChecker, IResponseEventProvider responseEventProvider) {
         this.server = server;
@@ -175,9 +180,26 @@ public class VirtualView {
 
         String player = event.getPlayer();
 
-        if (!playerNameValidator.isValid(player) || !playerChecker.isNameAvailable(player) || event.getAge() <= 0) {
-            // Invalid name or age
-            throw new IllegalArgumentException("Invalid player name or age");
+        if (!playerNameValidator.isValid(player)) {
+            String reason;
+
+            if (player.length() < MIN_NAME_LENGTH) {
+                reason = "Must be at least " + MIN_NAME_LENGTH + " characters";
+            } else if (player.length() > MAX_NAME_LENGTH) {
+                reason = "Can't have more than " + MAX_NAME_LENGTH + " characters";
+            } else {
+                reason = "Only letters, numbers, underscores and separators are allowed (spaces and dots are allowed inside the name)";
+            }
+
+            throw new IllegalArgumentException("Invalid player name (" + reason + ")");
+        }
+
+        if (!playerChecker.isNameAvailable(player)) {
+            throw new IllegalArgumentException("Another player is already using this name, please use another one");
+        }
+
+        if (event.getAge() <= 0) {
+            throw new IllegalArgumentException("Your age can't be negative");
         }
 
         server.identify(sender, player);
@@ -213,7 +235,7 @@ public class VirtualView {
         } catch (SerializationException exception) {
             // Bad client
             Logger.getInstance().warning("Invalid message received: " + exception.getMessage());
-            sendInvalidResponse(message.getSourcePlayer());
+            onResponse(new ResponseInvalidEvent(message.getSourcePlayer()));
             return;
         }
 
@@ -224,6 +246,7 @@ public class VirtualView {
             if (!event.isValid()) {
                 // Bad client
                 Logger.getInstance().warning("Invalid player in event from " + event.getSender());
+                onResponse(new ResponseInvalidEvent(message.getSourcePlayer()));
                 sendInvalidResponse(sender);
                 return;
             }
@@ -237,7 +260,7 @@ public class VirtualView {
             onResponse(new ResponseInvalidEvent(sender));
         } catch (IllegalArgumentException exception) {
             // ClientConnector sent a login event with invalid parameters
-            onResponse(new ResponseInvalidParametersEvent(sender));
+            onResponse(new ResponseInvalidLoginEvent(sender, exception.getMessage()));
         }
     }
 

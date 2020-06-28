@@ -27,6 +27,13 @@ public abstract class AbstractGuiView {
      */
     public abstract AbstractClientState getState();
 
+    /**
+     * Close all dialogs and alerts
+     */
+    public void closeWindows() {
+        // By default, views do not have dialogs and alerts
+    }
+
     public GuiAssets getAssets() {
         return assets;
     }

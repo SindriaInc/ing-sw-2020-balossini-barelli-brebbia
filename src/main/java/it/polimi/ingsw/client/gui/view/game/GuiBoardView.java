@@ -51,7 +51,7 @@ public class GuiBoardView extends AbstractGameView {
         for (int x = 0; x < map.length; x++) {
             CellInfo[] column = map[x];
 
-            for (int y = 0; y < column.length; y++) {
+            for (int y = column.length - 1; y >= 0; y--) {
                 CellInfo cell = column[y];
                 Coordinates coordinates = new Coordinates(x, y);
 
@@ -72,7 +72,7 @@ public class GuiBoardView extends AbstractGameView {
                 button.setMinHeight(GuiConstants.CELL_MIN_SIZE);
 
                 buttons.put(new Coordinates(x, y), button);
-                boardPane.add(button, x, y);
+                boardPane.add(button, x, column.length - (y + 1));
 
                 GridPane.setFillWidth(button, true);
                 GridPane.setFillHeight(button, true);

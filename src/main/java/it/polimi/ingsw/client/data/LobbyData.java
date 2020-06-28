@@ -12,15 +12,21 @@ public class LobbyData extends AbstractData {
 
     private final boolean waiting;
 
-    public LobbyData(String lastMessage, String name, List<RoomInfo> rooms) {
-        this(lastMessage, name, rooms, false);
+    private final int minGamePlayers;
+
+    private final int maxGamePlayers;
+
+    public LobbyData(String lastMessage, String name, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers) {
+        this(lastMessage, name, rooms, minGamePlayers, maxGamePlayers, false);
     }
 
-    private LobbyData(String lastMessage, String name, List<RoomInfo> rooms, boolean waiting) {
+    private LobbyData(String lastMessage, String name, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers, boolean waiting) {
         super(lastMessage);
 
         this.name = name;
         this.rooms = List.copyOf(rooms);
+        this.minGamePlayers = minGamePlayers;
+        this.maxGamePlayers = maxGamePlayers;
         this.waiting = false;
     }
 
@@ -36,9 +42,16 @@ public class LobbyData extends AbstractData {
         return waiting;
     }
 
-    public LobbyData withWaiting(boolean waiting) {
-        return new LobbyData(null, getName(), getRooms(), waiting);
+    public int getMinGamePlayers() {
+        return minGamePlayers;
     }
 
+    public int getMaxGamePlayers() {
+        return maxGamePlayers;
+    }
+
+    public LobbyData withWaiting(boolean waiting) {
+        return new LobbyData(null, getName(), getRooms(), minGamePlayers, maxGamePlayers, waiting);
+    }
 
 }

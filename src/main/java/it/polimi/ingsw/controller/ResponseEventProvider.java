@@ -3,11 +3,17 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.common.IResponseEventProvider;
 import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.Observer;
+import it.polimi.ingsw.common.event.response.ResponseInvalidLoginEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
 
 public class ResponseEventProvider implements IResponseEventProvider {
+
+    /**
+     * Observable for ResponseInvalidLoginEvent
+     */
+    private final Observable<ResponseInvalidLoginEvent> responseInvalidLoginEventObservable = new Observable<>();
 
     /**
      * Observable for ResponseInvalidParametersEvent
@@ -23,6 +29,14 @@ public class ResponseEventProvider implements IResponseEventProvider {
      * Observable for ResponseInvalidStateEvent
      */
     private final Observable<ResponseInvalidStateEvent> responseInvalidStateEventObservable = new Observable<>();
+
+    /**
+     * @see IResponseEventProvider#registerResponseInvalidLoginEventObserver(Observer)
+     */
+    @Override
+    public void registerResponseInvalidLoginEventObserver(Observer<ResponseInvalidLoginEvent> observer) {
+        responseInvalidLoginEventObservable.register(observer);
+    }
 
     /**
      * @see IResponseEventProvider#registerResponseInvalidParametersEventObserver(Observer)
@@ -46,6 +60,10 @@ public class ResponseEventProvider implements IResponseEventProvider {
     @Override
     public void registerResponseInvalidStateEventObserver(Observer<ResponseInvalidStateEvent> observer) {
         responseInvalidStateEventObservable.register(observer);
+    }
+
+    public Observable<ResponseInvalidLoginEvent> getResponseInvalidLoginEventObservable() {
+        return responseInvalidLoginEventObservable;
     }
 
     public Observable<ResponseInvalidParametersEvent> getResponseInvalidParametersEventObservable() {

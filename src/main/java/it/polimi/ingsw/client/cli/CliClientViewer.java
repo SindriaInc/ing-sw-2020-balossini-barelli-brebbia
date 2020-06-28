@@ -184,6 +184,11 @@ public class CliClientViewer extends AbstractClientViewer {
         updateView(state, abstractView);
     }
 
+    @Override
+    public void shutdown() {
+        executorService.shutdownNow();
+    }
+
     private void updateView(AbstractClientState clientState, AbstractCliView abstractView) {
         updateCommands(clientState, abstractView.generateCommands());
         String view = abstractView.generateView();

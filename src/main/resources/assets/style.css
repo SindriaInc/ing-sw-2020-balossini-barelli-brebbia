@@ -1,0 +1,23 @@
+/* Fix scrollpanes always having the default background */
+
+.scroll-pane>.viewport {
+	-fx-background-color: transparent;
+}
+
+/* Better scrollbars */
+
+.scroll-bar:vertical {
+  -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .track {
+  visibility: hidden;
+}
+
+.scroll-bar:vertical .track-background {
+  visibility: hidden;
+}
+
+.scroll-bar:vertical .thumb {
+  -fx-background-color: #333333;
+}

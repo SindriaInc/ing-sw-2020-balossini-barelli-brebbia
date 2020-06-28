@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.gui.view;
 
 import it.polimi.ingsw.client.gui.GuiAssets;
-import it.polimi.ingsw.client.gui.GuiConstants;
 import it.polimi.ingsw.client.gui.view.component.IntegerField;
 import it.polimi.ingsw.client.gui.view.presentation.FieldsPresentation;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -12,11 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Stack;
 
 public abstract class AbstractGuiFieldsView extends AbstractGuiView {
 
@@ -35,6 +32,14 @@ public abstract class AbstractGuiFieldsView extends AbstractGuiView {
         this.integerLabel = integerLabel;
         this.integerPrompt = integerPrompt;
         this.buttonText = buttonText;
+    }
+
+    @Override
+    public void closeWindows() {
+        if (currentAlert != null) {
+            currentAlert.close();
+            currentAlert = null;
+        }
     }
 
     public Parent generateView(String lastMessage, ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {

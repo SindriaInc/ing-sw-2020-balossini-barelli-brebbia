@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.data.LoginData;
 import it.polimi.ingsw.common.event.PlayerLoginEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
 import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
+import it.polimi.ingsw.common.event.response.ResponseInvalidLoginEvent;
 
 public class LoginState extends AbstractClientState {
 
@@ -19,6 +20,7 @@ public class LoginState extends AbstractClientState {
         this.data = new LoginData(null, null, null);
 
         getModelEventProvider().registerLobbyUpdateEventObserver(this::onLobbyUpdate);
+        getResponseEventProvider().registerResponseInvalidLoginEventObserver(this::onLoginResponse);
         getResponseEventProvider().registerResponseInvalidParametersEventObserver(this::onResponse);
         getResponseEventProvider().registerResponseInvalidPlayerEventObserver(this::onResponse);
         getResponseEventProvider().registerResponseInvalidStateEventObserver(this::onResponse);
@@ -47,13 +49,19 @@ public class LoginState extends AbstractClientState {
         getClientConnector().send(new PlayerLoginEvent(data.getName().get(), data.getAge().get()));
     }
 
+    private void onLoginResponse(ResponseInvalidLoginEvent event) {
+        data = new LoginData(event.getMessage(), null, null);
+        updateView();
+    }
+
     private void onResponse(AbstractResponseEvent event) {
         data = new LoginData("Invalid name or age", null, null);
         updateView();
     }
 
     private void onLobbyUpdate(LobbyUpdateEvent event) {
-        getClientConnector().updateState(new LobbyState(getClientConnector(), event.getPlayer(), event.getRooms()));
+        getClientConnector().updateState(new LobbyState(getClientConnector(), event.getPlayer(), event.getRooms(),
+                event.getMinGamePlayers(), event.getMaxGamePlayers()));
     }
 
     private void updateView() {

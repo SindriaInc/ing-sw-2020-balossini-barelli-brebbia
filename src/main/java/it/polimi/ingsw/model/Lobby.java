@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class Lobby {
 
+    private static final int MIN_ROOM_PLAYERS = 2;
     private static final int MAX_ROOM_PLAYERS = 4;
 
     private final ModelEventProvider provider;
@@ -132,7 +133,7 @@ public class Lobby {
             return ModelResponse.INVALID_STATE;
         }
 
-        if (maxPlayers <= 1 || maxPlayers > MAX_ROOM_PLAYERS) {
+        if (maxPlayers < MIN_ROOM_PLAYERS || maxPlayers > MAX_ROOM_PLAYERS) {
             // Trying to create a room with an invalid player limit
             return ModelResponse.INVALID_STATE;
         }
@@ -222,7 +223,7 @@ public class Lobby {
         List<String> players = freePlayers.stream().map(Player::getName).collect(Collectors.toList());
 
         for (Player player : freePlayers) {
-            new LobbyUpdateEvent(player.getName(), players, roomInfos).accept(provider);
+            new LobbyUpdateEvent(player.getName(), players, roomInfos, MIN_ROOM_PLAYERS, MAX_ROOM_PLAYERS).accept(provider);
         }
     }
 

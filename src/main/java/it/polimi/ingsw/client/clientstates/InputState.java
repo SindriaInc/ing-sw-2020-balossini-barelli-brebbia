@@ -14,10 +14,13 @@ public class InputState extends AbstractClientState {
     private InputData data;
 
     public InputState(ClientConnector clientConnector) {
+        this(clientConnector, null);
+    }
+
+    public InputState(ClientConnector clientConnector, String message) {
         super(clientConnector);
 
-        this.data = new InputData(null, null, null);
-
+        this.data = new InputData(message, null, null);
         updateView();
     }
 

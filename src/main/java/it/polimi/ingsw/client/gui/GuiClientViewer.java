@@ -28,8 +28,8 @@ public class GuiClientViewer extends AbstractClientViewer {
         Platform.startup(() -> {
             assets = new GuiAssets();
 
-            stage = new GuiClientStage(new Stage());
-            stage.init();
+            stage = new GuiClientStage(new Stage(), assets);
+            stage.init(this::shutdown);
 
             // Initialize the client after the application has loaded
             new ClientConnector(this);
@@ -66,13 +66,24 @@ public class GuiClientViewer extends AbstractClientViewer {
         updateScene(new GuiEndView(state, assets));
     }
 
-    private void updateScene(AbstractGuiView view) {
-        // Only update the view instance if a different state is passed
-        if (currentView == null || !currentView.getState().equals(view.getState())) {
-            currentView = view;
-        }
+    @Override
+    public void shutdown() {
+        Platform.exit();
+        System.exit(0);
+    }
 
+    private void updateScene(AbstractGuiView view) {
         Platform.runLater(() -> {
+            // Close previously open dialogs
+            if (currentView != null) {
+                currentView.closeWindows();
+            }
+
+            // Only update the view instance if a different state is passed
+            if (currentView == null || !currentView.getState().equals(view.getState())) {
+                currentView = view;
+            }
+
             if (!stage.hasScene()) {
                 StackPane splashScreen = new StackPane();
                 stage.setScene(new Scene(splashScreen, GuiConstants.DEFAULT_WIDTH, GuiConstants.DEFAULT_HEIGHT));
