@@ -172,14 +172,6 @@ public class AbstractPresentation {
      * @param component The field
      */
     public void styleRoom(Button component) {
-        CornerRadii corner = new CornerRadii(
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                false
-        );
-
         Image img = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
         BackgroundSize bgSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
         BackgroundImage backgroundImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize);
