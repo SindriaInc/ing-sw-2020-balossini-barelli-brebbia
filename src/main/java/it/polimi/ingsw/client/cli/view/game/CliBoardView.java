@@ -17,6 +17,7 @@ public class CliBoardView extends AbstractGameView {
     public static final String COLOR_BACKGROUND = "\u001B[45m";
     public static final String COLOR = "\u001B[35m";
 
+    private static final String BOARD_INDEX = "  0   1   2   3   4  ";
     private static final String BOARD_ROOF = "┌---┬---┬---┬---┬---┐";
     private static final String BOARD_FLOORS = "├---┼---┼---┼---┼---┤";
     private static final String BOARD_BASEMENT = "└---┴---┴---┴---┴---┘";
@@ -67,8 +68,8 @@ public class CliBoardView extends AbstractGameView {
         // Scan top to bottom to easily print in the correct order
         for (int y = data.getMap()[0].length - 1; y >= 0; y--) {
 
-            output.append(" ".repeat(BOARD_PADDING)).append("|");
-            for (int x = 0; x < data.getMap().length - 1; x++) {
+            output.append(" ".repeat(BOARD_PADDING-2)).append(y).append(" ").append("|");
+            for (int x = 0; x < data.getMap().length; x++) {
                 CellInfo cellInfo = data.getMap()[x][y];
                 WorkerInfo workerInfo = getWorkerByCoords(x, y);
                 Coordinates coords = new Coordinates(x, y);
@@ -141,6 +142,7 @@ public class CliBoardView extends AbstractGameView {
                 output.append(BOARD_FLOORS).append(System.lineSeparator());
             } else {
                 output.append(BOARD_BASEMENT).append(System.lineSeparator());
+                output.append(" ".repeat(BOARD_PADDING)).append(BOARD_INDEX).append(System.lineSeparator());;
             }
         }
 

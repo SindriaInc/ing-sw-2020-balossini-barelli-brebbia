@@ -8,22 +8,37 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
 
 public class GodBox extends HBox {
 
-    public GodBox(GodInfo godInfo, StringBinding buttonText, BooleanBinding buttonEnable, EventHandler<ActionEvent> handler) {
+    private Button button;
+
+    public GodBox(GodInfo godInfo, StringBinding buttonText, BooleanBinding buttonEnable, EventHandler<ActionEvent> handler, Font font) {
         Label name = new Label();
+        name.setFont(font);
+
         Label title = new Label();
+        title.setFont(font);
+
         Label id = new Label();
+        id.setFont(font);
+
         Label description = new Label();
+        description.setFont(font);
+
         Label type = new Label();
-        Button button = new Button();
+        type.setFont(font);
+
+        button = new Button();
 
         name.setText(godInfo.getName());
         title.setText(godInfo.getTitle());
@@ -37,7 +52,7 @@ public class GodBox extends HBox {
 
         name.setMinWidth(GuiConstants.GOD_NAME_SIZE);
         title.setMinWidth(GuiConstants.GOD_TITLE_SIZE);
-        description.setMaxWidth(GuiConstants.GOD_DESCRIPTION_SIZE);
+        description.setMaxWidth(GuiConstants.GOD_DESCRIPTION_SIZE*2.5);
         description.setWrapText(true);
 
         GridPane labelPane = new GridPane();
@@ -52,9 +67,11 @@ public class GodBox extends HBox {
         labelPane.setHgap(GuiConstants.DEFAULT_SPACING);
         labelPane.setVgap(GuiConstants.DEFAULT_SPACING);
         labelPane.setAlignment(Pos.CENTER_LEFT);
+        button.setMinWidth(80);
 
         setHgrow(labelPane, Priority.ALWAYS);
         setSpacing(GuiConstants.DEFAULT_SPACING);
+        setPadding(new Insets(GuiConstants.DEFAULT_SPACING*2));
         setAlignment(Pos.CENTER);
 
         getChildren().add(labelPane);
@@ -63,4 +80,7 @@ public class GodBox extends HBox {
         button.setOnAction(handler);
     }
 
+    public Button getButton() {
+        return button;
+    }
 }
