@@ -71,6 +71,10 @@ public class GuiBoardView extends AbstractGameView {
             infoText.setText("Select an action...");
         }
 
+        if (data.isSpectating()) {
+            infoText.setText("You're a spectator.\n\n" + infoText.getText());
+        }
+
         if (canBeEnded) {
             Button endButton = new Button();
             endButton.setText("End your turn");

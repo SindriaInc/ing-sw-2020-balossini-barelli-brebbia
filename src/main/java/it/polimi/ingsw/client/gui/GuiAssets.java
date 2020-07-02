@@ -87,7 +87,7 @@ public class GuiAssets {
         BLOCK1("image-block1.png"),
         BLOCK2("image-block1-2.png"),
         BLOCK3("image-block1-2-3.png"),
-        DOME("image-block1-2-3-D.png"),
+        DOME("image-dome.png"),
         GAME_BOARD("image-game-board.png"),
         GAME_SIDE("image-game-side.png"),
         GAME_BACKGROUND("image-game-background.png"),

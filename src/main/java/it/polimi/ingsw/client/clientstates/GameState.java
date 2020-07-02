@@ -311,13 +311,27 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onLose(PlayerLoseEvent event) {
-        if (!event.getPlayer().equals(data.getName())) {
-            // TODO: Show players that have lost?
-            return;
+        String lost = event.getPlayer();
+
+        List<WorkerInfo> workerInfos = new ArrayList<>(data.getWorkers());
+        workerInfos.removeIf(workerInfo -> workerInfo.getOwner().equals(lost));
+
+        List<String> otherPlayers = new ArrayList<>(data.getOtherPlayers());
+        otherPlayers.removeIf(otherPlayer -> otherPlayer.equals(lost));
+
+        String message = null;
+        boolean spectating = false;
+
+        if (lost.equals(data.getName()) && data.getOtherPlayers().size() > 0) {
+            message = "You've lost!\nYou can continue watching the game or quit.";
+            spectating = true;
+        } else if (data.getOtherPlayers().size() > 0) {
+            message = lost + " has lost!\nTheir workers have been removed.";
         }
 
-        data = new GameData(null, data.getName(), data.getOtherPlayers(),
-                data.isInGodsPhase(), true, data.getMap(), data.getWorkers());
+        data = new GameData(message, data.getName(), otherPlayers,
+                data.isInGodsPhase(), spectating, data.getMap(), workerInfos);
+
         updateView();
     }
 
