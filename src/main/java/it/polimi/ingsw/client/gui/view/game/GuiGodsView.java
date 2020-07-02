@@ -38,14 +38,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Create the gui rendering of the gods view
+ */
 public class GuiGodsView extends AbstractGameView {
 
     private final ObservableList<String> selectedGods = FXCollections.observableList(new ArrayList<>());
 
+    /**
+     * Class constructor, set state and assets
+     * @param state The state
+     * @param images The assets
+     */
     public GuiGodsView(GameState state, GuiAssets images) {
         super(state, images);
     }
 
+    /**
+     * @see it.polimi.ingsw.client.gui.view.AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     @Override
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = getState().getData();
@@ -200,14 +211,26 @@ public class GuiGodsView extends AbstractGameView {
         return pane;
     }
 
+    /**
+     * Handler for the choose button
+     * @param name The god's name
+     */
     private void onChoose(String name) {
         getState().acceptChooseGod(name);
     }
 
+    /**
+     * Handler for a god toggle button
+     * @param ignored The action event
+     */
     private void onGodToggle(ActionEvent ignored) {
         getState().acceptSelectGods(selectedGods);
     }
 
+    /**
+     * Handler for a god toggle button
+     * @param name The god's name
+     */
     private void onGodToggle(String name) {
         if (selectedGods.contains(name)) {
             selectedGods.remove(name);
@@ -217,10 +240,22 @@ public class GuiGodsView extends AbstractGameView {
         selectedGods.add(name);
     }
 
+    /**
+     * The handler for a select first player button
+     * @param player The player name
+     */
     private void onSelectFirst(String player) {
         getState().acceptSelectFirst(player);
     }
 
+    /**
+     * Generate a presentation with the given data
+     * @param width The width
+     * @param height The height
+     * @param center The center stack pane
+     * @param bottom The bottom stack pane
+     * @return A pane with generated with the previous parts
+     */
     private Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
                                         StackPane center, StackPane bottom
     ) {
@@ -258,6 +293,11 @@ public class GuiGodsView extends AbstractGameView {
         return pane;
     }
 
+    /**
+     * Load a card image
+     * @param god The card's god name
+     * @return The image view of the card
+     */
     private ImageView getCard(GodInfo god) {
         ImageView godCard = new ImageView(new Image(AbstractClientViewer.ASSETS_DIRECTORY + "image-card-" + god.getName().toLowerCase() + ".png"));
         godCard.setFitWidth(130);
@@ -267,11 +307,22 @@ public class GuiGodsView extends AbstractGameView {
         return godCard;
     }
 
+    /**
+     * Show the god info in a GodBox on the bottom stack pane
+     * @param godBox The god box
+     * @param bottom The stack pane
+     */
     private void showGodInfo(GodBox godBox, StackPane bottom) {
         removeChild(bottom);
         bottom.getChildren().add(godBox);
     }
 
+    /**
+     * Show the done button on the bottom stack pane
+     * @param done The button
+     * @param action The text
+     * @param bottom The stack pane
+     */
     private void showDoneButton(Button done, Text action, StackPane bottom) {
         removeChild(bottom);
 
@@ -282,18 +333,32 @@ public class GuiGodsView extends AbstractGameView {
         bottom.getChildren().add(vBox);
     }
 
+    /**
+     * Remove the child with index 1 from a stack pane
+     * @param bottom The stack pane
+     */
     private void removeChild(StackPane bottom) {
         try {
             bottom.getChildren().remove(1);
         } catch (IndexOutOfBoundsException e) {}
     }
 
+    /**
+     * Show the action text in a stack pane
+     * @param action The text
+     * @param bottom The stack pane
+     */
     private void showAction(Text action, StackPane bottom) {
         action.setFont(getAssets().getFont());
         action.setTextAlignment(TextAlignment.CENTER);
         bottom.getChildren().add(action);
     }
 
+    /**
+     * Create a scroll pane to contain god cards flow pane
+     * @param godsView The flow pane
+     * @return A scroll pane containing the flow pane
+     */
     private ScrollPane godsScroll(FlowPane godsView) {
         godsView.setBackground(Background.EMPTY);
         ScrollPane godsScroll = new ScrollPane(godsView);
@@ -305,6 +370,10 @@ public class GuiGodsView extends AbstractGameView {
         return godsScroll;
     }
 
+    /**
+     * Set the style effects on a god image view
+     * @param godCard The image view
+     */
     private void style(ImageView godCard) {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(15.0);

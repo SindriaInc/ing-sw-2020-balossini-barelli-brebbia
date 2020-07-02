@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * The gui rendering of the board
+ */
 public class BoardBox extends GridPane {
 
     private static final double RELATIVE_WORKER_SIZE = 0.8D;
@@ -24,6 +27,9 @@ public class BoardBox extends GridPane {
     private static final int BACKGROUND_INDEX = 2;
     private static final int WORKER_INDEX = 2;
 
+    /**
+     * The gui rendering of a board's cell
+     */
     private static class BoardCell {
 
         /**
@@ -36,9 +42,21 @@ public class BoardBox extends GridPane {
          * Z-3: Worker (WORKER_INDEX)
          */
         private final StackPane pane;
+
+        /**
+         * If the cell interactivity is enabled
+         */
         private boolean enabled;
+
+        /**
+         * The worker info
+         */
         private WorkerInfo workerInfo;
 
+        /**
+         * Pane setter
+         * @param pane The pane
+         */
         public BoardCell(StackPane pane) {
             this.pane = pane;
         }
@@ -60,10 +78,23 @@ public class BoardBox extends GridPane {
         }
     }
 
+    /**
+     * The board's data
+     */
     private final Map<Coordinates, BoardCell> cells = new HashMap<>();
 
+    /**
+     * The gui assets
+     */
     private final GuiAssets assets;
 
+    /**
+     * Class constructor, create a pane with board info
+     *
+     * @param assets The assets
+     * @param map The map
+     * @param actionConsumer The consume for an action
+     */
     public BoardBox(GuiAssets assets, CellInfo[][] map, Consumer<Coordinates> actionConsumer) {
         this.assets = assets;
 
@@ -149,6 +180,12 @@ public class BoardBox extends GridPane {
         return List.copyOf(cells.keySet());
     }
 
+    /**
+     * Enable/Disable interaction for a cell
+     *
+     * @param position The cell's position
+     * @param enabled Enable/Disable
+     */
     public void setEnabled(Coordinates position, boolean enabled) {
         cells.get(position).setEnabled(enabled);
 
@@ -171,6 +208,12 @@ public class BoardBox extends GridPane {
         cellPane.getChildren().add(BACKGROUND_INDEX, pane);
     }
 
+    /**
+     * Set the representation of a worker
+     *
+     * @param position The worker position
+     * @param worker The worker info
+     */
     public void setWorker(Coordinates position, WorkerInfo worker) {
         cells.get(position).setWorkerInfo(worker);
 
@@ -185,6 +228,10 @@ public class BoardBox extends GridPane {
         cellPane.getChildren().add(workerImage);
     }
 
+    /**
+     * Fit the image in a cell
+     * @param imageView The ImageView to be filled
+     */
     private void fitInCell(ImageView imageView) {
         imageView.setFitWidth(GuiConstants.CELL_MIN_SIZE);
         imageView.setFitHeight(GuiConstants.CELL_MIN_SIZE);

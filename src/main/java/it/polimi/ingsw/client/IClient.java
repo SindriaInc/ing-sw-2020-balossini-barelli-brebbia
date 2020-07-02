@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client;
 
+/**
+ * The interface of the connection
+ */
 public interface IClient {
 
     /**

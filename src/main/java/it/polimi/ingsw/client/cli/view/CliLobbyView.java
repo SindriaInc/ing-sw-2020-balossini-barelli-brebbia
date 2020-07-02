@@ -7,6 +7,9 @@ import it.polimi.ingsw.common.info.RoomInfo;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generate the cli obby view
+ */
 public class CliLobbyView extends AbstractCliView {
 
     private static final String TYPE_SIMPLE = "simple";
@@ -17,9 +20,23 @@ public class CliLobbyView extends AbstractCliView {
 
     private static final String SIDE_PADDING = " ".repeat(12);
 
+    /**
+     * The client state
+     */
     private final LobbyState state;
+
+    /**
+     * The side banner
+     */
     private final String[] side;
 
+    /**
+     * Class constructor, set the client state, the side banner and the line length
+     *
+     * @param state The client state
+     * @param side The side banner
+     * @param lineLength The line length
+     */
     public CliLobbyView(LobbyState state, String[] side, int lineLength) {
         super(lineLength);
 
@@ -27,6 +44,9 @@ public class CliLobbyView extends AbstractCliView {
         this.side = side;
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         String name = state.getData().getName();
@@ -83,6 +103,9 @@ public class CliLobbyView extends AbstractCliView {
         return output.toString();
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         if (state.getData().isWaiting()) {
@@ -138,7 +161,7 @@ public class CliLobbyView extends AbstractCliView {
             state.acceptCreate(simple, Integer.parseInt(arguments[1]));
             return Optional.empty();
         } catch (NumberFormatException exception) {
-            return Optional.of("The number of players must be... A number");
+            return Optional.of("The number of players must be a number between " + state.getData().getMinGamePlayers() + " and " + state.getData().getMaxGamePlayers());
         }
     }
 

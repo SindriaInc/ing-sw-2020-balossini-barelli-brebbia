@@ -4,10 +4,18 @@ import it.polimi.ingsw.client.cli.CliCommand;
 
 import java.util.List;
 
+/**
+ * Generates the cli views
+ */
 public abstract class AbstractCliView {
 
     private final int lineLength;
 
+    /**
+     * Class constructor, set the line length to be used in the rendering
+     *
+     * @param lineLength The line length
+     */
     public AbstractCliView(int lineLength) {
         this.lineLength = lineLength;
     }

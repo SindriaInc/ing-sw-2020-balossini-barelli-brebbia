@@ -2,6 +2,9 @@ package it.polimi.ingsw.client.data.request;
 
 import java.util.List;
 
+/**
+ * Represent the data of a first player selection
+ */
 public class SelectFirstData {
 
     /**
@@ -9,6 +12,11 @@ public class SelectFirstData {
      */
     private final List<String> availablePlayers;
 
+    /**
+     * Class constructor, set available players
+     *
+     * @param availablePlayers The available players
+     */
     public SelectFirstData(List<String> availablePlayers) {
         this.availablePlayers = List.copyOf(availablePlayers);
     }

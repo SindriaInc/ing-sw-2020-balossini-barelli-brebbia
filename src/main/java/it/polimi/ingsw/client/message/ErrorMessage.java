@@ -2,6 +2,9 @@ package it.polimi.ingsw.client.message;
 
 import java.util.Optional;
 
+/**
+ * Represent an error message
+ */
 public class ErrorMessage {
 
     public enum ErrorType {

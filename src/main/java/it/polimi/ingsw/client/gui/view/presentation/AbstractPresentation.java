@@ -16,10 +16,20 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+/**
+ * Presentation for a state of the game
+ */
 public abstract class AbstractPresentation {
 
+    /**
+     * The assets
+     */
     private final GuiAssets assets;
 
+    /**
+     * Class constructor, set the assets
+     * @param assets The assets
+     */
     public AbstractPresentation(GuiAssets assets) {
         this.assets = assets;
     }

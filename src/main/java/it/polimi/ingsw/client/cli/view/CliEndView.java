@@ -8,14 +8,34 @@ import it.polimi.ingsw.common.info.RoomInfo;
 
 import java.util.List;
 
+/**
+ * Generate the end cli view
+ */
 public class CliEndView extends AbstractCliView {
 
+    /**
+     * The client state
+     */
     private final EndState state;
 
+    /**
+     * The win header
+     */
     private final String[] win;
 
+    /**
+     * The lose header
+     */
     private final String[] lose;
 
+    /**
+     * Class constructor, set the state, win header, lose header and line length to be used in the rendering
+     *
+     * @param state The client state
+     * @param win The win header
+     * @param lose The lose header
+     * @param lineLength The line length
+     */
     public CliEndView(EndState state, String[] win, String[] lose, int lineLength) {
         super(lineLength);
 
@@ -24,6 +44,9 @@ public class CliEndView extends AbstractCliView {
         this.lose = lose;
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         String name = state.getData().getName();
@@ -51,6 +74,9 @@ public class CliEndView extends AbstractCliView {
         return output.toString();
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         return List.of();

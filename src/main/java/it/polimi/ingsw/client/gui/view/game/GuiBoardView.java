@@ -20,14 +20,26 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+/**
+ * Create the gui rendering of the board view
+ */
 public class GuiBoardView extends AbstractGameView {
 
     private Consumer<Coordinates> actionConsumer = (ignored) -> {};
 
+    /**
+     * Class constructor, set state and assets
+     *
+     * @param state The state
+     * @param images The assets
+     */
     public GuiBoardView(GameState state, GuiAssets images) {
         super(state, images);
     }
 
+    /**
+     * @see it.polimi.ingsw.client.gui.view.AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     @Override
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = getState().getData();
@@ -91,6 +103,13 @@ public class GuiBoardView extends AbstractGameView {
         return presentation.generatePresentation(width, height, boardBox, infoText, infoButtons);
     }
 
+    /**
+     * Generate a list of spawn buttons
+     * @param text The text
+     * @param boardBox The board representation
+     * @param spawn The spawn data
+     * @return The list of spawn buttons
+     */
     private List<Button> generateSpawn(Text text, BoardBox boardBox, InteractData spawn) {
         String buttonText = "Spawn a worker";
         String textToSet = "Click on a cell to spawn a worker";
@@ -100,6 +119,13 @@ public class GuiBoardView extends AbstractGameView {
         return List.of(generate(text, boardBox, spawn, buttonText, textToSet, actionConsumerSupplier));
     }
 
+    /**
+     * Generate a list of move buttons
+     * @param text The text
+     * @param boardBox The board representation
+     * @param move The move data
+     * @return The list of move buttons
+     */
     private List<Button> generateMove(Text text, BoardBox boardBox, WorkersInteractData move) {
         List<Button> generated = new ArrayList<>();
 
@@ -120,6 +146,13 @@ public class GuiBoardView extends AbstractGameView {
         return generated;
     }
 
+    /**
+     * Generate a list of build block buttons
+     * @param text The text
+     * @param boardBox The board representation
+     * @param buildBlock The build block data
+     * @return The list of build block buttons
+     */
     private List<Button> generateBuildBlock(Text text, BoardBox boardBox, WorkersInteractData buildBlock) {
         List<Button> generated = new ArrayList<>();
 
@@ -140,6 +173,13 @@ public class GuiBoardView extends AbstractGameView {
         return generated;
     }
 
+    /**
+     * Generate a list of build dome buttons
+     * @param text The text
+     * @param boardBox The board representation
+     * @param buildDome The build dome data
+     * @return The list of build dome buttons
+     */
     private List<Button> generateBuildDome(Text text, BoardBox boardBox, WorkersInteractData buildDome) {
         List<Button> generated = new ArrayList<>();
 
@@ -160,6 +200,13 @@ public class GuiBoardView extends AbstractGameView {
         return generated;
     }
 
+    /**
+     * Generate a list of force buttons
+     * @param text The text
+     * @param boardBox The board representation
+     * @param force The force data
+     * @return The list of force buttons
+     */
     private List<Button> generateForce(Text text, BoardBox boardBox, WorkersOtherInteractData force) {
         List<Button> generated = new ArrayList<>();
 
@@ -186,6 +233,16 @@ public class GuiBoardView extends AbstractGameView {
         return generated;
     }
 
+    /**
+     * Generate a button for a possible interaction
+     * @param text The text
+     * @param boardBox The board box
+     * @param data The data of the interaction
+     * @param buttonText The text for the button
+     * @param textToSet The text to set
+     * @param actionConsumerSupplier The action consumer supplier
+     * @return
+     */
     private Button generate(Text text, BoardBox boardBox, InteractData data, String buttonText,
                             String textToSet, Supplier<Consumer<Coordinates>> actionConsumerSupplier) {
         Button button = new Button();
@@ -198,6 +255,11 @@ public class GuiBoardView extends AbstractGameView {
         return button;
     }
 
+    /**
+     * Update the button list
+     * @param boardBox The board box
+     * @param enabledCoordinates The enabled coordinates
+     */
     private void updateButtons(BoardBox boardBox, List<Coordinates> enabledCoordinates) {
         for (Coordinates position : boardBox.getPositions()) {
             boardBox.setEnabled(position, enabledCoordinates.contains(position));

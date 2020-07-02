@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.info.GodInfo;
 
 import java.util.List;
 
+/**
+ * Represent the data of a gods selection
+ */
 public class SelectGodsData {
 
     /**
@@ -16,6 +19,12 @@ public class SelectGodsData {
      */
     private final int selectGodsCount;
 
+    /**
+     * Class constructor, set the available gods and how many to select
+     *
+     * @param availableGods The available gods
+     * @param selectGodsCount How many gods to select
+     */
     public SelectGodsData(List<GodInfo> availableGods, int selectGodsCount) {
         this.availableGods = List.copyOf(availableGods);
         this.selectGodsCount = selectGodsCount;

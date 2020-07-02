@@ -3,6 +3,9 @@ package it.polimi.ingsw.client.data.request;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Represent the data of worker interactions that each of the workers can do
+ */
 public class WorkersOtherInteractData {
 
     /**
@@ -11,6 +14,11 @@ public class WorkersOtherInteractData {
      */
     private final Map<Integer, WorkersInteractData> availableOtherInteractions;
 
+    /**
+     * Class constructor, set the availabel interactions
+     *
+     * @param availableOtherInteractions The available interactions
+     */
     public WorkersOtherInteractData(Map<Integer, WorkersInteractData> availableOtherInteractions) {
         this.availableOtherInteractions = Map.copyOf(availableOtherInteractions);
     }

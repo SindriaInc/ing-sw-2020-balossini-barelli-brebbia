@@ -2,6 +2,9 @@ package it.polimi.ingsw.client.data;
 
 import java.util.Optional;
 
+/**
+ * Represent the data of the input state
+ */
 public class InputData extends AbstractData {
 
     /**
@@ -14,6 +17,13 @@ public class InputData extends AbstractData {
      */
     private final Integer port;
 
+    /**
+     * Class constructor, set last message, IP and port
+     *
+     * @param lastMessage The last message
+     * @param ip The IP address
+     * @param port The port number
+     */
     public InputData(String lastMessage, String ip, Integer port) {
         super(lastMessage);
 

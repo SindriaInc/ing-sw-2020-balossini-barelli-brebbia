@@ -13,12 +13,27 @@ import javafx.scene.text.Text;
 
 import java.util.List;
 
+/**
+ * The gui presentation for lobby
+ */
 public class LobbyPresentation extends AbstractPreGamePresentation {
 
+    /**
+     * Class constructor, set assets
+     * @param assets The assets
+     */
     public LobbyPresentation(GuiAssets assets) {
         super(assets);
     }
 
+    /**
+     * Generate the presentation for lobby view
+     * @param width The width
+     * @param height The height
+     * @param rooms The list of available rooms in room boxes
+     * @param action The action button
+     * @return The generated pane
+     */
     public Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
                                      List<RoomBox> rooms,
                                      Button action

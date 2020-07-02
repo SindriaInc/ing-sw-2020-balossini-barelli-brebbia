@@ -5,10 +5,20 @@ import it.polimi.ingsw.client.gui.GuiAssets;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Parent;
 
+/**
+ * A gui view of the game
+ */
 public abstract class AbstractGuiView {
 
+    /**
+     * The assets
+     */
     private final GuiAssets assets;
 
+    /**
+     * Class constructor, set hte assets
+     * @param assets
+     */
     public AbstractGuiView(GuiAssets assets) {
         this.assets = assets;
     }

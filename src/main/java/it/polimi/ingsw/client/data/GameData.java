@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represent the data of the game state
+ */
 public class GameData extends AbstractData {
 
     /**
@@ -91,6 +94,17 @@ public class GameData extends AbstractData {
      */
     private final Boolean canBeEnded;
 
+    /**
+     * Class constructor, set last message, name, othe players list, phase of the game state, spectating state, map and workers list
+     *
+     * @param lastMessage The last message
+     * @param name The name
+     * @param otherPlayers The other player's list
+     * @param inGodsPhase Whether or not the game is in god phase
+     * @param spectating Whether or not the player is spectating
+     * @param map The map
+     * @param workers The worker list
+     */
     public GameData(String lastMessage, String name, List<String> otherPlayers, boolean inGodsPhase, boolean spectating,
                     CellInfo[][] map, List<WorkerInfo> workers) {
         this(lastMessage, name, otherPlayers, inGodsPhase, spectating, map, workers, null,
@@ -100,6 +114,27 @@ public class GameData extends AbstractData {
                 null, null);
     }
 
+    /**
+     * Class constructor, sets all the class attributes
+     *
+     * @param lastMessage The last message
+     * @param name The player's name
+     * @param otherPlayers The other players list
+     * @param inGodsPhase Whether the game is in god phase or not
+     * @param spectating Whether the player is spectating or not
+     * @param map The map
+     * @param workers The worker list
+     * @param turnPlayer The player on turn
+     * @param selectGodsData The data for gods selection
+     * @param chooseGodData The data for gods choosing
+     * @param selectFirstData The data for first player selection
+     * @param spawnData The spawn data
+     * @param moveData The move data
+     * @param buildBlockData The build block data
+     * @param buildDomeData The build dome data
+     * @param forceData The force data
+     * @param canBeEnded Whether the turn can be ended or not
+     */
     private GameData(String lastMessage, String name, List<String> otherPlayers, boolean inGodsPhase, boolean spectating,
                      CellInfo[][] map, List<WorkerInfo> workers, String turnPlayer,
                      SelectGodsData selectGodsData, ChooseGodData chooseGodData, SelectFirstData selectFirstData,

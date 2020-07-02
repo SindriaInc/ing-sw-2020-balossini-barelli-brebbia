@@ -15,14 +15,31 @@ import javafx.scene.layout.StackPane;
 
 import java.util.Map;
 
+/**
+ * The field presentation
+ */
 public class FieldsPresentation extends AbstractPresentation {
 
     private static final double COMPONENTS_HEIGHT = 170;
 
+    /**
+     * Class constructor, set assets
+     * @param assets The assets
+     */
     public FieldsPresentation(GuiAssets assets) {
         super(assets);
     }
 
+    /**
+     * Generate a field presentation
+     * @param width The width
+     * @param height The height
+     * @param inputs The input text fields
+     * @param action The action button
+     * @param buttonImage The button image
+     * @param connect The stack pane containing action and button image
+     * @return The generated stack pane
+     */
     public StackPane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
                                           Map<Label, TextField> inputs,
                                           Button action, ImageView buttonImage, StackPane connect

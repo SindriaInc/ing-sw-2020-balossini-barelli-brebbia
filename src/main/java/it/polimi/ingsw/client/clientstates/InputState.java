@@ -6,6 +6,9 @@ import it.polimi.ingsw.client.socket.SocketClient;
 
 import java.io.IOException;
 
+/**
+ * Generate the data for the input state
+ */
 public class InputState extends AbstractClientState {
 
     /**
@@ -13,10 +16,21 @@ public class InputState extends AbstractClientState {
      */
     private InputData data;
 
+    /**
+     * Class constructor, set the client connector
+     *
+     * @param clientConnector The client connector
+     */
     public InputState(ClientConnector clientConnector) {
         this(clientConnector, null);
     }
 
+    /**
+     * Class constructor, set the client connector and generate input data given a message
+     *
+     * @param clientConnector The client connector
+     * @param message The message
+     */
     public InputState(ClientConnector clientConnector, String message) {
         super(clientConnector);
 

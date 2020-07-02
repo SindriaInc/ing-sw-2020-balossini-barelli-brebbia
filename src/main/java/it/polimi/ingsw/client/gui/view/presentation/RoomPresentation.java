@@ -10,12 +10,28 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
+/**
+ * The room gui presentation
+ */
 public class RoomPresentation extends AbstractPreGamePresentation {
 
+    /**
+     * Class constructor, set the assets
+     * @param assets The assets
+     */
     public RoomPresentation(GuiAssets assets) {
         super(assets);
     }
 
+    /**
+     * Generate a presentation of the room view
+     * @param width The width
+     * @param height The height
+     * @param room The room name
+     * @param count The room number of people
+     * @param start The start text
+     * @return
+     */
     public Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height, Text room, Text count, Text start) {
         styleTitle(room);
         styleTitle(count);

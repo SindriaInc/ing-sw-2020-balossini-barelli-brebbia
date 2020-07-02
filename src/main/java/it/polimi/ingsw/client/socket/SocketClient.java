@@ -16,6 +16,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * Socket implementation of the connection
+ */
 public class SocketClient implements IClient {
 
     private static final int CONNECT_TIMEOUT = 3000;
@@ -50,6 +53,15 @@ public class SocketClient implements IClient {
      */
     private boolean active;
 
+    /**
+     * Class constructor, create a connection given IP address and port number
+     * Create a new executor service for reading messages
+     *
+     * @param ip The IP address
+     * @param port The port number
+     * @throws IllegalArgumentException Thrown for wrong arguments
+     * @throws IOException Thrown if an error occurs on the communication
+     */
     public SocketClient(String ip, int port) throws IllegalArgumentException, IOException {
         Socket socket = new Socket();
         socket.connect(new InetSocketAddress(ip, port), CONNECT_TIMEOUT);
@@ -62,21 +74,36 @@ public class SocketClient implements IClient {
         socketHandler = new SocketHandler(executorService, socket, this::onMessage, this::onError);
     }
 
+    /**
+     * @see IClient#send(String)
+     */
     @Override
     public void send(String message) {
         socketHandler.schedulePacket(message);
     }
 
+
+    /**
+     * @see IClient#registerHandler(IMessageHandler)
+     */
     @Override
     public void registerHandler(IMessageHandler packetHandler) {
         packetHandlers.add(packetHandler);
     }
 
+
+    /**
+     * @see IClient#registerHandler(IErrorHandler)
+     */
     @Override
     public void registerHandler(IErrorHandler errorHandler) {
         errorHandlers.add(errorHandler);
     }
 
+
+    /**
+     * @see IClient#shutdown()
+     */
     @Override
     public void shutdown() {
         active = false;
@@ -85,6 +112,9 @@ public class SocketClient implements IClient {
         executorService.shutdownNow();
     }
 
+    /**
+     * Create a new thread for message reading
+     */
     private void readMessages() {
         while (active) {
             try {
@@ -96,6 +126,11 @@ public class SocketClient implements IClient {
         }
     }
 
+    /**
+     * Set the handler for when a message arrives
+     * @param socketHandler The handler
+     * @param message The message
+     */
     private void onMessage(SocketHandler socketHandler, String message) {
         pendingMessages.addLast(() -> {
             for (IMessageHandler packetHandler : packetHandlers) {
@@ -104,6 +139,11 @@ public class SocketClient implements IClient {
         });
     }
 
+    /**
+     * Set the handles for when an error occurs
+     * @param socketHandler The handler
+     * @param message The message
+     */
     private void onError(SocketHandler socketHandler, String message) {
         ErrorMessage errorMessage = new ErrorMessage(ErrorMessage.ErrorType.MESSAGE_FAILED, message);
 

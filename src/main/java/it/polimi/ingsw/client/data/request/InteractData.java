@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.info.Coordinates;
 
 import java.util.List;
 
+/**
+ * Represent the data of an interaction
+ */
 public class InteractData {
 
     /**
@@ -11,6 +14,11 @@ public class InteractData {
      */
     private final List<Coordinates> availableCoordinates;
 
+    /**
+     * Class constructor, set the list of available coordinates
+     *
+     * @param availableCoordinates The available coordinates
+     */
     public InteractData(List<Coordinates> availableCoordinates) {
         this.availableCoordinates = List.copyOf(availableCoordinates);
     }

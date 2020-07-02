@@ -8,12 +8,26 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
+/**
+ * A gui view of the input state
+ */
 public class GuiInputView extends AbstractGuiFieldsView {
 
+    /**
+     * The game state
+     */
     private final InputState state;
 
+    /**
+     * The current alert
+     */
     private Alert currentAlert;
 
+    /**
+     * Class constructor, set game state and assets
+     * @param state The game state
+     * @param images The assets
+     */
     public GuiInputView(InputState state, GuiAssets images) {
         super(images,
                 "Server ip", "127.0.0.1",
@@ -24,16 +38,25 @@ public class GuiInputView extends AbstractGuiFieldsView {
         this.state = state;
     }
 
+    /**
+     * @see AbstractGuiFieldsView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         InputData data = state.getData();
         return super.generateView(data.getLastMessage().orElse(null), width, height);
     }
 
+    /**
+     * @see AbstractGuiFieldsView#getState()
+     */
     @Override
     public AbstractClientState getState() {
         return state;
     }
 
+    /**
+     * @see AbstractGuiFieldsView#onAction(String, int)
+     */
     @Override
     public void onAction(String ip, int port) {
         state.acceptIp(ip);

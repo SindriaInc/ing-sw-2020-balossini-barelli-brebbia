@@ -7,8 +7,16 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 
+/**
+ * Create a dialog for creating a room
+ */
 public class CreateRoomDialog extends Dialog<Pair<Integer, Boolean>> {
 
+    /**
+     * Class constructor, create a dialog with an IntegerBox for the player's number, a checkbox for a simple/normal game and Ok/Undo buttons
+     * @param minGamePlayers Min game players
+     * @param maxGamePlayers Max game players
+     */
     public CreateRoomDialog(int minGamePlayers, int maxGamePlayers) {
         setTitle("Create a new room...");
 
