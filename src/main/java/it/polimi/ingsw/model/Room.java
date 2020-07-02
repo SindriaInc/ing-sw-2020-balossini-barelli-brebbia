@@ -36,8 +36,9 @@ public class Room {
     }
 
     public List<Player> getAllPlayers() {
-        List<Player> allPlayers = new ArrayList<>(otherPlayers);
+        List<Player> allPlayers = new ArrayList<>();
         allPlayers.add(owner);
+        allPlayers.addAll(otherPlayers);
         return allPlayers;
     }
 

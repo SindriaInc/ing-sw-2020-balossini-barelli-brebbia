@@ -96,7 +96,7 @@ class GameTest {
         game.chooseGod(gods.get(1).getName()); // WinOnDeltaLevel
         game.chooseGod(gods.get(2).getName()); // ParkourCross
 
-        game.selectFirst(players.get(0).getName());
+        game.selectFirst(players.get(1).getName());
 
         game.spawnWorker(new Coordinates(1, 0)); // Worker 0
         game.spawnWorker(new Coordinates(3, 3)); // Worker 1
@@ -235,7 +235,7 @@ class GameTest {
         game.logout(PLAYER_YOUNGEST_NAME);
     }
 
-     private Cell getCell(Game game, int x, int y) {
+    private Cell getCell(Game game, int x, int y) {
         return game.getOriginalBoard().getCellFromCoords(x, y);
     }
 

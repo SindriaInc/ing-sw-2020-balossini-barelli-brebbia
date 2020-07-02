@@ -181,8 +181,9 @@ public class PreGodsGame extends AbstractGameState {
         int index = 0;
         for (Player other : getPlayers()) {
             if (other.getName().equals(player)) {
-                optionalIndex = index++;
+                optionalIndex = index;
             }
+            index++;
         }
 
         if (optionalIndex == null) {
