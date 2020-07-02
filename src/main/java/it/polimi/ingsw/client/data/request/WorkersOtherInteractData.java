@@ -19,6 +19,10 @@ public class WorkersOtherInteractData {
         return availableOtherInteractions;
     }
 
+    /**
+     * Get single worker interaction
+     * @return The interaction, if exists
+     */
     public Optional<Map.Entry<Integer, WorkersInteractData>> getSingleWorkerOtherInteractions() {
         if (availableOtherInteractions.size() != 1) {
             return Optional.empty();

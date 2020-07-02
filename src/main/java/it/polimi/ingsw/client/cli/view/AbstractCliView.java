@@ -24,6 +24,11 @@ public abstract class AbstractCliView {
      */
     public abstract List<CliCommand> generateCommands();
 
+    /**
+     * Build the header
+     * @param header The header as a string array
+     * @return The header as a string
+     */
     protected String buildHeader(String[] header) {
         StringBuilder output = new StringBuilder();
 
@@ -36,28 +41,50 @@ public abstract class AbstractCliView {
         return output.toString();
     }
 
+    /**
+     * Print a centered text
+     * @param toPrint The text
+     * @return The text with additional spaces
+     */
     protected String center(String toPrint) {
         return center(toPrint, toPrint.length());
     }
 
+    /**
+     * Print a centered text given a limit on the right
+     * @param toPrint The text
+     * @param maxLength The limit offset
+     * @return The text with additional spaces
+     */
     protected String center(String toPrint, int maxLength) {
         int startOS = (lineLength - maxLength) / 2;
         return " ".repeat(startOS) + toPrint;
     }
 
+    /**
+     * Create a separator
+     * @return The separator's string
+     */
     protected String separator() {
         return "=".repeat(lineLength) + System.lineSeparator();
     }
 
-    protected String slimSeparator() {
-        return "-".repeat(lineLength) + System.lineSeparator();
-    }
-
+    /**
+     * Print a centered text given a padding on the left
+     * @param toPrint The text
+     * @param padding The padding
+     * @return The text with additional spaces
+     */
     protected String leftPadAndCenter(String toPrint, int padding) {
         int startOS = (lineLength - padding - toPrint.length()) / 2;
         return " ".repeat(startOS) + toPrint;
     }
 
+    /**
+     * Get the length of the longest string in a string array
+     * @param strings The string array
+     * @return The longest line's length
+     */
     protected int largestLine(String[] strings) {
         int largestLineLength = 0;
 

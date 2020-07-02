@@ -176,6 +176,11 @@ public class CliGodsView extends AbstractGameView {
         return List.of();
     }
 
+    /**
+     * Respond to a gods select command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onSelect(String[] arguments) {
         GameData data = getState().getData();
 
@@ -195,6 +200,11 @@ public class CliGodsView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a god choose command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onChoose(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of(CHOOSE_FAIL);
@@ -209,6 +219,11 @@ public class CliGodsView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a select first player command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onFirst(String[] arguments) {
         GameData data = getState().getData();
 
@@ -222,6 +237,14 @@ public class CliGodsView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Print a text until a certain limit is reached without splitting words
+     * @param output The string builder in use
+     * @param toPrint The text to print
+     * @param startOS The starting offset
+     * @param limit The limit offset
+     * @return The reached offset
+     */
     private int printUntilLimit(StringBuilder output, List<String> toPrint, int startOS, int limit) {
         int length = toPrint.get(0).length();
         int currOS = startOS;

@@ -13,14 +13,29 @@ import javafx.scene.layout.Priority;
 
 public class RoomBox extends HBox {
 
+    /**
+     * The box containing the room data
+     */
     private final HBox labelBox;
 
+    /**
+     * The room owner's name
+     */
     private final Label name;
 
+    /**
+     * The number of players
+     */
     private final Label players;
 
+    /**
+     * Whether the game is simple or not
+     */
     private final Label simple;
 
+    /**
+     * The join button
+     */
     private final Button button;
 
     public RoomBox(RoomInfo roomInfo, EventHandler<ActionEvent> handler) {

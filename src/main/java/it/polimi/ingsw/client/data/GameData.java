@@ -11,23 +11,84 @@ import java.util.Optional;
 
 public class GameData extends AbstractData {
 
+    /**
+     * The player's name
+     */
     private final String name;
+
+    /**
+     * The other player's list
+     */
     private final List<String> otherPlayers;
 
+    /**
+     * If the game is in gods phase
+     */
     private final boolean inGodsPhase;
+
+    /**
+     * If the player is spectating
+     */
     private final boolean spectating;
+
+    /**
+     * The map
+     */
     private final CellInfo[][] map;
+
+    /**
+     * The list of worker
+     */
     private final List<WorkerInfo> workers;
 
+    /**
+     * The player on turn
+     */
     private final String turnPlayer;
+
+    /**
+     * The select god data
+     */
     private final SelectGodsData selectGodsData;
+
+    /**
+     * The choose god data
+     */
     private final ChooseGodData chooseGodData;
+
+    /**
+     * The select first data
+     */
     private final SelectFirstData selectFirstData;
+
+    /**
+     * The spawn data
+     */
     private final InteractData spawnData;
+
+    /**
+     * The move data
+     */
     private final WorkersInteractData moveData;
+
+    /**
+     * The build block data
+     */
     private final WorkersInteractData buildBlockData;
+
+    /**
+     * The build dome data
+     */
     private final WorkersInteractData buildDomeData;
+
+    /**
+     * THe force data
+     */
     private final WorkersOtherInteractData forceData;
+
+    /**
+     * If the turn can be ended
+     */
     private final Boolean canBeEnded;
 
     public GameData(String lastMessage, String name, List<String> otherPlayers, boolean inGodsPhase, boolean spectating,
@@ -133,6 +194,12 @@ public class GameData extends AbstractData {
         return getCellInfo(coordinates.getX(), coordinates.getY());
     }
 
+    /**
+     * Get a cell info
+     * @param x The x index
+     * @param y The y index
+     * @return
+     */
     public Optional<CellInfo> getCellInfo(int x, int y) {
         if (x >= map.length) {
             return Optional.empty();
@@ -147,6 +214,11 @@ public class GameData extends AbstractData {
         return Optional.of(column[y]);
     }
 
+    /**
+     * Create a new GameData given a last message
+     * @param lastMessage The last message
+     * @return The new GameData
+     */
     public GameData withMessage(String lastMessage) {
         return new GameData(lastMessage, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -156,6 +228,12 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given a map with an updated cell
+     * @param coordinates The cell coordinates
+     * @param cellInfo The new cell info
+     * @return The new GameData
+     */
     public GameData withCellInfo(Coordinates coordinates, CellInfo cellInfo) {
         if (getCellInfo(coordinates).isEmpty()) {
             throw new IllegalArgumentException("Invalid coordinates: " + coordinates.toString());
@@ -172,6 +250,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given the player on turn
+     * @param turnPlayer The player
+     * @return The new GameData
+     */
     public GameData withTurnPlayer(String turnPlayer) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -181,6 +264,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData with select gods data
+     * @param selectGodsData The selected gods
+     * @return The new GameData
+     */
     public GameData withSelectGods(SelectGodsData selectGodsData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -190,6 +278,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given choose god data
+     * @param chooseGodData The chosen god
+     * @return The new GameData
+     */
     public GameData withChooseGod(ChooseGodData chooseGodData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -199,6 +292,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given select first data
+     * @param selectFirstData The first to play
+     * @return The new GameData
+     */
     public GameData withSelectFirst(SelectFirstData selectFirstData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -208,6 +306,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given spawn data
+     * @param spawnData The spawn data
+     * @return The GameData
+     */
     public GameData withSpawn(InteractData spawnData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -217,6 +320,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given move data
+     * @param moveData The move data
+     * @return The new GameData
+     */
     public GameData withMove(WorkersInteractData moveData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -226,6 +334,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given a build block data
+     * @param buildBlockData The build block data
+     * @return The new GameData
+     */
     public GameData withBuildBlock(WorkersInteractData buildBlockData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -235,6 +348,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given a build dome data
+     * @param buildDomeData The build dome data
+     * @return The new GameData
+     */
     public GameData withBuildDome(WorkersInteractData buildDomeData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -244,6 +362,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData given the force data
+     * @param forceData The force data
+     * @return The new GameData
+     */
     public GameData withForce(WorkersOtherInteractData forceData) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -253,6 +376,11 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData stated if the turn can be ended
+     * @param canBeEnded If the turn can be ended
+     * @return The new GameData
+     */
     public GameData withEndTurn(Boolean canBeEnded) {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 selectGodsData, chooseGodData, selectFirstData,
@@ -262,6 +390,10 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a new GameData mantaining name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer
+     * @return The new GameData
+     */
     public GameData withNoRequests() {
         return new GameData(null, name, otherPlayers, inGodsPhase, spectating, map, workers, turnPlayer,
                 null, null, null,
@@ -271,6 +403,10 @@ public class GameData extends AbstractData {
         );
     }
 
+    /**
+     * Create a map's copy
+     * @return The map copy
+     */
     private CellInfo[][] copyOfMap() {
         return Arrays.stream(this.map).map(CellInfo[]::clone).toArray(CellInfo[][]::new);
     }

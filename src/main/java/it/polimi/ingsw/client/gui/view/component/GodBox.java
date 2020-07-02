@@ -16,7 +16,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 
 public class GodBox extends HBox {
-
+    
+    /**
+     * The select/choose button
+     */
     private final Button button;
 
     public GodBox(GodInfo godInfo, StringBinding buttonText, BooleanBinding buttonEnable, EventHandler<ActionEvent> handler, Font font) {

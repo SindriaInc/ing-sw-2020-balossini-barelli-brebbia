@@ -65,6 +65,11 @@ public class CliInputView extends AbstractCliView {
         return List.of();
     }
 
+    /**
+     * Respond to an insert IP command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onInsertIp(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of("Please type only the server ip");
@@ -80,6 +85,11 @@ public class CliInputView extends AbstractCliView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to an insert port command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onInsertPort(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of("Please type only the server port");

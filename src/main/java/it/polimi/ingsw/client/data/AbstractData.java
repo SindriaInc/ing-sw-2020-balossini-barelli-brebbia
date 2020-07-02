@@ -8,6 +8,9 @@ import java.util.Optional;
  */
 public class AbstractData {
 
+    /**
+     * The òast message
+     */
     private final String lastMessage;
 
     public AbstractData(String lastMessage) {

@@ -95,6 +95,11 @@ public class CliLobbyView extends AbstractCliView {
         );
     }
 
+    /**
+     * Respond to a join command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onJoin(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of(JOIN_ARGUMENTS_FAIL);
@@ -110,6 +115,11 @@ public class CliLobbyView extends AbstractCliView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a create command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onCreate(String[] arguments) {
         if (arguments.length != 2) {
             return Optional.of(CREATE_ARGUMENTS_FAIL);
@@ -132,6 +142,13 @@ public class CliLobbyView extends AbstractCliView {
         }
     }
 
+    /**
+     * Build a string with a room's data
+     * @param sideLineLen The padding on the left
+     * @param largestNameLength The largest name of a room owner between all the rooms
+     * @param roomInfo The room info
+     * @return The string
+     */
     private String buildRoom(int sideLineLen, int largestNameLength, RoomInfo roomInfo) {
         StringBuilder output = new StringBuilder();
 

@@ -25,14 +25,27 @@ public class IntegerField extends TextField {
         }));
     }
 
+    /**
+     * Create a binding allowing IntegerField to contain only integer values
+     * @return The binding
+     */
     public BooleanBinding validBinding() {
         return Bindings.createBooleanBinding(() -> getValue().isPresent(), textProperty());
     }
 
+    /**
+     * Get integer value in the field
+     * @return The value
+     */
     public Optional<Integer> getValue() {
         return getValue(getText());
     }
 
+    /**
+     * Get the integer value out of a text
+     * @param text The text
+     * @return The value
+     */
     private Optional<Integer> getValue(String text) {
         try {
             return Optional.of(Integer.parseInt(text));

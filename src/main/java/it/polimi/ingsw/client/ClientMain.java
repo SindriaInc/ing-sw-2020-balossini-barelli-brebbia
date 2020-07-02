@@ -56,6 +56,11 @@ public class ClientMain {
         logger.start(executorService);
     }
 
+    /**
+     * Open and close the logger to print a single message
+     * @param executorService The executor service
+     * @param message The message
+     */
     private void printAndQuit(ExecutorService executorService, String message) {
         Logger logger = Logger.getInstance();
         logger.addReader(new ConsoleLogReader(System.out));

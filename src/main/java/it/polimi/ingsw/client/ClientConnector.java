@@ -67,6 +67,10 @@ public class ClientConnector {
         return viewer;
     }
 
+    /**
+     * Register the message and error handlers on the connection
+     * @param connection The connection to the server
+     */
     public void registerConnection(IClient connection) {
         this.connection = connection;
 
@@ -74,6 +78,10 @@ public class ClientConnector {
         connection.registerHandler(this::onServerError);
     }
 
+    /**
+     * Updates the client state
+     * @param state The state
+     */
     public void updateState(AbstractClientState state) {
         this.currentClientState = state;
 
@@ -142,6 +150,9 @@ public class ClientConnector {
         updateState(new InputState(this, "An unexpected server error has occurred"));
     }
 
+    /**
+     * Shutdown the connection if the ping time is greater than the timeout
+     */
     private void onTimeoutCheck() {
         if (lastPing == null) {
             return;

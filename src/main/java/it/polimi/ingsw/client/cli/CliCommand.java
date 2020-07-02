@@ -10,12 +10,24 @@ public class CliCommand {
 
     }
 
+    /**
+     * The command label
+     */
     private final String label;
 
+    /**
+     * The array of command arguments
+     */
     private final String[] arguments;
 
+    /**
+     * The command description
+     */
     private final String description;
 
+    /**
+     * The executor
+     */
     private final CliCommandExecutor executor;
 
     /**

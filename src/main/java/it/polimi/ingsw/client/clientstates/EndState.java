@@ -25,6 +25,9 @@ public class EndState extends AbstractClientState {
         return data;
     }
 
+    /**
+     * Update the view
+     */
     private void updateView() {
         getClientConnector().getViewer().viewEnd(this);
     }

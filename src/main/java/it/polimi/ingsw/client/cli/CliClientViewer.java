@@ -33,8 +33,13 @@ public class CliClientViewer extends AbstractClientViewer {
 
     private static final String INVALID_COMMAND = "Invalid command, please type one of the available commands: ";
 
+    /**
+     */
     private final ExecutorService executorService;
 
+    /**
+     * The outbound handler
+     */
     private final OutboundHandler cliOutboundHandler;
 
     /**
@@ -104,6 +109,10 @@ public class CliClientViewer extends AbstractClientViewer {
         postStartup.accept(this);
     }
 
+    /**
+     * Check and execute an input message
+     * @param message The message
+     */
     private void onInput(String message) {
         String[] split = message.split(" ");
         String label = split[0];
@@ -130,6 +139,11 @@ public class CliClientViewer extends AbstractClientViewer {
         onCommand(optionalCommand.get(), Arrays.copyOfRange(split, 1, split.length));
     }
 
+    /**
+     * Execute a command
+     * @param command The command
+     * @param arguments Its arguments
+     */
     private void onCommand(CliCommand command, String[] arguments) {
         Optional<String> result = command.execute(arguments);
 
@@ -141,6 +155,10 @@ public class CliClientViewer extends AbstractClientViewer {
         cliOutboundHandler.scheduleMessage(output);
     }
 
+    /**
+     * Get handler for strings without a command
+     * @return The handler
+     */
     private Optional<CliCommand> getNonLabelHandler() {
         return commands.stream()
                 .filter(command -> command.getLabel() == null)
@@ -188,6 +206,11 @@ public class CliClientViewer extends AbstractClientViewer {
         executorService.shutdownNow();
     }
 
+    /**
+     * Update the view
+     * @param clientState The client state
+     * @param abstractView The view to be generated
+     */
     private void updateView(AbstractClientState clientState, AbstractCliView abstractView) {
         updateCommands(clientState, abstractView.generateCommands());
         String view = abstractView.generateView();
@@ -198,6 +221,11 @@ public class CliClientViewer extends AbstractClientViewer {
         lastOutput = view;
     }
 
+    /**
+     * Update the usable commands
+     * @param clientState The client state
+     * @param generatedCommands The list of commands
+     */
     private void updateCommands(AbstractClientState clientState, List<CliCommand> generatedCommands) {
         commands.clear();
         commands.add(new CliCommand(SPECIAL_COMMAND_PREFIX + "stop", "Close the application", (parameters) -> {
@@ -208,6 +236,11 @@ public class CliClientViewer extends AbstractClientViewer {
         commands.addAll(generatedCommands);
     }
 
+    /**
+     * Get a string with commands
+     * @param message The message
+     * @return The string
+     */
     private String viewCommands(String message) {
         if (getNonLabelHandler().isPresent()) {
             return "";
@@ -235,6 +268,12 @@ public class CliClientViewer extends AbstractClientViewer {
         return output.toString();
     }
 
+    /**
+     * Load a textual asset and turn it in a string array
+     * @param file The file's path
+     * @return The asset as a string array
+     * @throws IOException Exception thrown when file isn't a valid path
+     */
     private String[] loadLinesAsset(String file) throws IOException {
         file = ASSETS_DIRECTORY + file;
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file);
