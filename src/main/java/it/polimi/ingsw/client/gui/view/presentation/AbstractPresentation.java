@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.gui.view.presentation;
 import it.polimi.ingsw.client.gui.GuiAssets;
 import it.polimi.ingsw.client.gui.GuiConstants;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -15,7 +16,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class AbstractPresentation {
+public abstract class AbstractPresentation {
 
     private final GuiAssets assets;
 
@@ -33,23 +34,34 @@ public class AbstractPresentation {
      * @param view The ImageView
      */
     public void bindCover(Region region, ImageView view) {
-        view.setPreserveRatio(true);
+        bindCover(region.widthProperty(), region.heightProperty(), view);
+    }
+
+    /**
+     * Bind the ImageView width and height such that it behaves like a cover image
+     * @param width The container width
+     * @param height The container height
+     * @param view The ImageView
+     */
+    public void bindCover(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height, ImageView view) {
+        double aspectRatio = view.getImage().getWidth() / view.getImage().getHeight();
+        //view.setPreserveRatio(true);
 
         view.fitWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-            if (region.getWidth() / region.getHeight() > view.getImage().getWidth() / view.getImage().getHeight()) {
-                return region.getWidth();
+            if (width.get() / height.get() > aspectRatio) {
+                return width.get();
             } else {
-                return view.getImage().getWidth();
+                return height.get() * aspectRatio;
             }
-        }, region.widthProperty(), region.heightProperty()));
+        }, width, height));
 
         view.fitHeightProperty().bind(Bindings.createDoubleBinding(() -> {
-            if (region.getWidth() / region.getHeight() <= view.getImage().getWidth() / view.getImage().getHeight()) {
-                return region.getHeight();
+            if (width.get() / height.get() <= aspectRatio) {
+                return height.get();
             } else {
-                return view.getImage().getHeight();
+                return width.get() / aspectRatio;
             }
-        }, region.widthProperty(), region.heightProperty()));
+        }, width, height));
     }
 
     /**

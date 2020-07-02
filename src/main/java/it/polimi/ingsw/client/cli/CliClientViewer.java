@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.cli;
 
 import it.polimi.ingsw.client.AbstractClientViewer;
-import it.polimi.ingsw.client.ClientConnector;
 import it.polimi.ingsw.client.cli.view.*;
 import it.polimi.ingsw.client.clientstates.*;
 import it.polimi.ingsw.common.io.InboundHandler;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 import static it.polimi.ingsw.client.cli.CliConstants.CLEAR;
 import static it.polimi.ingsw.client.cli.CliConstants.TERM_WIDTH;
@@ -73,7 +73,7 @@ public class CliClientViewer extends AbstractClientViewer {
      */
     private String lastOutput = "";
 
-    public CliClientViewer(ExecutorService executorService) {
+    public CliClientViewer(ExecutorService executorService, Consumer<AbstractClientViewer> postStartup) {
         this.executorService = executorService;
 
         InboundHandler inboundHandler = new InboundHandler(System.in, this::onInput);
@@ -106,8 +106,7 @@ public class CliClientViewer extends AbstractClientViewer {
         this.win = win;
         this.lose = lose;
 
-        // Initialize the connector after everything has loaded
-        new ClientConnector(this);
+        postStartup.accept(this);
     }
 
     /**

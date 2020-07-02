@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.gui;
 
 import it.polimi.ingsw.client.AbstractClientViewer;
-import it.polimi.ingsw.client.ClientConnector;
 import it.polimi.ingsw.client.clientstates.*;
 import it.polimi.ingsw.client.gui.view.*;
 import it.polimi.ingsw.common.logging.Logger;
@@ -13,6 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 public class GuiClientViewer extends AbstractClientViewer {
 
@@ -22,7 +22,7 @@ public class GuiClientViewer extends AbstractClientViewer {
 
     private AbstractGuiView currentView;
 
-    public GuiClientViewer(ExecutorService executorService) {
+    public GuiClientViewer(ExecutorService executorService, Consumer<AbstractClientViewer> postStartup) {
         Logger.getInstance().addReader(new ConsoleLogReader(System.out));
 
         Platform.startup(() -> {
@@ -31,8 +31,7 @@ public class GuiClientViewer extends AbstractClientViewer {
             stage = new GuiClientStage(new Stage(), assets);
             stage.init(this::shutdown);
 
-            // Initialize the client after the application has loaded
-            new ClientConnector(this);
+            postStartup.accept(this);
         });
     }
 

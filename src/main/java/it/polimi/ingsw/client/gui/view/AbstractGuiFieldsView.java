@@ -25,6 +25,11 @@ public abstract class AbstractGuiFieldsView extends AbstractGuiView {
     private final String integerPrompt;
     private final String buttonText;
 
+    /**
+     * The previously generated view, null before generateView is called
+     */
+    private Parent generatedView;
+
     public AbstractGuiFieldsView(GuiAssets images, String stringLabel, String stringPrompt, String integerLabel, String integerPrompt, String buttonText) {
         super(images);
         this.stringLabel = stringLabel;
@@ -43,6 +48,20 @@ public abstract class AbstractGuiFieldsView extends AbstractGuiView {
     }
 
     public Parent generateView(String lastMessage, ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
+        if (lastMessage != null) {
+            if (currentAlert != null) {
+                currentAlert.close();
+            }
+
+            currentAlert = new Alert(Alert.AlertType.WARNING);
+            currentAlert.setContentText(lastMessage);
+            currentAlert.show();
+        }
+
+        if (generatedView != null) {
+            return generatedView;
+        }
+
         Label stringLabel = new Label(this.stringLabel);
         TextField string = new TextField();
         string.setPromptText(stringPrompt);
@@ -60,21 +79,14 @@ public abstract class AbstractGuiFieldsView extends AbstractGuiView {
         button.setOnAction(event -> onAction(string.getText(), integer.getValue().orElse(0)));
         buttonImage.setOnMouseClicked(event -> onAction(string.getText(), integer.getValue().orElse(0)));
 
-        if (lastMessage != null) {
-            if (currentAlert != null) {
-                currentAlert.close();
-            }
-
-            currentAlert = new Alert(Alert.AlertType.WARNING);
-            currentAlert.setContentText(lastMessage);
-            currentAlert.show();
-        }
-
         FieldsPresentation presentation = new FieldsPresentation(getAssets());
+
         Map<Label, TextField> inputs = new LinkedHashMap<>();
         inputs.put(stringLabel, string);
         inputs.put(integerLabel, integer);
-        return presentation.generatePresentation(width, height, inputs, button, buttonImage, connect);
+
+        generatedView = presentation.generatePresentation(width, height, inputs, button, buttonImage, connect);
+        return generatedView;
     }
 
     public abstract void onAction(String string, int integer);

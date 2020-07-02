@@ -177,9 +177,11 @@ public class Lobby {
 
         if (room.isFull()) {
             startGame(room);
+            notifyLobbyUpdate();
             return ModelResponse.ALLOW;
         }
 
+        notifyLobbyUpdate();
         return ModelResponse.ALLOW;
     }
 

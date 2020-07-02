@@ -2,8 +2,6 @@ package it.polimi.ingsw.client.gui.view.component;
 
 import it.polimi.ingsw.client.gui.GuiConstants;
 import it.polimi.ingsw.common.info.GodInfo;
-import it.polimi.ingsw.common.info.RoomInfo;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringBinding;
 import javafx.event.ActionEvent;
@@ -12,18 +10,17 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 
 public class GodBox extends HBox {
-
+    
     /**
      * The select/choose button
      */
-    private Button button;
+    private final Button button;
 
     public GodBox(GodInfo godInfo, StringBinding buttonText, BooleanBinding buttonEnable, EventHandler<ActionEvent> handler, Font font) {
         Label name = new Label();
