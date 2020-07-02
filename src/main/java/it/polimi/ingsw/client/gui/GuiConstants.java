@@ -7,10 +7,10 @@ public class GuiConstants {
     public static final int DEFAULT_WIDTH = 800;
     public static final int DEFAULT_HEIGHT = 600;
 
-    public static final int MIN_WIDTH = 550;
+    public static final int MIN_WIDTH = 750;
     public static final int MIN_HEIGHT = 550;
 
-    public static final int CELL_MIN_SIZE = 50;
+    public static final int CELL_MIN_SIZE = 61;
 
     public static final int INFO_MIN_SIZE = 250;
 
@@ -31,4 +31,6 @@ public class GuiConstants {
     public static final double TITLE_FONT_SIZE = 20;
     public static final double BUTTON_FONT_SIZE = 20;
     public static final double END_FONT_SIZE = 30;
+    public static final double DEFAULT_RADII = 5;
+
 }
