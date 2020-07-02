@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 
-public class AbstractPreGamePresentation extends AbstractPresentation {
+public abstract class AbstractPreGamePresentation extends AbstractPresentation {
 
     public AbstractPreGamePresentation(GuiAssets assets) {
         super(assets);

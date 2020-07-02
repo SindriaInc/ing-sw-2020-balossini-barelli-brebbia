@@ -7,6 +7,7 @@ import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class ClientMain {
 
@@ -41,12 +42,15 @@ public class ClientMain {
             }
         }
 
+        // Initialize the client after the application has loaded
+        Consumer<AbstractClientViewer> postStartup = ClientConnector::new;
+
         // The viewer should register its own log reader
-        // The viewer will initialize the client connector when ready
+        // The viewer will call the consumer that will initialize the connector when ready
         if (gui) {
-            new GuiClientViewer(executorService);
+            new GuiClientViewer(executorService, postStartup);
         } else {
-            new CliClientViewer(executorService);
+            new CliClientViewer(executorService, postStartup);
         }
 
         logger.start(executorService);

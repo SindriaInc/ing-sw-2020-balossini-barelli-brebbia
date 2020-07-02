@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model.abilities.decorators;
 
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.TestConstants;
-import it.polimi.ingsw.model.Turn;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ParkourCrossTest {
 
@@ -61,6 +59,17 @@ class ParkourCrossTest {
     @Test
     void checkCannotForceOccupied() {
         assertFalse(abilities.checkCanForce(turn, worker2, board.getCellFromCoords(2, 2)));
+    }
+
+    /**
+     * Check that the worker can't force other workers in occupied cells
+     */
+    @Test
+    void checkCannotForceDoomed() {
+        Cell destination = board.getCellFromCoords(1, 2);
+
+        destination.setDoomed(true);
+        assertFalse(abilities.checkCanForce(turn, worker4, destination));
     }
 
     /**
