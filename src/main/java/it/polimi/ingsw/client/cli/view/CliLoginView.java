@@ -66,6 +66,11 @@ public class CliLoginView extends AbstractCliView {
         return List.of();
     }
 
+    /**
+     * Respond to an insert name command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onInsertName(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of("Spaces are not allowed in the name, please type a name without them");
@@ -81,6 +86,11 @@ public class CliLoginView extends AbstractCliView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to an insert age command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onInsertAge(String[] arguments) {
         if (arguments.length != 1) {
             return Optional.of("Please type only your age");

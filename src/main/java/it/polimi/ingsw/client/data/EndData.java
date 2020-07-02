@@ -11,10 +11,24 @@ import java.util.Optional;
 
 public class EndData extends AbstractData {
 
+    /**
+     * The player's name
+     */
     private final String name;
+
+    /**
+     * The winner's name
+     */
     private final String winner;
 
+    /**
+     * The map
+     */
     private final CellInfo[][] map;
+
+    /**
+     * The worker list
+     */
     private final List<WorkerInfo> workers;
 
     public EndData(String name, String winner, CellInfo[][] map, List<WorkerInfo> workers) {
@@ -43,6 +57,10 @@ public class EndData extends AbstractData {
         return workers;
     }
 
+    /**
+     * Create a map's copy
+     * @return The map's copy
+     */
     private CellInfo[][] copyOfMap() {
         return Arrays.stream(this.map).map(CellInfo[]::clone).toArray(CellInfo[][]::new);
     }

@@ -4,8 +4,14 @@ import it.polimi.ingsw.common.info.RoomInfo;
 
 public class RoomData extends AbstractData {
 
+    /**
+     * The player's name
+     */
     private final String name;
 
+    /**
+     * The room info
+     */
     private final RoomInfo room;
 
     public RoomData(String lastMessage, String name, RoomInfo room) {

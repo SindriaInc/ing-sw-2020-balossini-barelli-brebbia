@@ -28,16 +28,27 @@ public class InputState extends AbstractClientState {
         return data;
     }
 
+    /**
+     * Update data and view
+     * @param ip The ip
+     */
     public void acceptIp(String ip) {
         data = data.withIp(ip);
         updateView();
     }
 
+    /**
+     * Update data and view
+     * @param port The port
+     */
     public void acceptPort(int port) {
         data = data.withPort(port);
         updateView();
     }
 
+    /**
+     * Try a connection to the server
+     */
     public void acceptConnect() {
         if (data.getIp().isEmpty() || data.getPort().isEmpty()) {
             throw new IllegalStateException("Tried to connect with a null ip or port");
@@ -53,6 +64,9 @@ public class InputState extends AbstractClientState {
         }
     }
 
+    /**
+     * Update the view
+     */
     private void updateView() {
         getClientConnector().getViewer().viewInput(this);
     }

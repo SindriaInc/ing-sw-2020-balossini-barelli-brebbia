@@ -27,15 +27,26 @@ public class RoomState extends AbstractClientState {
         return data;
     }
 
+    /**
+     * Update data and view on a room update event
+     * @param event The event
+     */
     private void onLobbyRoomUpdate(LobbyRoomUpdateEvent event) {
         data = new RoomData(null, data.getName(), event.getRoomInfo());
         updateView();
     }
 
+    /**
+     * Update the game state on a game starts event
+     * @param event The event
+     */
     private void onLobbyGameStart(LobbyGameStartEvent event) {
         getClientConnector().updateState(new GameState(getClientConnector(), event.getPlayer(), event.getRoomInfo().getOtherPlayers(), event.getRoomInfo().isSimpleGame()));
     }
 
+    /**
+     * Update the view
+     */
     private void updateView() {
         getClientConnector().getViewer().viewRoom(this);
     }

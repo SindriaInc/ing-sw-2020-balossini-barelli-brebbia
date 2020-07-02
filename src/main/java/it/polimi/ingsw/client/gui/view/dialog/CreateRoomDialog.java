@@ -76,6 +76,11 @@ public class CreateRoomDialog extends Dialog<Pair<Integer, Boolean>> {
         getDialogPane().setContent(pane);
     }
 
+    /**
+     * Parse a string turning into an integer, if possible
+     * @param text The string
+     * @return The int value, if exists, otherwise null
+     */
     private Integer parseInteger(String text) {
         try {
             return Integer.parseInt(text);

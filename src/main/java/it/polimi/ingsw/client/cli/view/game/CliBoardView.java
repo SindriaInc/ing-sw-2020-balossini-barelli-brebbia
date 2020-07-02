@@ -191,6 +191,11 @@ public class CliBoardView extends AbstractGameView {
         return commands;
     }
 
+    /**
+     * Respond to a spawn command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onSpawn(String[] arguments) {
         if (arguments.length != 2) {
             return Optional.of(SPAWN_FAIL);
@@ -208,6 +213,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a move command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onMove(String[] arguments) {
         if (arguments.length != 3) {
             return Optional.of(MOVE_FAIL);
@@ -231,6 +241,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a build block command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onBuildBlock(String[] arguments) {
         if (arguments.length != 3) {
             return Optional.of(BLOCK_FAIL);
@@ -254,6 +269,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a build dome command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onBuildDome(String[] arguments) {
         if (arguments.length != 3) {
             return Optional.of(DOME_FAIL);
@@ -277,6 +297,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to a force command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onForce(String[] arguments) {
         if (arguments.length != 4) {
             return Optional.of(FORCE_FAIL);
@@ -302,6 +327,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
+    /**
+     * Respond to an end of turn command
+     * @param arguments The command arguments
+     * @return An empty optional if the command is correct, a fail if not
+     */
     private Optional<String> onEndTurn(String[] arguments) {
         if (arguments.length != 0) {
             return Optional.of(END_FAIL);
@@ -311,7 +341,11 @@ public class CliBoardView extends AbstractGameView {
         return Optional.empty();
     }
 
-
+    /**
+     * Get the worker's pawn
+     * @param workerNumber The worker ID number
+     * @return The pawn
+     */
     private String getPawn(int workerNumber) {
         if (workerNumber < 2) {
             return WORKER1;
@@ -325,6 +359,11 @@ public class CliBoardView extends AbstractGameView {
         return WORKER4;
     }
 
+    /**
+     * Get the pawn of a player workers
+     * @param player The player
+     * @return The pawn
+     */
     private String getPlayersPawn(String player) {
         for (WorkerInfo worker : state.getData().getWorkers()) {
             if (worker.getOwner().equals(player)) {
@@ -334,6 +373,10 @@ public class CliBoardView extends AbstractGameView {
         return " ";
     }
 
+    /**
+     * Verifies if the player has already spawned his workers
+     * @return True if the player has already spawned his workers, false if not
+     */
     private boolean hasSpawned() {
         for (WorkerInfo worker : state.getData().getWorkers()) {
             if (worker.getOwner().equals(state.getData().getName())) {
@@ -343,6 +386,11 @@ public class CliBoardView extends AbstractGameView {
         return false;
     }
 
+    /**
+     * Get the char correspondent to a cell's height
+     * @param n The number of blocks on a cell
+     * @return The char
+     */
     private String getBlocksChar (int n) {
         if (n==3)
             return "⦀";
@@ -353,6 +401,12 @@ public class CliBoardView extends AbstractGameView {
         return " ";
     }
 
+    /**
+     * Get a worker given his coordinate
+     * @param x The x index
+     * @param y The y index
+     * @return The worker
+     */
     private WorkerInfo getWorkerByCoords(int x, int y) {
         for (WorkerInfo worker : state.getData().getWorkers()) {
             if (worker.getPosition().equals(new Coordinates(x, y))) {
@@ -362,6 +416,10 @@ public class CliBoardView extends AbstractGameView {
         return null;
     }
 
+    /**
+     * Get how many workers the player has on the board
+     * @return The workers' number
+     */
     private int getPlayerWorkersNumber() {
         int i=0;
         for (WorkerInfo worker : state.getData().getWorkers()) {
@@ -372,6 +430,11 @@ public class CliBoardView extends AbstractGameView {
         return i;
     }
 
+    /**
+     * Check whether or not the worker is a player's one
+     * @param workerID The worker's ID
+     * @return True if the worker is a player's one, false if not
+     */
     private boolean isCorrectWorker(int workerID) {
         for (WorkerInfo worker : state.getData().getWorkers()) {
             if (workerID == worker.getId()) {

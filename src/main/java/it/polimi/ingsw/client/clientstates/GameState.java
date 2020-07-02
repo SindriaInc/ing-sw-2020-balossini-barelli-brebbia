@@ -71,6 +71,10 @@ public class GameState extends AbstractClientState {
         return data;
     }
 
+    /**
+     * On a player turn start event update data and view
+     * @param event The event
+     */
     private void onPlayerTurnStart(PlayerTurnStartEvent event) {
         // The turn start event is sent before requests, the view will be updated after the requests arrive
         data = data.withTurnPlayer(event.getPlayer());
@@ -85,6 +89,10 @@ public class GameState extends AbstractClientState {
      * Request events, build the GameData adding the requests
      */
 
+    /**
+     * On a request select gods event update data and view
+     * @param event The event
+     */
     private void onRequestSelectGods(RequestPlayerChallengerSelectGodsEvent event) {
         // The gods phase does not use turn logic
         data = data.withSelectGods(new SelectGodsData(event.getGods(), event.getSelectedGodsCount()));
@@ -92,6 +100,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On a request choose gods event update data and view
+     * @param event The event
+     */
     private void onRequestChooseGod(RequestPlayerChooseGodEvent event) {
         // The gods phase does not use turn logic
         data = data.withChooseGod(new ChooseGodData(event.getAvailableGods()));
@@ -99,6 +111,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On a request select first event update data and view
+     * @param event The event
+     */
     private void onRequestSelectFirst(RequestPlayerChallengerSelectFirstEvent event) {
         // The gods phase does not use turn logic
         data = data.withSelectFirst(new SelectFirstData(event.getPlayers()));
@@ -106,6 +122,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On a request spawn event update data and view
+     * @param event The event
+     */
     private void onRequestSpawn(RequestWorkerSpawnEvent event) {
         // The spawn phase does not use turn logic
         data = data.withSpawn(new InteractData(event.getAvailablePositions()));
@@ -113,21 +133,37 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On a request move event update data and view
+     * @param event The event
+     */
     private void onRequestMove(RequestWorkerMoveEvent event) {
         data = data.withMove(extractData(event));
         dataSnapshot = null;
     }
 
+    /**
+     * On a request build block event update data and view
+     * @param event The event
+     */
     private void onRequestBuildBlock(RequestWorkerBuildBlockEvent event) {
         data = data.withBuildBlock(extractData(event));
         dataSnapshot = null;
     }
 
+    /**
+     * On a request build dome event update data and view
+     * @param event The event
+     */
     private void onRequestBuildDome(RequestWorkerBuildDomeEvent event) {
         data = data.withBuildDome(extractData(event));
         dataSnapshot = null;
     }
 
+    /**
+     * On a request force event update data and view
+     * @param event The event
+     */
     private void onRequestForce(RequestWorkerForceEvent event) {
         WorkersOtherInteractData otherInteractData = data.getForceData().orElse(new WorkersOtherInteractData(Map.of()));
 
@@ -144,6 +180,10 @@ public class GameState extends AbstractClientState {
         dataSnapshot = null;
     }
 
+    /**
+     * On a request end turn event update data and view
+     * @param event The event
+     */
     private void onRequestEndTurn(RequestPlayerEndTurnEvent event) {
         // Called after each other request event has been called
         data = data.withEndTurn(event.getCanBeEnded());
@@ -155,6 +195,10 @@ public class GameState extends AbstractClientState {
      * Model events, update the GameData with the new information
      */
 
+    /**
+     * On select gods event update data and view
+     * @param event The event
+     */
     private void onSelectGods(PlayerChallengerSelectGodsEvent event) {
         // TODO: Show something?
 
@@ -163,6 +207,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On choose gods event update data and view
+     * @param event The event
+     */
     private void onChooseGod(PlayerChooseGodEvent event) {
         // TODO: Show something?
 
@@ -171,6 +219,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On select first event update data and view
+     * @param event The event
+     */
     private void onSelectFirst(PlayerChallengerSelectFirstEvent event) {
         // TODO: Show something?
 
@@ -182,6 +234,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On spawn event update data and view
+     * @param event The event
+     */
     private void onSpawn(WorkerSpawnEvent event) {
         List<WorkerInfo> workers = new ArrayList<>(data.getWorkers());
         workers.add(new WorkerInfo(event.getId(), event.getPlayer(), event.getPosition()));
@@ -193,11 +249,19 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On move event update data and view
+     * @param event The event
+     */
     private void onMove(WorkerMoveEvent event) {
         updatePosition(event.getId(), event.getDestination());
         updateView();
     }
 
+    /**
+     * On build block event update data and view
+     * @param event The event
+     */
     private void onBuildBlock(WorkerBuildBlockEvent event) {
         Optional<CellInfo> cell = data.getCellInfo(event.getDestination());
 
@@ -211,6 +275,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On build dome event update data and view
+     * @param event The event
+     */
     private void onBuildDome(WorkerBuildDomeEvent event) {
         Optional<CellInfo> cell = data.getCellInfo(event.getDestination());
 
@@ -224,6 +292,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On force event update data and view
+     * @param event The event
+     */
     private void onForce(WorkerForceEvent event) {
         Optional<CellInfo> cell = data.getCellInfo(event.getDestination());
 
@@ -234,6 +306,10 @@ public class GameState extends AbstractClientState {
         updatePosition(event.getTarget(), event.getDestination());
     }
 
+    /**
+     * On lose event update data and view
+     * @param event The event
+     */
     private void onLose(PlayerLoseEvent event) {
         if (!event.getPlayer().equals(data.getName())) {
             // TODO: Show players that have lost?
@@ -245,6 +321,10 @@ public class GameState extends AbstractClientState {
         updateView();
     }
 
+    /**
+     * On win event update data and view
+     * @param event The event
+     */
     private void onWin(PlayerWinEvent event) {
         getClientConnector().updateState(new EndState(getClientConnector(), data.getName(), event.getPlayer(), data.getMap(), data.getWorkers()));
     }
@@ -253,6 +333,10 @@ public class GameState extends AbstractClientState {
      * Response methods
      */
 
+    /**
+     * On a response update data and view
+     * @param event The event
+     */
     private void onResponse(AbstractResponseEvent event) {
         String message = "Invalid action, please specify correct parameters";
 
@@ -270,54 +354,99 @@ public class GameState extends AbstractClientState {
      * View interaction methods
      */
 
+    /**
+     * Update view and send a select gods event
+     * @param selectedGods The selected gods
+     */
     public void acceptSelectGods(List<String> selectedGods) {
         clearData();
         updateView();
         getClientConnector().send(new PlayerChallengerSelectGodsEvent(getData().getName(), selectedGods));
     }
 
+    /**
+     * Update view and send a choose gods event
+     * @param chooseGod The chosen god
+     */
     public void acceptChooseGod(String chooseGod) {
         clearData();
         updateView();
         getClientConnector().send(new PlayerChooseGodEvent(getData().getName(), chooseGod));
     }
 
+    /**
+     * Update view and send a select first event
+     * @param first The selected player
+     */
     public void acceptSelectFirst(String first) {
         clearData();
         updateView();
         getClientConnector().send(new PlayerChallengerSelectFirstEvent(getData().getName(), first));
     }
 
+    /**
+     * Update view and send a worker spawn event
+     * @param x The x index
+     * @param y The y index
+     */
     public void acceptSpawn(int x, int y) {
         clearData();
         updateView();
         getClientConnector().send(new WorkerSpawnEvent(getData().getName(), 0, new Coordinates(x, y)));
     }
 
+    /**
+     * Update view and send a move event
+     * @param worker The worker
+     * @param x The destination's x index
+     * @param y The destination's y index
+     */
     public void acceptMove(int worker, int x, int y) {
         clearData();
         updateView();
         getClientConnector().send(new WorkerMoveEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
+    /**
+     * Update view and send a build block event
+     * @param worker The worker
+     * @param x The target's x index
+     * @param y The target's y index
+     */
     public void acceptBuildBlock(int worker, int x, int y) {
         clearData();
         updateView();
         getClientConnector().send(new WorkerBuildBlockEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
+    /**
+     * Update view and send a build dome event
+     * @param worker The worker
+     * @param x The target's x index
+     * @param y The target's y index
+     */
     public void acceptBuildDome(int worker, int x, int y) {
         clearData();
         updateView();
         getClientConnector().send(new WorkerBuildDomeEvent(getData().getName(), worker, new Coordinates(x, y)));
     }
 
+    /**
+     * Update view and send a build block event
+     * @param worker The worker
+     * @param target The target worker
+     * @param x The target cell x index
+     * @param y The target cell y index
+     */
     public void acceptForce(int worker, int target, int x, int y) {
         clearData();
         updateView();
         getClientConnector().send(new WorkerForceEvent(getData().getName(), worker, target, new Coordinates(x, y)));
     }
 
+    /**
+     * update view and send an end turn event
+     */
     public void acceptEnd() {
         clearData();
         updateView();
@@ -328,15 +457,26 @@ public class GameState extends AbstractClientState {
      * Utility methods
      */
 
+    /**
+     * Update the view
+     */
     private void updateView() {
         getClientConnector().getViewer().viewGame(this);
     }
 
+    /**
+     * Clear the state data
+     */
     private void clearData() {
         dataSnapshot = data;
         data = data.withNoRequests();
     }
 
+    /**
+     * Update a worker's position
+     * @param worker The worker
+     * @param position THe new position
+     */
     private void updatePosition(int worker, Coordinates position) {
         List<WorkerInfo> workers = new ArrayList<>(data.getWorkers());
         List<WorkerInfo> updatedWorkers = new ArrayList<>();
@@ -357,6 +497,11 @@ public class GameState extends AbstractClientState {
         dataSnapshot = null;
     }
 
+    /**
+     * Extract the data from a request worker interact event
+     * @param event The event
+     * @return The interact data
+     */
     private WorkersInteractData extractData(AbstractRequestWorkerInteractEvent event) {
         WorkersInteractData interactData = data.getMoveData().orElse(new WorkersInteractData(Map.of()));
 
