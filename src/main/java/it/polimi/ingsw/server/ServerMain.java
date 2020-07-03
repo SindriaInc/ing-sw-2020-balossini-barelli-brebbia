@@ -16,12 +16,19 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The server root class
+ *
+ * The server has a connection manager (an implementation of <code>IServer</code>) to communicate with clients,
+ * and the game <code>Controller</code> instance, that interacts with the model
+ */
 public class ServerMain {
 
     private static final String DEFAULT_CONFIG_PATH = "./config.json";
 
     private static final String COMMAND_STOP = "stop";
 
+    private static final String PREFIX_ARGUMENT = "-";
     private static final String ARGUMENT_PORT = "port";
     private static final String ARGUMENT_CONFIG_PATH = "config";
     private static final String ARGUMENT_LOG_PATH = "log-path";
@@ -38,6 +45,15 @@ public class ServerMain {
      */
     private Controller controller;
 
+    /**
+     * Class constructor, takes the command line arguments passed to the server and instances the
+     * <code>IServer</code> and <code>Controller</code>
+     *
+     * Arguments must be passed using <code>PREFIX_ARGUMENT</code> followed by one of the allowed
+     * <code>ARGUMENTS</code> and then a space followed by the parameter value
+     *
+     * @param args The arguments
+     */
     public ServerMain(String... args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -91,6 +107,19 @@ public class ServerMain {
         this.controller = new Controller(server, deck);
     }
 
+    /**
+     * Loads the server configuration
+     * The configuration is constructed by taking each configuration option in the following order:
+     * 1) Load the option from the arguments
+     * 2) Load the option from the file specified with "config" parameter
+     * 3) Load the option from the default config file
+     * 4) Load the option from <code>ServerConfiguration</code> defaults
+     *
+     * @param args The arguments to be parsed
+     * @return The constructed ServerConfiguration
+     * @throws IOException if the server is unable to read the configuration file
+     * @throws IllegalArgumentException If the port is not a valid number
+     */
     private ServerConfiguration loadConfiguration(String... args) throws IOException, IllegalArgumentException {
         Map<String, String> parameters = readParameters(args);
 
@@ -136,6 +165,10 @@ public class ServerMain {
         return configuration;
     }
 
+    /**
+     * Starts a blocking operation listening to console inputs
+     * The listener can parse and execute commands
+     */
     private void runInputListener() {
         Logger logger = Logger.getInstance();
         logger.debug("Listening started");
@@ -175,11 +208,22 @@ public class ServerMain {
         shutdown();
     }
 
+    /**
+     * Prints the exception stacktrace and the message to the logger, flushes it and shuts down the server
+     * @param exception The exception
+     * @param message The severe message
+     * @param executorService The executor service used to start server tasks
+     */
     private void dumpAndQuit(Exception exception, String message, ExecutorService executorService) {
         Logger.getInstance().exception(exception);
         dumpAndQuit(message, executorService);
     }
 
+    /**
+     * Prints the message to the logger, flushes it and shuts down the server
+     * @param message The severe message
+     * @param executorService The executor service used to start server tasks
+     */
     private void dumpAndQuit(String message, ExecutorService executorService) {
         Logger logger = Logger.getInstance();
         logger.severe(message);
@@ -188,6 +232,9 @@ public class ServerMain {
         executorService.shutdownNow();
     }
 
+    /**
+     * Shuts down the server, closing each task
+     */
     private void shutdown() {
         Logger logger = Logger.getInstance();
         logger.info("Shutting down, goodbye!");
@@ -196,16 +243,23 @@ public class ServerMain {
         logger.shutdown();
     }
 
+    /**
+     * Reads the arguments, parsing the parameters and putting them in a map
+     * The map has each unprefixed argument as the key and the parameter as the value
+     *
+     * @param args The arguments
+     * @return The parameters map
+     */
     private Map<String, String> readParameters(String... args) {
         Map<String, String> parameters = new HashMap<>();
 
         for (int i = 0; i < args.length; i++) {
-            if (!args[i].startsWith("-")) {
+            if (!args[i].startsWith(PREFIX_ARGUMENT)) {
                 Logger.getInstance().warning("Invalid parameter name passed: " + args[i]);
                 continue;
             }
 
-            String parameter = args[i].substring(1);
+            String parameter = args[i].substring(PREFIX_ARGUMENT.length());
 
             if (Arrays.stream(ARGUMENTS).noneMatch(argument -> argument.equals(parameter))) {
                 Logger.getInstance().warning("Unrecognised parameter name passed: " + args[i]);

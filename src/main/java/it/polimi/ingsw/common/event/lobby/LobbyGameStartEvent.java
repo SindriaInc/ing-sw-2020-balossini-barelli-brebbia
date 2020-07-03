@@ -8,8 +8,17 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class LobbyGameStartEvent extends AbstractLobbyEvent {
 
+    /**
+     * The room information that will be used to start the game
+     */
     private final RoomInfo roomInfo;
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that receives the event
+     * @param roomInfo The room information
+     */
     public LobbyGameStartEvent(String player, RoomInfo roomInfo) {
         super(player);
 
@@ -20,6 +29,9 @@ public class LobbyGameStartEvent extends AbstractLobbyEvent {
         return roomInfo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getLobbyGameStartEventObservable().notifyObservers(this);

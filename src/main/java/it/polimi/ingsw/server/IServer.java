@@ -2,6 +2,9 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.message.OutboundMessage;
 
+/**
+ * A server instance that can receive and send messages to clients
+ */
 public interface IServer {
 
     /**

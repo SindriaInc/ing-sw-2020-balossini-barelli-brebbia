@@ -12,6 +12,9 @@ import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
 
 import java.util.List;
 
+/**
+ * Generate the data for the lobby phase of the game
+ */
 public class LobbyState extends AbstractClientState {
 
     /**
@@ -19,6 +22,17 @@ public class LobbyState extends AbstractClientState {
      */
     private LobbyData data;
 
+    /**
+     * Class constructor, set the connector.
+     * Create lobby data given player's name, room list, and the limit numbers of players for each room
+     * Register the handlers
+     *
+     * @param clientConnector The client connector
+     * @param player The player's name
+     * @param rooms The room list
+     * @param minGamePlayers Minimum number of player for each room
+     * @param maxGamePlayers Maximum number of players for each room
+     */
     public LobbyState(ClientConnector clientConnector, String player, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers) {
         super(clientConnector);
 

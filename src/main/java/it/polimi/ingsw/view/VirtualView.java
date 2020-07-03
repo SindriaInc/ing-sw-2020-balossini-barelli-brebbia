@@ -26,6 +26,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The VirtualView provides the controller an interface to communicate with the client
+ *
+ * It handles event handling/dispatching and has access to the server connector implementation
+ */
 public class VirtualView {
 
     private static final int MIN_NAME_LENGTH = 3;
@@ -33,7 +38,6 @@ public class VirtualView {
     private static final String PLAYER_NAME = "^[a-zA-Z0-9_-][a-zA-Z0-9_ .-]{" + (MIN_NAME_LENGTH - 2) + "," + (MAX_NAME_LENGTH - 2) + "}[a-zA-Z0-9_-]$";
 
     public static final long PING_SCHEDULE_MS = 1000;
-
     public static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
 
     /**
@@ -72,6 +76,13 @@ public class VirtualView {
      */
     private final Validator playerNameValidator = new Validator(PLAYER_NAME);
 
+    /**
+     * Class constructor, registers the handlers for server events and initializes a timer for timeout
+     *
+     * @param server The server connector instance
+     * @param playerChecker The instance of the player name and age checker
+     * @param responseEventProvider The provider for response events sent by the controller
+     */
     public VirtualView(IServer server, IPlayerChecker playerChecker, IResponseEventProvider responseEventProvider) {
         this.server = server;
         this.playerChecker = playerChecker;
@@ -148,6 +159,11 @@ public class VirtualView {
         timer.cancel();
     }
 
+    /**
+     * Check for player timeouts every <code>PING_SCHEDULE_MS</code>
+     *
+     * A player times out if the last ping received by the server is more than <code>PING_TIMEOUT_MS</code> old
+     */
     private void onPingTick() {
         for (Map.Entry<String, Long> lastPlayerPing : lastPlayerPings.entrySet()) {
             String player = lastPlayerPing.getKey();
@@ -163,10 +179,24 @@ public class VirtualView {
         }
     }
 
+    /**
+     * Handles the player initial connection to the server
+     * The player is registered in the <code>VirtualView</code> and must reply to ping events to not be disconnected
+     *
+     * @param tempName The temporary identifier for the player
+     */
     private void onConnect(String tempName) {
         lastPlayerPings.put(tempName, System.currentTimeMillis());
     }
 
+    /**
+     * Handles a <code>PlayerLoginEvent</code>, checking the player username and age and logging in if they are accepted
+     * Players must have a valid username, as defined in the <code>PLAYER_NAME</code> regex
+     * No duplicate usernames are allowed
+     * The age must be a number greater than 0
+     *
+     * @param event The player login event
+     */
     private void onLogin(PlayerLoginEvent event) {
         if (event.getSender().isEmpty()) {
             return;
@@ -209,6 +239,11 @@ public class VirtualView {
         lastPlayerPings.put(player, System.currentTimeMillis());
     }
 
+    /**
+     * Handles a <code>PlayerPingEvent</code>, saving the current ping time that will be used to check for timeouts
+     *
+     * @param event The player ping event
+     */
     private void onPing(PlayerPingEvent event) {
         if (event.getSender().isEmpty()) {
             return;
@@ -218,6 +253,11 @@ public class VirtualView {
         lastPlayerPings.put(event.getSender().get(), System.currentTimeMillis());
     }
 
+    /**
+     * Handles a <code>PlayerLogoutEvent</code>, disconnecting the player
+     *
+     * @param event The player logout event
+     */
     private void onLogout(PlayerLogoutEvent event) {
         if (!event.isValid()) {
             return;
@@ -227,6 +267,16 @@ public class VirtualView {
         disconnect(event.getPlayer());
     }
 
+    /**
+     * Handles an <code>InboundMessage</code> received from a player
+     * The message must contain a valid event, that will be deserialized and the resulting event forwarded to the
+     * appropriate event providers
+     * The message will be rejected (with a response event) if there's an error while parsing, if the event is invalid
+     * or if the player that sent the message is not the same specified in the event, otherwise the event will be
+     * forwarded to the <code>Controller</code>, that will reply accordingly
+     *
+     * @param message The message received by the server
+     */
     private void onMessage(InboundMessage message) {
         AbstractEvent event;
 
@@ -264,6 +314,13 @@ public class VirtualView {
         }
     }
 
+    /**
+     * Handles an <code>ErrorMessage</code> received from the server while sending a message
+     * If there's an error sending a message, the related player will be disconnected
+     * (TCP will try to send the packet multiple times before failing and getting to this point)
+     *
+     * @param message The error message
+     */
     private void onError(ErrorMessage message) {
         Optional<OutboundMessage> outboundMessage = message.getOutboundMessage();
 
@@ -276,30 +333,64 @@ public class VirtualView {
         dispatchLogout(player);
     }
 
+    /**
+     * Disconnect the player, closing it's connection and removing the player from the list of connected players
+     *
+     * @param player The player
+     */
     private void disconnect(String player) {
         server.disconnect(player);
         lastPlayerPings.remove(player);
     }
 
+    /**
+     * Handles a <code>AbstractLobbyEvent</code>
+     * The event will be sent to the event player
+     *
+     * @param event The lobby event
+     */
     private void onLobbyEvent(AbstractLobbyEvent event) {
         String serialized = serializedEvent(event);
         dispatchEvent(event.getPlayer(), serialized);
     }
 
+    /**
+     * Handles a <code>AbstractRequestEvent</code>
+     * The event will be sent to the event player
+     *
+     * @param event The request event
+     */
     private void onRequestEvent(AbstractRequestEvent event) {
         String serialized = serializedEvent(event);
         dispatchEvent(event.getPlayer(), serialized);
     }
 
+    /**
+     * Handles a <code>AbstractResponseEvent</code>
+     * The event will be sent to the event player
+     *
+     * @param event The response event
+     */
     private void onResponse(AbstractResponseEvent event) {
         String serialized = serializedEvent(event);
         dispatchEvent(event.getPlayer(), serialized);
     }
 
+    /**
+     * Handles a generic <code>AbstractEvent</code>
+     * The event will be sent to the event receivers
+     *
+     * @param event The event
+     */
     private void onEvent(AbstractEvent event) {
         dispatchEvent(event);
     }
 
+    /**
+     * Send an event to every receiving player
+     *
+     * @param event The event
+     */
     private void dispatchEvent(AbstractEvent event) {
         String serialized = serializedEvent(event);
 
@@ -313,20 +404,42 @@ public class VirtualView {
         }
     }
 
+    /**
+     * Send a message (a serialized event) to the specified player
+     *
+     * @param player The player
+     * @param serialized The message
+     */
     private void dispatchEvent(String player, String serialized) {
         server.send(new OutboundMessage(player, serialized));
     }
 
+    /**
+     * Notify the controller that a player has disconnected
+     *
+     * @param player The player
+     */
     private void dispatchLogout(String player) {
         var event = new PlayerLogoutEvent(player);
         event.setSender(player);
         event.accept(getViewEventProvider());
     }
 
+    /**
+     * Serialize an event, transforming it to a <code>String</code>
+     *
+     * @param event The event to be serialized
+     * @return The serialized message
+     */
     private String serializedEvent(AbstractEvent event) {
         return eventSerializer.serialize(event);
     }
 
+    /**
+     * Sends a <code>ResponseInvalidParametersEvent</code> to the player
+     *
+     * @param player The player
+     */
     private void sendInvalidResponse(String player) {
         String serialized = serializedEvent(new ResponseInvalidParametersEvent(player));
         server.send(new OutboundMessage(player, serialized));

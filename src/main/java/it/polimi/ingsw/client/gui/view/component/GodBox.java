@@ -15,13 +15,25 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 
+/**
+ * Gui rendering of a god data
+ */
 public class GodBox extends HBox {
-    
+
     /**
      * The select/choose button
      */
     private final Button button;
 
+    /**
+     * Class constructor, create a pane with a god's data and a select/choose button
+     *
+     * @param godInfo The god info
+     * @param buttonText The button text
+     * @param buttonEnable The button enabler
+     * @param handler The button handler
+     * @param font The font
+     */
     public GodBox(GodInfo godInfo, StringBinding buttonText, BooleanBinding buttonEnable, EventHandler<ActionEvent> handler, Font font) {
         Label name = new Label();
         name.setFont(font);

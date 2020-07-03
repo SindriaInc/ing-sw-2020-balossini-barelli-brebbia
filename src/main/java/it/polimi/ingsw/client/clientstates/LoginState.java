@@ -7,6 +7,9 @@ import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
 import it.polimi.ingsw.common.event.response.AbstractResponseEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidLoginEvent;
 
+/**
+ * Generate data for login phase of the game
+ */
 public class LoginState extends AbstractClientState {
 
     /**
@@ -14,6 +17,11 @@ public class LoginState extends AbstractClientState {
      */
     private LoginData data;
 
+    /**
+     * Class constructor, set the client connector, generate the data and register the handlers
+     *
+     * @param clientConnector The client connector
+     */
     public LoginState(ClientConnector clientConnector) {
         super(clientConnector);
 

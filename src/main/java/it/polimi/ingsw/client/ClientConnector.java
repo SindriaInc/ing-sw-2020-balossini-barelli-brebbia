@@ -15,6 +15,9 @@ import java.util.TimerTask;
 import static it.polimi.ingsw.view.VirtualView.PING_SCHEDULE_MS;
 import static it.polimi.ingsw.view.VirtualView.PING_TIMEOUT_MS;
 
+/**
+ * Client connector serialize messages in JSON and send them
+ */
 public class ClientConnector {
 
     /**
@@ -47,6 +50,10 @@ public class ClientConnector {
      */
     private Long lastPing = null;
 
+    /**
+     * Class constructor, set client viewer
+     * @param viewer The client viewer
+     */
     public ClientConnector(AbstractClientViewer viewer) {
         this.viewer = viewer;
 

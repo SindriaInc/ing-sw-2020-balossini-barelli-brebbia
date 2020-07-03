@@ -5,6 +5,11 @@ import it.polimi.ingsw.server.ServerApplication;
 
 import java.util.Arrays;
 
+/**
+ * The entry point of the application
+ *
+ * The application must be launched by specifying whether to run the client or the server
+ */
 public class Application {
 
     private static final String ARGUMENT_CLIENT = "client";

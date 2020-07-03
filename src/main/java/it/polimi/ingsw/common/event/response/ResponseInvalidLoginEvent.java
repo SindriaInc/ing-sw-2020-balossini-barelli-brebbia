@@ -12,6 +12,11 @@ public class ResponseInvalidLoginEvent extends AbstractResponseEvent {
 
     private final String message;
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that will receive the event
+     */
     public ResponseInvalidLoginEvent(String player, String message) {
         super(player);
 
@@ -22,6 +27,9 @@ public class ResponseInvalidLoginEvent extends AbstractResponseEvent {
         return message;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ResponseEventProvider provider) {
         provider.getResponseInvalidLoginEventObservable().notifyObservers(this);

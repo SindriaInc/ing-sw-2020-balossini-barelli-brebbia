@@ -7,6 +7,9 @@ import it.polimi.ingsw.common.info.WorkerInfo;
 
 import java.util.List;
 
+/**
+ * Generate the data for the end phase of the game
+ */
 public class EndState extends AbstractClientState {
 
     /**
@@ -14,6 +17,16 @@ public class EndState extends AbstractClientState {
      */
     private final EndData data;
 
+    /**
+     * Class constructor, set client connector.
+     * Generate the end data given player name, winner name, map and workers
+     *
+     * @param clientConnector The client connector
+     * @param name The player name
+     * @param winner The winner
+     * @param map The map
+     * @param workers The workers
+     */
     public EndState(ClientConnector clientConnector, String name, String winner, CellInfo[][] map, List<WorkerInfo> workers) {
         super(clientConnector);
 

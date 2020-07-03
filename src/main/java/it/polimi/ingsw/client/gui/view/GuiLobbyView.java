@@ -18,18 +18,35 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * A gui view of the lobby state
+ */
 public class GuiLobbyView extends AbstractGuiView {
 
+    /**
+     * The lobby data
+     */
     private final LobbyState state;
 
+    /**
+     * The dialog for creating a room
+     */
     private CreateRoomDialog dialog;
 
+    /**
+     * Class constructor, set state and assets
+     * @param state The state
+     * @param assets The assets
+     */
     public GuiLobbyView(LobbyState state, GuiAssets assets) {
         super(assets);
 
         this.state = state;
     }
 
+    /**
+     * @see AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         LobbyData data = state.getData();
 
@@ -60,11 +77,17 @@ public class GuiLobbyView extends AbstractGuiView {
         return presentation.generatePresentation(width, height, roomsView, create);
     }
 
+    /**
+     * @see AbstractGuiView#getState()
+     */
     @Override
     public AbstractClientState getState() {
         return state;
     }
 
+    /**
+     * @see AbstractGuiView#closeWindows()
+     */
     @Override
     public void closeWindows() {
         if (dialog != null) {
@@ -72,10 +95,19 @@ public class GuiLobbyView extends AbstractGuiView {
         }
     }
 
+    /**
+     * Handler for join button
+     * @param owner Owner of the room
+     */
     private void onJoin(String owner) {
         state.acceptJoin(owner);
     }
 
+    /**
+     * Handler for the room create button
+     * @param maxPlayers Max player number
+     * @param simpleGame Whether the game is simple or not
+     */
     private void onCreate(int maxPlayers, boolean simpleGame) {
         state.acceptCreate(simpleGame, maxPlayers);
     }

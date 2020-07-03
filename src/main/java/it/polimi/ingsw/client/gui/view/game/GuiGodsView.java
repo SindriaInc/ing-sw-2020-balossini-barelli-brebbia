@@ -6,9 +6,11 @@ import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.client.data.request.ChooseGodData;
 import it.polimi.ingsw.client.data.request.SelectFirstData;
 import it.polimi.ingsw.client.data.request.SelectGodsData;
-import it.polimi.ingsw.client.gui.GuiConstants;
 import it.polimi.ingsw.client.gui.GuiAssets;
+import it.polimi.ingsw.client.gui.GuiConstants;
 import it.polimi.ingsw.client.gui.view.component.GodBox;
+import it.polimi.ingsw.client.gui.view.presentation.AbstractPresentation;
+import it.polimi.ingsw.client.gui.view.presentation.GodsPresentation;
 import it.polimi.ingsw.common.info.GodInfo;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -24,31 +26,39 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * Create the gui rendering of the gods view
+ */
 public class GuiGodsView extends AbstractGameView {
 
     private final ObservableList<String> selectedGods = FXCollections.observableList(new ArrayList<>());
 
+    /**
+     * Class constructor, set state and assets
+     * @param state The state
+     * @param images The assets
+     */
     public GuiGodsView(GameState state, GuiAssets images) {
         super(state, images);
     }
 
+    /**
+     * @see it.polimi.ingsw.client.gui.view.AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     @Override
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = getState().getData();
+        GodsPresentation presentation = new GodsPresentation(getAssets());
 
         selectedGods.clear();
 
@@ -66,7 +76,7 @@ public class GuiGodsView extends AbstractGameView {
         godsView.setPadding(new Insets(GuiConstants.DEFAULT_SPACING*2));
         godsView.setAlignment(Pos.CENTER);
 
-        Button selectButton = null;
+        Button selectButton;
         StackPane center;
 
         if (selectFirstData.isPresent()) {
@@ -78,7 +88,7 @@ public class GuiGodsView extends AbstractGameView {
 
             for (String player : selectFirstData.get().getAvailablePlayers()) {
                 Button button = new Button();
-                style(button);
+                presentation.styleRoom(button);
                 button.setText(player);
                 button.setOnAction((event) -> onSelectFirst(player));
                 buttons.add(button);
@@ -125,22 +135,21 @@ public class GuiGodsView extends AbstractGameView {
                 ImageView godCard = getCard(god);
                 godImageList.add(godCard);
 
-                Button finalSelectButton = selectButton;
                 Text finalAction = action;
                 EventHandler<ActionEvent> handler = (ignored) -> {
                     onGodToggle(god.getName());
-                    if(text.get()=="Deselect") {
-                        showDoneButton(finalSelectButton, finalAction, bottom);
+                    if (text.get().equals("Deselect")) {
+                        showDoneButton(selectButton, finalAction, bottom);
                     }
                 };
                 GodBox godBox = new GodBox(god, text, enabled, handler, getAssets().getFont());
 
                 godComponentsList.add(godBox);
-                style(godBox.getButton());
+                presentation.styleRoom(godBox.getButton());
 
                 godCard.setOnMouseClicked(event -> {
                     if (godComponentsList.get(godImageList.indexOf(godCard)).equals(bottom.getChildren().get(1))) {
-                        showDoneButton(finalSelectButton, finalAction, bottom);
+                        showDoneButton(selectButton, finalAction, bottom);
                     } else {
                         showGodInfo(godBox, bottom);
                     }
@@ -158,7 +167,7 @@ public class GuiGodsView extends AbstractGameView {
             selectButton.setText("Done");
             selectButton.setOnAction(this::onGodToggle);
             selectButton.disableProperty().bind(selectEnabled.not());
-            style(selectButton);
+            presentation.styleRoom(selectButton);
             center = new StackPane(godsScroll(godsView));
         } else if (chooseGodData.isPresent()) {
             action.setText("Choose a god to use");
@@ -167,17 +176,12 @@ public class GuiGodsView extends AbstractGameView {
             StringBinding text = Bindings.createStringBinding(() -> "Choose");
             BooleanBinding enabled = Bindings.createBooleanBinding(() -> true);
 
-            List<GodBox> godComponentsList = new ArrayList<>();
-            List<ImageView> godImageList = new ArrayList<>();
             for (GodInfo god : chooseGodData.get().getAvailableGods()) {
-
                 ImageView godCard = getCard(god);
-                godImageList.add(godCard);
 
-                Button finalSelectButton = selectButton;
                 EventHandler<ActionEvent> handler = (ignored) -> onChoose(god.getName());
                 GodBox godBox = new GodBox(god, text, enabled, handler, getAssets().getFont());
-                style(godBox.getButton());
+                presentation.styleRoom(godBox.getButton());
 
                 godCard.setOnMouseClicked(event -> showGodInfo(godBox, bottom));
 
@@ -195,19 +199,29 @@ public class GuiGodsView extends AbstractGameView {
         }
 
         // Presentation
-        Pane pane = generatePresentation(width, height, center, bottom);
-
-        return pane;
+        return presentation.generatePresentation(width, height, center, bottom);
     }
 
+    /**
+     * Handler for the choose button
+     * @param name The god's name
+     */
     private void onChoose(String name) {
         getState().acceptChooseGod(name);
     }
 
+    /**
+     * Handler for a god toggle button
+     * @param ignored The action event
+     */
     private void onGodToggle(ActionEvent ignored) {
         getState().acceptSelectGods(selectedGods);
     }
 
+    /**
+     * Handler for a god toggle button
+     * @param name The god's name
+     */
     private void onGodToggle(String name) {
         if (selectedGods.contains(name)) {
             selectedGods.remove(name);
@@ -217,61 +231,44 @@ public class GuiGodsView extends AbstractGameView {
         selectedGods.add(name);
     }
 
+    /**
+     * The handler for a select first player button
+     * @param player The player name
+     */
     private void onSelectFirst(String player) {
         getState().acceptSelectFirst(player);
     }
 
-    private Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
-                                        StackPane center, StackPane bottom
-    ) {
-        GridPane pane = new GridPane();
-
-        ImageView topImage = new ImageView(getAssets().getImage(GuiAssets.Images.LOBBY_TOP));
-        topImage.setPreserveRatio(false);
-        pane.add(topImage, 0, 0);
-
-        ImageView background = new ImageView(getAssets().getImage(GuiAssets.Images.LOBBY_BACKGROUND));
-        background.setPreserveRatio(false);
-        background.fitWidthProperty().bind(width);
-
-        center.setAlignment(Pos.CENTER);
-        center.getChildren().add(0, background);
-        pane.add(center, 0, 1);
-
-        ImageView bottomImage = new ImageView(getAssets().getImage(GuiAssets.Images.LOBBY_BOTTOM));
-        bottomImage.setPreserveRatio(false);
-
-        background.fitHeightProperty().bind(Bindings.createDoubleBinding(() -> {
-            double topHeight = topImage.getImage().getHeight();
-            double bottomHeight = bottomImage.getImage().getHeight();
-            return Math.max(GuiConstants.DEFAULT_SPACING, height.get() - (topHeight + bottomHeight));
-        }, width, height));
-
-        bottom.getChildren().add(0, bottomImage);
-        pane.add(bottom, 0, 2);
-
-        GridPane.setVgrow(center, Priority.ALWAYS);
-        pane.setPadding(new Insets(0, 0, 0, 0));
-
-        topImage.fitWidthProperty().bind(width);
-        bottomImage.fitWidthProperty().bind(width);
-        return pane;
-    }
-
+    /**
+     * Load a card image
+     * @param god The card's god name
+     * @return The image view of the card
+     */
     private ImageView getCard(GodInfo god) {
         ImageView godCard = new ImageView(new Image(AbstractClientViewer.ASSETS_DIRECTORY + "image-card-" + god.getName().toLowerCase() + ".png"));
         godCard.setFitWidth(130);
         godCard.setPreserveRatio(true);
-        style(godCard);
+        new AbstractPresentation(getAssets()){}.styleShadow(godCard, godCard);
 
         return godCard;
     }
 
+    /**
+     * Show the god info in a GodBox on the bottom stack pane
+     * @param godBox The god box
+     * @param bottom The stack pane
+     */
     private void showGodInfo(GodBox godBox, StackPane bottom) {
         removeChild(bottom);
         bottom.getChildren().add(godBox);
     }
 
+    /**
+     * Show the done button on the bottom stack pane
+     * @param done The button
+     * @param action The text
+     * @param bottom The stack pane
+     */
     private void showDoneButton(Button done, Text action, StackPane bottom) {
         removeChild(bottom);
 
@@ -282,18 +279,32 @@ public class GuiGodsView extends AbstractGameView {
         bottom.getChildren().add(vBox);
     }
 
+    /**
+     * Remove the child with index 1 from a stack pane
+     * @param bottom The stack pane
+     */
     private void removeChild(StackPane bottom) {
         try {
             bottom.getChildren().remove(1);
-        } catch (IndexOutOfBoundsException e) {}
+        } catch (IndexOutOfBoundsException ignored) {}
     }
 
+    /**
+     * Show the action text in a stack pane
+     * @param action The text
+     * @param bottom The stack pane
+     */
     private void showAction(Text action, StackPane bottom) {
         action.setFont(getAssets().getFont());
         action.setTextAlignment(TextAlignment.CENTER);
         bottom.getChildren().add(action);
     }
 
+    /**
+     * Create a scroll pane to contain god cards flow pane
+     * @param godsView The flow pane
+     * @return A scroll pane containing the flow pane
+     */
     private ScrollPane godsScroll(FlowPane godsView) {
         godsView.setBackground(Background.EMPTY);
         ScrollPane godsScroll = new ScrollPane(godsView);
@@ -303,37 +314,6 @@ public class GuiGodsView extends AbstractGameView {
         godsScroll.setFitToWidth(true);
 
         return godsScroll;
-    }
-
-    private void style(ImageView godCard) {
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(15.0);
-        dropShadow.setOffsetX(3.0);
-        dropShadow.setOffsetY(3.0);
-        dropShadow.setColor(Color.color(0.25, 0.25, 0.25));
-        godCard.setOnMouseEntered(event -> godCard.setEffect(dropShadow));
-        godCard.setOnMouseExited(event -> godCard.setEffect(null));
-    }
-
-    /**
-     * Style button
-     * @param component The field
-     */
-    public void style(Button component) {
-        Image img = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
-        BackgroundSize bgSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
-        BackgroundImage backgroundImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize);
-        Background background = new Background(backgroundImage);
-        component.setBackground(background);
-
-        component.setFont(getAssets().getFont());
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(15.0);
-        dropShadow.setOffsetX(3.0);
-        dropShadow.setOffsetY(3.0);
-        dropShadow.setColor(Color.color(0.2, 0.2, 0.2));
-        component.setOnMouseEntered(event -> component.setEffect(dropShadow));
-        component.setOnMouseExited(event -> component.setEffect(null));
     }
 
 }

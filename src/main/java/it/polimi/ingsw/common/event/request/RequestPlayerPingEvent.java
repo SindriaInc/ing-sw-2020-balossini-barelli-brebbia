@@ -3,7 +3,7 @@ package it.polimi.ingsw.common.event.request;
 import it.polimi.ingsw.model.ModelEventProvider;
 
 /**
- * Request a ping response from the player
+ * Request a PlayerPingEvent from the player
  * The response will be used to determine whether or not the player is still connected
  * This event is not related to other request events and can always be replied to
  *
@@ -11,10 +11,18 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class RequestPlayerPingEvent extends AbstractRequestEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that the request is targeted to
+     */
     public RequestPlayerPingEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getRequestPlayerPingEventObservable().notifyObservers(this);

@@ -1,11 +1,17 @@
 package it.polimi.ingsw.client.cli;
 
+/**
+ * Util constants for cli rendering
+ */
 public class CliConstants {
 
     private static final String COLOR_PREFIX = "\u001b[";
     private static final String COLOR_SUFFIX = "m";
     private static final String BRIGHT_CODE = ";1";
 
+    /**
+     * Color constants
+     */
     enum CliColor {
 
         BLACK("30", "40", "Black"),
@@ -49,7 +55,7 @@ public class CliConstants {
 
     public static final int TERM_WIDTH = 120;
 
-    public static final String CLEAR = System.lineSeparator().repeat(TERM_HEIGHT);
+    public static final String CLEAR = System.lineSeparator().repeat(TERM_HEIGHT * 10);
 
     public static final int HEADER_SPACING = 1;
 

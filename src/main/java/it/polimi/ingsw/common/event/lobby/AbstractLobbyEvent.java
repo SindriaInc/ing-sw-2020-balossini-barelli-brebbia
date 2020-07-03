@@ -10,17 +10,28 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public abstract class AbstractLobbyEvent extends AbstractPlayerEvent {
 
+    /**
+     * Abstract class constructor
+     *
+     * @param player The player that receives the event
+     */
     public AbstractLobbyEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void accept(ResponseEventProvider provider) {
-        // Lobby events are sent only by the model
         super.accept(provider);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void accept(ViewEventProvider provider) {
-        // Lobby events are sent only by the model
         super.accept(provider);
     }
 

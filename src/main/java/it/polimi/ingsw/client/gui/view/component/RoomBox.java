@@ -11,6 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+/**
+ * Gui rendering of a room data
+ */
 public class RoomBox extends HBox {
 
     /**
@@ -38,6 +41,12 @@ public class RoomBox extends HBox {
      */
     private final Button button;
 
+    /**
+     * Class constructor, create a pane containing the room data and a button for joining
+     *
+     * @param roomInfo The room info
+     * @param handler The handler for the button
+     */
     public RoomBox(RoomInfo roomInfo, EventHandler<ActionEvent> handler) {
         name = new Label();
         players = new Label();

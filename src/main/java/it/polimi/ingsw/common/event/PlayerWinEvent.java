@@ -10,14 +10,18 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class PlayerWinEvent extends AbstractPlayerEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The winner, or null if there's no winner
+     */
     public PlayerWinEvent(String player) {
         super(player);
     }
 
-    public PlayerWinEvent() {
-        super(null);
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getPlayerWinEventObservable().notifyObservers(this);

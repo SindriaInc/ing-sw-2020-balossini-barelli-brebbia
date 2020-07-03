@@ -7,11 +7,28 @@ import it.polimi.ingsw.client.clientstates.LoginState;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generate a cli lobby view
+ */
 public class CliLoginView extends AbstractCliView {
 
+    /**
+     * The client state
+     */
     private final LoginState state;
+
+    /**
+     * The header
+     */
     private final String[] header;
 
+    /**
+     * Class constructor, set the client state, the header and the line length
+     *
+     * @param state The client state
+     * @param header The header
+     * @param lineLength The line length
+     */
     public CliLoginView(LoginState state, String[] header, int lineLength) {
         super(lineLength);
 
@@ -19,6 +36,9 @@ public class CliLoginView extends AbstractCliView {
         this.header = header;
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         Optional<String> name = state.getData().getName();
@@ -55,6 +75,9 @@ public class CliLoginView extends AbstractCliView {
         return output.toString();
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         if (state.getData().getName().isEmpty()) {

@@ -5,8 +5,17 @@ package it.polimi.ingsw.common.event;
  */
 public abstract class AbstractWorkerEvent extends AbstractPlayerEvent {
 
+    /**
+     * The worker id
+     */
     private final int id;
 
+    /**
+     * Abstract class constructor
+     *
+     * @param player The owner
+     * @param id The worker id
+     */
     public AbstractWorkerEvent(String player, int id) {
         super(player);
 

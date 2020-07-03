@@ -15,12 +15,28 @@ import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 
+/**
+ * The board presentation
+ */
 public class BoardPresentation extends AbstractPresentation {
 
+    /**
+     * Class constructor, set assets
+     * @param assets The assets
+     */
     public BoardPresentation(GuiAssets assets) {
         super(assets);
     }
 
+    /**
+     * Generate a board presentation
+     * @param width The width
+     * @param height The height
+     * @param boardPane The board pane
+     * @param infoText The info text
+     * @param infoButtons The info buttons
+     * @return The board presentation
+     */
     public Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height, BoardBox boardPane, Text infoText, List<Button> infoButtons) {
         ImageView boardBackground = new ImageView(getAssets().getImage(GuiAssets.Images.GAME_BOARD));
         StackPane boardContainer = new StackPane(boardBackground, boardPane);

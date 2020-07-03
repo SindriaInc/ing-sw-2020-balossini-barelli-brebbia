@@ -2,6 +2,9 @@ package it.polimi.ingsw.client.message;
 
 import java.util.Optional;
 
+/**
+ * Represent an error message
+ */
 public class ErrorMessage {
 
     public enum ErrorType {
@@ -32,6 +35,11 @@ public class ErrorMessage {
         return errorType;
     }
 
+    /**
+     * Obtains the message related that was being sent
+     *
+     * @return the message, or <code>Optional.empty()</code> if no message was being sent
+     */
     public Optional<String> getMessage() {
         return Optional.ofNullable(message);
     }

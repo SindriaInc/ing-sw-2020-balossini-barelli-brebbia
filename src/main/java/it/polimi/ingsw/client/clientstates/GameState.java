@@ -13,6 +13,9 @@ import it.polimi.ingsw.model.Game;
 
 import java.util.*;
 
+/**
+ * Generate the data for the game phase of the game
+ */
 public class GameState extends AbstractClientState {
 
     /**
@@ -26,6 +29,16 @@ public class GameState extends AbstractClientState {
      */
     private GameData dataSnapshot;
 
+    /**
+     * Class constructor, set the client connector.
+     * Generate the game data given player name, other players names and if the state of the game (simple or not)
+     * Register the handlers on model event provider
+     *
+     * @param clientConnector The client connector
+     * @param name The player's name
+     * @param otherPlayers The other players' names
+     * @param simpleGame Whether the game is simple or not
+     */
     public GameState(ClientConnector clientConnector, String name, List<String> otherPlayers, boolean simpleGame) {
         super(clientConnector);
 
@@ -200,8 +213,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onSelectGods(PlayerChallengerSelectGodsEvent event) {
-        // TODO: Show something?
-
         data = data.withNoRequests();
         dataSnapshot = null;
         updateView();
@@ -212,8 +223,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onChooseGod(PlayerChooseGodEvent event) {
-        // TODO: Show something?
-
         data = data.withNoRequests();
         dataSnapshot = null;
         updateView();
@@ -224,8 +233,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onSelectFirst(PlayerChallengerSelectFirstEvent event) {
-        // TODO: Show something?
-
         // Leave the gods phase
         data = new GameData(null, data.getName(), data.getOtherPlayers(),
                 false, data.isSpectating(), data.getMap(), data.getWorkers())

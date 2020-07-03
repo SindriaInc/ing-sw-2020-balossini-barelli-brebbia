@@ -9,13 +9,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+/**
+ * A file-based <code>ILogReader</code>
+ * Logs are appended to the file specified in the constructor
+ */
 public class FileLogReader implements ILogReader {
 
     private static final String FILE_CHARSET = "UTF-8";
     private static final String LOG_FAIL = "Failed to write log to file, file logging is now disabled";
 
+    /**
+     * The path of the file where the logs will be written to
+     */
     private final Path path;
 
+    /**
+     * Class constructor, checks if the log file exists and creates it if needed
+     *
+     * @param path The path
+     */
     public FileLogReader(Path path) {
         this.path = path;
 
@@ -32,6 +44,12 @@ public class FileLogReader implements ILogReader {
         }
     }
 
+    /**
+     * @see ILogReader#read(String)
+     *
+     * The message is appended to the file
+     * If an error occurs, the reader removes itself from the list of readers
+     */
     @Override
     public void read(String message) {
         try {

@@ -4,6 +4,11 @@ import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import it.polimi.ingsw.common.event.AbstractEvent;
 
+/**
+ * Serializes and deserializes extensions of AbstractEvent, transforming them from/to JSON
+ *
+ * Events must be in the EVENTS_PACKAGE
+ */
 public class GsonEventSerializer implements ISerializer<AbstractEvent> {
 
     private static final String EVENTS_PACKAGE = "it.polimi.ingsw.common.event.";
@@ -16,6 +21,9 @@ public class GsonEventSerializer implements ISerializer<AbstractEvent> {
 
     private final Gson gson;
 
+    /**
+     * Class constructor
+     */
     public GsonEventSerializer() {
         GsonBuilder builder = new GsonBuilder();
 
@@ -43,6 +51,12 @@ public class GsonEventSerializer implements ISerializer<AbstractEvent> {
         gson = builder.create();
     }
 
+    /**
+     * Serializes an event, converting it to a JSON string
+     *
+     * @param object The event
+     * @return The serialized event
+     */
     @Override
     public String serialize(AbstractEvent object) {
         JsonElement attributes = gson.toJsonTree(object);
@@ -52,6 +66,13 @@ public class GsonEventSerializer implements ISerializer<AbstractEvent> {
         return json.toString();
     }
 
+    /**
+     * Deserializes an event, converting it from a JSON string to an instance of the correct class
+     *
+     * @param serialized The serialized event
+     * @return The event
+     * @throws SerializationException if the string is not a correct JSON or the event is invalid
+     */
     @Override
     public AbstractEvent deserialize(String serialized) throws SerializationException {
         JsonElement parsed;
@@ -82,6 +103,13 @@ public class GsonEventSerializer implements ISerializer<AbstractEvent> {
         }
     }
 
+    /**
+     * Obtains the class of an event from its serialized JSON string
+     *
+     * @param json The serialized event
+     * @return The class of the event
+     * @throws SerializationException if no class is found for the event
+     */
     @SuppressWarnings("unchecked")
     private Class<AbstractEvent> getEventClass(JsonObject json) throws SerializationException {
         try {

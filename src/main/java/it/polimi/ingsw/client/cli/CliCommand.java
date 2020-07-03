@@ -2,10 +2,21 @@ package it.polimi.ingsw.client.cli;
 
 import java.util.Optional;
 
+/**
+ * The representation of a command given by user
+ */
 public class CliCommand {
 
+    /**
+     * A handler for a command
+     */
     public interface CliCommandExecutor {
 
+        /**
+         * Called when the cli reads a command, the string returned will be shown to the user if present
+         * @param parameters The parameters
+         * @return The textual response
+         */
         Optional<String> execute(String[] parameters);
 
     }

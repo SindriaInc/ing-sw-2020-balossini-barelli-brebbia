@@ -9,10 +9,24 @@ import it.polimi.ingsw.client.data.GameData;
 
 import java.util.List;
 
+/**
+ * Generate the game phase view
+ */
 public class CliGameView extends AbstractCliView {
 
+    /**
+     * The view to be used.
+     * <code>CliGodsView</code> if the game is in gods choosing/selection state
+     * <code>CliBoardView</code> if the game is in game state
+     */
     private final AbstractGameView delegatedView;
 
+    /**
+     * Class constructor, set the state of the client and the line length
+     *
+     * @param state The client state
+     * @param lineLength The line length
+     */
     public CliGameView(GameState state, int lineLength) {
         super(lineLength);
 
@@ -26,11 +40,17 @@ public class CliGameView extends AbstractCliView {
         delegatedView = new CliBoardView(state, lineLength);
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         return delegatedView.generateView();
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         return delegatedView.generateCommands();

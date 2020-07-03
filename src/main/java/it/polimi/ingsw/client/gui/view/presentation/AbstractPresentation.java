@@ -6,6 +6,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,10 +17,20 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+/**
+ * Presentation for a state of the game
+ */
 public abstract class AbstractPresentation {
 
+    /**
+     * The assets
+     */
     private final GuiAssets assets;
 
+    /**
+     * Class constructor, set the assets
+     * @param assets The assets
+     */
     public AbstractPresentation(GuiAssets assets) {
         this.assets = assets;
     }
@@ -140,27 +151,28 @@ public abstract class AbstractPresentation {
      * @param buttonImage The field background
      */
     public void style(ImageView buttonImage, Button button, StackPane pane) {
-        CornerRadii corner = new CornerRadii(
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                GuiConstants.INPUT_CORNER_RADII,
-                false
-        );
-
         button.setBackground(null);
         button.setFont(getAssets().getInputButtonFont());
 
         buttonImage.setPreserveRatio(true);
         buttonImage.setFitHeight(GuiConstants.INPUT_BUTTON_HEIGHT);
-        
+
+        styleShadow(buttonImage, pane);
+    }
+
+    /**
+     * Set a drop shadow on an image view
+     * @param imageView The image view
+     * @param container The image container
+     */
+    public void styleShadow(ImageView imageView, Node container) {
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(15.0);
         dropShadow.setOffsetX(3.0);
         dropShadow.setOffsetY(3.0);
         dropShadow.setColor(Color.color(0.25, 0.25, 0.25));
-        pane.setOnMouseEntered(event -> buttonImage.setEffect(dropShadow));
-        pane.setOnMouseExited(event -> buttonImage.setEffect(null));
+        container.setOnMouseEntered(event -> imageView.setEffect(dropShadow));
+        container.setOnMouseExited(event -> imageView.setEffect(null));
     }
 
     /**
@@ -180,13 +192,13 @@ public abstract class AbstractPresentation {
     }
 
     /**
-     * Style "Create Room" button
+     * Style a button in the room style
      * @param component The field
      */
     public void styleRoom(Button component) {
-        Image img = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
-        BackgroundSize bgSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
-        BackgroundImage backgroundImage = new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize);
+        Image image = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
+        BackgroundSize backgroundSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         Background background = new Background(backgroundImage);
         component.setBackground(background);
 

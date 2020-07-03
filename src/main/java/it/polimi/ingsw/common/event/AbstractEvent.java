@@ -18,9 +18,15 @@ import java.util.Optional;
  */
 public abstract class AbstractEvent {
 
+    /**
+     * The player that sent this event, or null if this event was sent by the server
+     */
     @Expose(serialize = false, deserialize = false)
     private String sender = null;
 
+    /**
+     * The list of players that will receive this event, or null if destined to a single player or to the server
+     */
     @Expose(serialize = false, deserialize = false)
     private List<String> receivers = null;
 
@@ -58,6 +64,11 @@ public abstract class AbstractEvent {
         throw new IllegalStateException("Not a view event");
     }
 
+    /**
+     * Obtains the player that send the event
+     *
+     * @return The sender, or <code>Optional.empty()</code> if the event was not sent by a player
+     */
     public Optional<String> getSender() {
         return Optional.ofNullable(sender);
     }
@@ -66,6 +77,11 @@ public abstract class AbstractEvent {
         this.sender = sender;
     }
 
+    /**
+     * Obtains the list of players that will receive the event
+     *
+     * @return The receivers, or <code>Optional.empty()</code> if the event is destined to a single player or the server
+     */
     public Optional<List<String>> getReceivers() {
         return Optional.ofNullable(receivers);
     }

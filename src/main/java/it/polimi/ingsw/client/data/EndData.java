@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represent the data of the end state of the game
+ */
 public class EndData extends AbstractData {
 
     /**
@@ -31,6 +34,14 @@ public class EndData extends AbstractData {
      */
     private final List<WorkerInfo> workers;
 
+    /**
+     * Class constructor, set player's name, winner's name, map and worker list
+     *
+     * @param name The player's name
+     * @param winner The winner's name
+     * @param map The map
+     * @param workers The workers
+     */
     public EndData(String name, String winner, CellInfo[][] map, List<WorkerInfo> workers) {
         // The end state does not accept any command
         super(null);

@@ -11,8 +11,17 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class PlayerChallengerSelectFirstEvent extends AbstractPlayerEvent {
 
+    /**
+     * The player that will make the first move
+     */
     private final String first;
 
+    /**
+     * Class constructor
+     *
+     * @param player The challenger selecting the first player
+     * @param first The first player
+     */
     public PlayerChallengerSelectFirstEvent(String player, String first) {
         super(player);
 
@@ -23,11 +32,17 @@ public class PlayerChallengerSelectFirstEvent extends AbstractPlayerEvent {
         return first;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getPlayerChallengerSelectFirstEventObservable().notifyObservers(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getPlayerChallengerSelectFirstEventObservable().notifyObservers(this);

@@ -10,10 +10,18 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class PlayerLogoutEvent extends AbstractPlayerEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that has disconnected
+     */
     public PlayerLogoutEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getPlayerLogoutEventObservable().notifyObservers(this);

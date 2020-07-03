@@ -1,5 +1,8 @@
 package it.polimi.ingsw.server;
 
+/**
+ * Handles a new player connection
+ */
 public interface IConnectHandler {
 
     /**

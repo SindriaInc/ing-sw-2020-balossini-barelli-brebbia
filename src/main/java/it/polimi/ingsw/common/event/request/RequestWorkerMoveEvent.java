@@ -11,10 +11,20 @@ import java.util.List;
  */
 public class RequestWorkerMoveEvent extends AbstractRequestWorkerInteractEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that the request is targeted to
+     * @param worker The worker that can be moved
+     * @param availableDestinations The list of coordinates where the worker can move to
+     */
     public RequestWorkerMoveEvent(String player, int worker, List<Coordinates> availableDestinations) {
         super(player, worker, availableDestinations);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getRequestWorkerMoveEventObservable().notifyObservers(this);

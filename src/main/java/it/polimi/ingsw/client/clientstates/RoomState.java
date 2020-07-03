@@ -6,6 +6,9 @@ import it.polimi.ingsw.common.info.RoomInfo;
 import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
 
+/**
+ * Generate data for the room phase of the game
+ */
 public class RoomState extends AbstractClientState {
 
     /**
@@ -13,6 +16,14 @@ public class RoomState extends AbstractClientState {
      */
     private RoomData data;
 
+    /**
+     * Class constructor, set the client connector, generate room data given player's name and room info.
+     * Register the handlers
+     *
+     * @param clientConnector The client connector
+     * @param player The player's name
+     * @param room The room info
+     */
     public RoomState(ClientConnector clientConnector, String player, RoomInfo room) {
         super(clientConnector);
 

@@ -7,8 +7,14 @@ import javafx.scene.control.TextFormatter;
 
 import java.util.Optional;
 
+/**
+ * A TextField binded for containing only integer number
+ */
 public class IntegerField extends TextField {
 
+    /**
+     * Class constructor, create the binding
+     */
     public IntegerField() {
         setTextFormatter(new TextFormatter<>(change -> {
             String text = change.getControlNewText();

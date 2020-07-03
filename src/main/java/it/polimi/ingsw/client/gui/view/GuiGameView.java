@@ -10,13 +10,31 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 
+/**
+ * A gui view of the game state
+ */
 public class GuiGameView extends AbstractGuiView {
 
+    /**
+     * The game data
+     */
     private final GameState state;
 
+    /**
+     * The gods view
+     */
     private final GuiGodsView godsView;
+
+    /**
+     * The board view
+     */
     private final GuiBoardView boardView;
 
+    /**
+     * Class constructor, set game state and assets
+     * @param state The game state
+     * @param assets The assets
+     */
     public GuiGameView(GameState state, GuiAssets assets) {
         super(assets);
 
@@ -26,6 +44,9 @@ public class GuiGameView extends AbstractGuiView {
         boardView = new GuiBoardView(state, assets);
     }
 
+    /**
+     * @see AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     @Override
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         GameData data = state.getData();
@@ -45,6 +66,9 @@ public class GuiGameView extends AbstractGuiView {
         return boardView.generateView(width, height);
     }
 
+    /**
+     * @see AbstractGuiView#getState()
+     */
     @Override
     public AbstractClientState getState() {
         return state;

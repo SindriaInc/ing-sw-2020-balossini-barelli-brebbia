@@ -7,14 +7,30 @@ import it.polimi.ingsw.common.info.RoomInfo;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generate a vli room view
+ */
 public class CliRoomView extends AbstractCliView {
 
     private static final String SIDE_PADDING = " ".repeat(12);
 
+    /**
+     * The clien state
+     */
     private final RoomState state;
 
+    /**
+     * The side banner
+     */
     private final String[] side;
 
+    /**
+     * Class constructor, set the client state, the side banner and the line length
+     *
+     * @param state The client state
+     * @param side The side banner
+     * @param lineLength The line length
+     */
     public CliRoomView(RoomState state, String[] side, int lineLength) {
         super(lineLength);
 
@@ -22,6 +38,9 @@ public class CliRoomView extends AbstractCliView {
         this.side = side;
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         String name = state.getData().getName();
@@ -62,6 +81,9 @@ public class CliRoomView extends AbstractCliView {
 
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         return List.of();

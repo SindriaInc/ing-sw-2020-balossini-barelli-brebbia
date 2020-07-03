@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client;
 
+/**
+ * The message handler interface
+ */
 public interface IMessageHandler {
 
     /**

@@ -6,6 +6,11 @@ import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
 import it.polimi.ingsw.common.event.request.*;
 
+/**
+ * The provider that handles the registration of model events
+ *
+ * Model events are events sent by a model (in the client)
+ */
 public interface IModelEventProvider {
 
     /**

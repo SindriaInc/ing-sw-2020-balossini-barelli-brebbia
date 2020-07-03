@@ -2,6 +2,7 @@ package it.polimi.ingsw.client.cli.view.game;
 
 import it.polimi.ingsw.client.cli.CliCommand;
 import it.polimi.ingsw.client.cli.CliConstants;
+import it.polimi.ingsw.client.cli.view.AbstractCliView;
 import it.polimi.ingsw.client.clientstates.GameState;
 import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.common.info.GodInfo;
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 import static it.polimi.ingsw.client.cli.CliConstants.*;
 
+/**
+ * Generate cli view of the god list and the responses to commands
+ */
 public class CliGodsView extends AbstractGameView {
 
     private static final int ADDITIONAL_SPACE_FOR_WAIT = 10;
@@ -33,12 +37,21 @@ public class CliGodsView extends AbstractGameView {
 
     private final GameState state;
 
+    /**
+     * Class constructor, generate a gods view given the client state and the line length
+     *
+     * @param state The client state
+     * @param lineLength The line length
+     */
     public CliGodsView(GameState state, int lineLength) {
         super(state, lineLength);
 
         this.state = super.getState();
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         GameData data = getState().getData();
@@ -142,6 +155,9 @@ public class CliGodsView extends AbstractGameView {
         return output.toString();
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
         GameData data = getState().getData();

@@ -9,10 +9,23 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class PlayerCreateRoomEvent extends AbstractPlayerEvent {
 
+    /**
+     * The maximum number of players
+     */
     private final int maxPlayers;
 
+    /**
+     * Whether or not the game will be simple
+     */
     private final boolean simpleGame;
 
+    /**
+     * Class constructor
+     *
+     * @param player The player creating the room
+     * @param maxPlayers The number of players
+     * @param simpleGame Whether the game will be simple
+     */
     public PlayerCreateRoomEvent(String player, int maxPlayers, boolean simpleGame) {
         super(player);
         this.maxPlayers = maxPlayers;
@@ -27,6 +40,9 @@ public class PlayerCreateRoomEvent extends AbstractPlayerEvent {
         return simpleGame;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getPlayerCreateRoomEventObservable().notifyObservers(this);

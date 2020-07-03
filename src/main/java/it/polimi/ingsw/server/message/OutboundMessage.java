@@ -1,5 +1,8 @@
 package it.polimi.ingsw.server.message;
 
+/**
+ * A message that will be sent to a player
+ */
 public class OutboundMessage {
 
     /**
@@ -12,6 +15,12 @@ public class OutboundMessage {
      */
     private final String message;
 
+    /**
+     * Class constructor
+     *
+     * @param destinationPlayer The message destination player
+     * @param message The message
+     */
     public OutboundMessage(String destinationPlayer, String message) {
         this.destinationPlayer = destinationPlayer;
         this.message = message;

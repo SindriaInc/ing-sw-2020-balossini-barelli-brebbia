@@ -4,6 +4,9 @@ import it.polimi.ingsw.common.info.RoomInfo;
 
 import java.util.List;
 
+/**
+ * Represent the data of the lobby state
+ */
 public class LobbyData extends AbstractData {
 
     /**
@@ -31,10 +34,29 @@ public class LobbyData extends AbstractData {
      */
     private final int maxGamePlayers;
 
+    /**
+     * Class constructor, set last message, player's name, room list, and limit number for people in each room
+     *
+     * @param lastMessage The last message
+     * @param name The player's name
+     * @param rooms The room list
+     * @param minGamePlayers The minimum number of players for a room
+     * @param maxGamePlayers The maximum number of players for a room
+     */
     public LobbyData(String lastMessage, String name, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers) {
         this(lastMessage, name, rooms, minGamePlayers, maxGamePlayers, false);
     }
 
+    /**
+     * Class constructor, set all the attributes
+     *
+     * @param lastMessage The last message
+     * @param name The player's name
+     * @param rooms The room list
+     * @param minGamePlayers The minimum number of players for a room
+     * @param maxGamePlayers The maximum number of players for a room
+     * @param waiting The waiting status
+     */
     private LobbyData(String lastMessage, String name, List<RoomInfo> rooms, int minGamePlayers, int maxGamePlayers, boolean waiting) {
         super(lastMessage);
 

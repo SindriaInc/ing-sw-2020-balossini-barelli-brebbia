@@ -19,6 +19,15 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * A socket implementation of <code>IServer</code>
+ *
+ * Players will connect to the server by instancing a TCP connection
+ * The server can receive and send packets simultaneously to multiple clients
+ *
+ * Connections are managed by worker threads provided by an <code>ExecutorService</code>
+ * Each thread will only be used when effectively needed and will never busy-wait
+ */
 public class SocketServer implements IServer {
 
     /**
@@ -67,6 +76,14 @@ public class SocketServer implements IServer {
      */
     private int nextPlayerId;
 
+    /**
+     * Class constructor, submits tasks to the executor service
+     *
+     * @param executorService The executor service
+     * @param port The port which the server will be bound to
+     * @throws IllegalArgumentException if the port is not valid
+     * @throws IOException if there's an error while setting up the server
+     */
     public SocketServer(ExecutorService executorService, int port) throws IllegalArgumentException, IOException {
         this.executorService = executorService;
 
@@ -77,6 +94,9 @@ public class SocketServer implements IServer {
         executorService.submit(this::runSocket);
     }
 
+    /**
+     * @see IServer#send(OutboundMessage)
+     */
     @Override
     public void send(OutboundMessage message) {
         Logger.getInstance().debug("Sending outbound message to \"" + message.getDestinationPlayer() + "\": " + message.getMessage());
@@ -93,21 +113,33 @@ public class SocketServer implements IServer {
         }
     }
 
+    /**
+     * @see IServer#registerHandler(IConnectHandler)
+     */
     @Override
     public void registerHandler(IConnectHandler connectHandler) {
         connectHandlers.add(connectHandler);
     }
 
+    /**
+     * @see IServer#registerHandler(IMessageHandler)
+     */
     @Override
     public void registerHandler(IMessageHandler packetHandler) {
         packetHandlers.add(packetHandler);
     }
 
+    /**
+     * @see IServer#registerHandler(IErrorHandler)
+     */
     @Override
     public void registerHandler(IErrorHandler errorHandler) {
         errorHandlers.add(errorHandler);
     }
 
+    /**
+     * @see IServer#identify(String, String)
+     */
     @Override
     public void identify(String tempName, String player) {
         SocketHandler socketHandler = socketHandlers.get(tempName);
@@ -121,6 +153,9 @@ public class SocketServer implements IServer {
         socketHandlers.remove(tempName);
     }
 
+    /**
+     * @see IServer#disconnect(String)
+     */
     @Override
     public void disconnect(String player) {
         SocketHandler socketHandler = socketHandlers.get(player);
@@ -144,6 +179,9 @@ public class SocketServer implements IServer {
         Logger.getInstance().debug("Disconnected " + socketHandler.getAddress() + playerInfo);
     }
 
+    /**
+     * @see IServer#shutdown()
+     */
     @Override
     public void shutdown() {
         active = false;
@@ -155,6 +193,11 @@ public class SocketServer implements IServer {
         }
     }
 
+    /**
+     * Reads incoming messages in a single thread and executes the associated runnable
+     *
+     * The method will end its execution after the server is shut down
+     */
     private void readMessages() {
         while (active) {
             try {
@@ -166,6 +209,13 @@ public class SocketServer implements IServer {
         }
     }
 
+    /**
+     * Runs the server socket
+     *
+     * The socket will accept new connections and create an appropriate <code>SocketHandler</code> when needed
+     *
+     * The method will end its execution after the server is shut down
+     */
     private void runSocket() {
         while (active) {
             try {
@@ -210,6 +260,11 @@ public class SocketServer implements IServer {
         Logger.getInstance().debug("Socket shutdown");
     }
 
+    /**
+     * Schedules a connect message to be read later
+     *
+     * @param tempName The player temporary name
+     */
     private void scheduleConnect(String tempName) {
         pendingMessages.addLast(() -> {
             for (IConnectHandler connectHandler : connectHandlers) {
@@ -218,6 +273,11 @@ public class SocketServer implements IServer {
         });
     }
 
+    /**
+     * Schedules an error message to be read later
+     *
+     * @param message The error message
+     */
     private void scheduleError(ErrorMessage message) {
         pendingMessages.addLast(() -> {
             for (IErrorHandler errorHandler : errorHandlers) {
@@ -226,6 +286,12 @@ public class SocketServer implements IServer {
         });
     }
 
+    /**
+     * Schedules an error message received by a <code>SocketHandler</code> to be read later
+     *
+     * @param socketHandler The socket handler
+     * @param message The error message
+     */
     private void scheduleError(SocketHandler socketHandler, String message) {
         Optional<String> player = getPlayerByHandler(socketHandler);
 
@@ -240,6 +306,12 @@ public class SocketServer implements IServer {
         scheduleError(errorMessage);
     }
 
+    /**
+     * Schedules a normal message received by the socket to be read later
+     *
+     * @param socketHandler The socket handler
+     * @param message The message
+     */
     private void scheduleRead(SocketHandler socketHandler, String message) {
         Optional<String> player = getPlayerByHandler(socketHandler);
 
@@ -257,6 +329,12 @@ public class SocketServer implements IServer {
         });
     }
 
+    /**
+     * Obtains the player associated with the <code>SocketHandler</code>
+     *
+     * @param socketHandler The socket handler
+     * @return The player, or <code>Optional.empty()</code> if no player is associated with the handler
+     */
     private Optional<String> getPlayerByHandler(SocketHandler socketHandler) {
         for (Map.Entry<String, SocketHandler> entry : socketHandlers.entrySet()) {
             if (entry.getValue() != socketHandler) {

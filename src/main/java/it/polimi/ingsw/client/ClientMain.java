@@ -9,10 +9,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+/**
+ * Main class of the client
+ */
 public class ClientMain {
 
     public static final long SLEEP_PERIOD_MS = 100;
 
+    /**
+     * Class constructor, initialize the client, use arguments given by <code>ClientApplication</code>
+     *
+     * @param args The arguments
+     */
     public ClientMain(String... args) {
         ExecutorService executorService = Executors.newCachedThreadPool();
 

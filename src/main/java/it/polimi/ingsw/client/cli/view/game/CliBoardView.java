@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.cli.view.game;
 
 import it.polimi.ingsw.client.cli.CliCommand;
+import it.polimi.ingsw.client.cli.view.AbstractCliView;
 import it.polimi.ingsw.client.clientstates.GameState;
 import it.polimi.ingsw.client.data.GameData;
 import it.polimi.ingsw.common.info.CellInfo;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generate the cli view of the board and the responses to commands
+ */
 public class CliBoardView extends AbstractGameView {
 
     public static final String RESET = "\u001B[0m";
@@ -44,12 +48,21 @@ public class CliBoardView extends AbstractGameView {
 
     private final GameState state;
 
+    /**
+     * Class constructor, generate a board view given client state and line length
+     *
+     * @param state The state
+     * @param lineLength The line length
+     */
     public CliBoardView(GameState state, int lineLength) {
         super(state, lineLength);
 
         this.state = super.getState();
     }
 
+    /**
+     * @see AbstractCliView#generateView()
+     */
     @Override
     public String generateView() {
         GameData data = state.getData();
@@ -157,6 +170,9 @@ public class CliBoardView extends AbstractGameView {
 
     }
 
+    /**
+     * @see AbstractCliView#generateCommands()
+     */
     @Override
     public List<CliCommand> generateCommands() {
 

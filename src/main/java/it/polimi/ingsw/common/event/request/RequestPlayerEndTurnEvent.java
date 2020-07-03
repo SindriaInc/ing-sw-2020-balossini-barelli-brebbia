@@ -11,8 +11,17 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class RequestPlayerEndTurnEvent extends AbstractRequestEvent {
 
+    /**
+     * Whether or not the player can end the turn
+     */
     private final boolean canBeEnded;
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that the request is targeted to
+     * @param canBeEnded Whether or not the player can actually end the turn
+     */
     public RequestPlayerEndTurnEvent(String player, boolean canBeEnded) {
         super(player);
 
@@ -23,6 +32,9 @@ public class RequestPlayerEndTurnEvent extends AbstractRequestEvent {
         return canBeEnded;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getRequestPlayerEndTurnEventObservable().notifyObservers(this);

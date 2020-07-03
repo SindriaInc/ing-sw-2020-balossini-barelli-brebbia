@@ -11,12 +11,27 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 
+/**
+ * Presentation of a lobby/room state
+ */
 public abstract class AbstractPreGamePresentation extends AbstractPresentation {
 
+    /**
+     * Class constructor, set the assets
+     * @param assets The assets
+     */
     public AbstractPreGamePresentation(GuiAssets assets) {
         super(assets);
     }
 
+    /**
+     * Generate a presentation given width, height, center and bottom stack panes
+     * @param width The width
+     * @param height The height
+     * @param center The center stack pane
+     * @param bottom The bottom stack pane
+     * @return A completed pane created with given arguments
+     */
     protected Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height,
                                         StackPane center, StackPane bottom
     ) {

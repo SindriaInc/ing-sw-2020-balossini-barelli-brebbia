@@ -2,6 +2,9 @@ package it.polimi.ingsw.client;
 
 import it.polimi.ingsw.client.message.ErrorMessage;
 
+/**
+ * The error handler interface
+ */
 public interface IErrorHandler {
 
     /**

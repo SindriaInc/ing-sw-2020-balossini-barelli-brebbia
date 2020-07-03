@@ -8,6 +8,11 @@ package it.polimi.ingsw.common.event.response;
  */
 public class ResponseInvalidEvent extends AbstractResponseEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that will receive the event
+     */
     public ResponseInvalidEvent(String player) {
         super(player);
     }

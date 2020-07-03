@@ -15,19 +15,34 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * A gui view of the end state
+ */
 public class GuiEndView extends AbstractGuiView {
 
     private static final double COMPONENTS_HEIGHT = 200;
     private static final double MAX_GAMEOVER_HEIGHT = 600;
 
+    /**
+     * The game state
+     */
     private final EndState state;
 
+    /**
+     * Class constructor, set state and assets
+     *
+     * @param state The state
+     * @param images The assets
+     */
     public GuiEndView(EndState state, GuiAssets images) {
         super(images);
 
         this.state = state;
     }
 
+    /**
+     * @see AbstractGuiView#generateView(ReadOnlyDoubleProperty, ReadOnlyDoubleProperty)
+     */
     public Parent generateView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         EndData data = state.getData();
 
@@ -92,6 +107,9 @@ public class GuiEndView extends AbstractGuiView {
         return pane;
     }
 
+    /**
+     * @see AbstractGuiView#getState()
+     */
     @Override
     public AbstractClientState getState() {
         return state;

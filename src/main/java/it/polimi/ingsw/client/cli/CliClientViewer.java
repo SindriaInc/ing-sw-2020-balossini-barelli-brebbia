@@ -19,6 +19,10 @@ import java.util.function.Consumer;
 import static it.polimi.ingsw.client.cli.CliConstants.CLEAR;
 import static it.polimi.ingsw.client.cli.CliConstants.TERM_WIDTH;
 
+/**
+ * The class settle the inbound and outbound handler for the cli.
+ * Also load all asset files into string arrays
+ */
 public class CliClientViewer extends AbstractClientViewer {
 
     private static final String SPECIAL_COMMAND_PREFIX = "!";
@@ -34,6 +38,7 @@ public class CliClientViewer extends AbstractClientViewer {
     private static final String INVALID_COMMAND = "Invalid command, please type one of the available commands: ";
 
     /**
+     * The service executor
      */
     private final ExecutorService executorService;
 
@@ -73,6 +78,14 @@ public class CliClientViewer extends AbstractClientViewer {
      */
     private String lastOutput = "";
 
+    /**
+     * Class constructor, set the executor service, inbound handler and outbound handler
+     * Load all asset files into string arrays
+     * Call a consumer when the setup ends for launching client connector
+     *
+     * @param executorService The executor service
+     * @param postStartup A consumer that will be called after the cli setup has ended
+     */
     public CliClientViewer(ExecutorService executorService, Consumer<AbstractClientViewer> postStartup) {
         this.executorService = executorService;
 
@@ -81,7 +94,6 @@ public class CliClientViewer extends AbstractClientViewer {
 
         executorService.submit(inboundHandler);
         executorService.submit(cliOutboundHandler);
-        // TODO: Register log reader
 
         String[] header;
         String[] side;
@@ -165,42 +177,63 @@ public class CliClientViewer extends AbstractClientViewer {
                 .findFirst();
     }
 
+    /**
+     * @see AbstractClientViewer#viewInput(InputState)
+     */
     @Override
     public void viewInput(InputState state) {
         AbstractCliView abstractView = new CliInputView(state, header, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#viewLogin(LoginState)
+     */
     @Override
     public void viewLogin(LoginState state) {
         AbstractCliView abstractView = new CliLoginView(state, header, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#viewLobby(LobbyState)
+     */
     @Override
     public void viewLobby(LobbyState state) {
         AbstractCliView abstractView = new CliLobbyView(state, side, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#viewRoom(RoomState)
+     */
     @Override
     public void viewRoom(RoomState state) {
         AbstractCliView abstractView = new CliRoomView(state, side, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#viewGame(GameState)
+     */
     @Override
     public void viewGame(GameState state) {
         AbstractCliView abstractView = new CliGameView(state, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#viewEnd(EndState)
+     */
     @Override
     public void viewEnd(EndState state) {
         AbstractCliView abstractView = new CliEndView(state, win, lose, TERM_WIDTH);
         updateView(state, abstractView);
     }
 
+    /**
+     * @see AbstractClientViewer#shutdown()
+     */
     @Override
     public void shutdown() {
         executorService.shutdownNow();

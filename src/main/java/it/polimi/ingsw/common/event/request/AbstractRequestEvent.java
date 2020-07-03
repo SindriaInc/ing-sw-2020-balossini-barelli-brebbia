@@ -10,14 +10,27 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public abstract class AbstractRequestEvent extends AbstractPlayerEvent {
 
+    /**
+     * Abstract class constructor
+     *
+     * @param player The player that the request is targeted to
+     */
     public AbstractRequestEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void accept(ResponseEventProvider provider) {
         super.accept(provider);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public final void accept(ViewEventProvider provider) {
         super.accept(provider);
     }

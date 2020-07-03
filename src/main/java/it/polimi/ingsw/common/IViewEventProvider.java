@@ -2,6 +2,11 @@ package it.polimi.ingsw.common;
 
 import it.polimi.ingsw.common.event.*;
 
+/**
+ * The provider that handles the registration of view events
+ *
+ * View events are events sent by a view (in the client)
+ */
 public interface IViewEventProvider {
 
     /**
