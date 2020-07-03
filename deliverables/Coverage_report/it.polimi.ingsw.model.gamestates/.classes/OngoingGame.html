@@ -1,0 +1,557 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OngoingGame</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.gamestates</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OngoingGame (it.polimi.ingsw.model.gamestates)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OngoingGame</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (28/ 28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (224/ 224)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.gamestates;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.info.Coordinates;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.event.*;
+<i>5</i>&nbsp;import it.polimi.ingsw.common.event.request.*;
+<i>6</i>&nbsp;import it.polimi.ingsw.model.*;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import java.util.*;
+<i>9</i>&nbsp;import java.util.function.Predicate;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;public class OngoingGame extends AbstractGameState {
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * The current player index (refers to getPlayers())
+<i>15</i>&nbsp;     */
+<i>16</i>&nbsp;    private int playerIndex;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * The current turn
+<i>20</i>&nbsp;     * If null, the player has not yet done anything
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    private Turn turn;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    public OngoingGame(ModelEventProvider provider, Board board, List&lt;Player&gt; players) {
+<b class="fc"><i>25</i>&nbsp;        super(provider, board, players);</b>
+<i>26</i>&nbsp;
+<b class="fc"><i>27</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>28</i>&nbsp;        var event = new PlayerTurnStartEvent(player.getName());</b>
+<b class="fc"><i>29</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>30</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<b class="fc"><i>31</i>&nbsp;        generateRequests(player);</b>
+<b class="fc"><i>32</i>&nbsp;    }</b>
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    @Override
+<i>35</i>&nbsp;    public ModelResponse moveWorker(int worker, Coordinates destination) {
+<b class="fc"><i>36</i>&nbsp;        Worker modelWorker = getWorkerById(worker);</b>
+<i>37</i>&nbsp;
+<b class="fc"><i>38</i>&nbsp;        if (modelWorker == null) {</b>
+<b class="fc"><i>39</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>40</i>&nbsp;        }
+<i>41</i>&nbsp;
+<b class="fc"><i>42</i>&nbsp;        Optional&lt;Turn&gt; turn = getOrGenerateTurn(modelWorker);</b>
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;        if (turn.isEmpty()) {</b>
+<b class="fc"><i>45</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>46</i>&nbsp;        }
+<i>47</i>&nbsp;
+<b class="fc"><i>48</i>&nbsp;        if (!getAvailableMoves(turn.get()).contains(destination)) {</b>
+<b class="fc"><i>49</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>50</i>&nbsp;        }
+<i>51</i>&nbsp;
+<b class="fc"><i>52</i>&nbsp;        Cell cell = getBoard().getCell(destination);</b>
+<b class="fc"><i>53</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>54</i>&nbsp;        player.doMove(turn.get(), cell);</b>
+<b class="fc"><i>55</i>&nbsp;        notifyMovements(player.getName(), turn.get());</b>
+<i>56</i>&nbsp;
+<b class="fc"><i>57</i>&nbsp;        this.turn = turn.get();</b>
+<i>58</i>&nbsp;
+<b class="fc"><i>59</i>&nbsp;        var event = new WorkerMoveEvent(player.getName(), worker, destination);</b>
+<b class="fc"><i>60</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>61</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;        if (player.checkHasWon(turn.get())) {</b>
+<i>64</i>&nbsp;            // The current player has won, remove every opponent
+<b class="fc"><i>65</i>&nbsp;            getOpponents(player).forEach(super::removePlayer);</b>
+<b class="fc"><i>66</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>67</i>&nbsp;        }
+<i>68</i>&nbsp;
+<b class="fc"><i>69</i>&nbsp;        generateRequests(getCurrentPlayer());</b>
+<b class="fc"><i>70</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    @Override
+<i>74</i>&nbsp;    public ModelResponse buildBlock(int worker, Coordinates destination) {
+<b class="fc"><i>75</i>&nbsp;        Worker modelWorker = getWorkerById(worker);</b>
+<i>76</i>&nbsp;
+<b class="fc"><i>77</i>&nbsp;        if (modelWorker == null) {</b>
+<b class="fc"><i>78</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;
+<b class="fc"><i>81</i>&nbsp;        Optional&lt;Turn&gt; turn = getOrGenerateTurn(modelWorker);</b>
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;        if (turn.isEmpty()) {</b>
+<b class="fc"><i>84</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>85</i>&nbsp;        }
+<i>86</i>&nbsp;
+<b class="fc"><i>87</i>&nbsp;        if (!getAvailableBlockBuilds(turn.get()).contains(destination)) {</b>
+<b class="fc"><i>88</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>89</i>&nbsp;        }
+<i>90</i>&nbsp;
+<b class="fc"><i>91</i>&nbsp;        Cell cell = getBoard().getCell(destination);</b>
+<b class="fc"><i>92</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>93</i>&nbsp;        player.doBuildBlock(turn.get(), cell);</b>
+<b class="fc"><i>94</i>&nbsp;        notifyMovements(player.getName(), turn.get());</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;        this.turn = turn.get();</b>
+<i>97</i>&nbsp;
+<b class="fc"><i>98</i>&nbsp;        var event = new WorkerBuildBlockEvent(player.getName(), worker, destination);</b>
+<b class="fc"><i>99</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>100</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<i>101</i>&nbsp;
+<b class="fc"><i>102</i>&nbsp;        generateRequests(getCurrentPlayer());</b>
+<b class="fc"><i>103</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    @Override
+<i>107</i>&nbsp;    public ModelResponse buildDome(int worker, Coordinates destination) {
+<b class="fc"><i>108</i>&nbsp;        Worker modelWorker = getWorkerById(worker);</b>
+<i>109</i>&nbsp;
+<b class="fc"><i>110</i>&nbsp;        if (modelWorker == null) {</b>
+<b class="fc"><i>111</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>112</i>&nbsp;        }
+<i>113</i>&nbsp;
+<b class="fc"><i>114</i>&nbsp;        Optional&lt;Turn&gt; turn = getOrGenerateTurn(modelWorker);</b>
+<i>115</i>&nbsp;
+<b class="fc"><i>116</i>&nbsp;        if (turn.isEmpty()) {</b>
+<b class="fc"><i>117</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>118</i>&nbsp;        }
+<i>119</i>&nbsp;
+<b class="fc"><i>120</i>&nbsp;        if (!getAvailableDomeBuilds(turn.get()).contains(destination)) {</b>
+<b class="fc"><i>121</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>122</i>&nbsp;        }
+<i>123</i>&nbsp;
+<b class="fc"><i>124</i>&nbsp;        Cell cell = getBoard().getCell(destination);</b>
+<b class="fc"><i>125</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>126</i>&nbsp;        player.doBuildDome(turn.get(), cell);</b>
+<b class="fc"><i>127</i>&nbsp;        notifyMovements(player.getName(), turn.get());</b>
+<i>128</i>&nbsp;
+<b class="fc"><i>129</i>&nbsp;        this.turn = turn.get();</b>
+<i>130</i>&nbsp;
+<b class="fc"><i>131</i>&nbsp;        var event = new WorkerBuildDomeEvent(player.getName(), worker, destination);</b>
+<b class="fc"><i>132</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>133</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<i>134</i>&nbsp;
+<b class="fc"><i>135</i>&nbsp;        generateRequests(getCurrentPlayer());</b>
+<b class="fc"><i>136</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;    @Override
+<i>140</i>&nbsp;    public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
+<b class="fc"><i>141</i>&nbsp;        Worker modelWorker = getWorkerById(worker);</b>
+<b class="fc"><i>142</i>&nbsp;        Worker modelTarget = getOtherWorkerById(target);</b>
+<i>143</i>&nbsp;
+<b class="fc"><i>144</i>&nbsp;        if (modelWorker == null) {</b>
+<b class="fc"><i>145</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>146</i>&nbsp;        }
+<i>147</i>&nbsp;
+<b class="fc"><i>148</i>&nbsp;        if (modelTarget == null) {</b>
+<b class="fc"><i>149</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>150</i>&nbsp;        }
+<i>151</i>&nbsp;
+<b class="fc"><i>152</i>&nbsp;        Optional&lt;Turn&gt; turn = getOrGenerateTurn(modelWorker);</b>
+<i>153</i>&nbsp;
+<b class="fc"><i>154</i>&nbsp;        if (turn.isEmpty()) {</b>
+<b class="fc"><i>155</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>156</i>&nbsp;        }
+<i>157</i>&nbsp;
+<b class="fc"><i>158</i>&nbsp;        if (!getAvailableForces(turn.get(), modelTarget).contains(destination)) {</b>
+<b class="fc"><i>159</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>160</i>&nbsp;        }
+<i>161</i>&nbsp;
+<b class="fc"><i>162</i>&nbsp;        Cell cell = getBoard().getCell(destination);</b>
+<b class="fc"><i>163</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>164</i>&nbsp;        player.doForce(turn.get(), modelTarget, cell);</b>
+<b class="fc"><i>165</i>&nbsp;        notifyMovements(player.getName(), turn.get());</b>
+<i>166</i>&nbsp;
+<b class="fc"><i>167</i>&nbsp;        this.turn = turn.get();</b>
+<i>168</i>&nbsp;
+<b class="fc"><i>169</i>&nbsp;        var event = new WorkerForceEvent(player.getName(), worker, target, destination);</b>
+<b class="fc"><i>170</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>171</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<i>172</i>&nbsp;
+<b class="fc"><i>173</i>&nbsp;        generateRequests(getCurrentPlayer());</b>
+<b class="fc"><i>174</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>175</i>&nbsp;    }
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;    @Override
+<i>178</i>&nbsp;    public ModelResponse endTurn() {
+<b class="fc"><i>179</i>&nbsp;        if (!checkCanEndTurn()) {</b>
+<b class="fc"><i>180</i>&nbsp;            return ModelResponse.INVALID_STATE;</b>
+<i>181</i>&nbsp;        }
+<i>182</i>&nbsp;
+<b class="fc"><i>183</i>&nbsp;        Turn turn = this.turn;</b>
+<b class="fc"><i>184</i>&nbsp;        this.turn = null;</b>
+<i>185</i>&nbsp;
+<b class="fc"><i>186</i>&nbsp;        if (turn == null) {</b>
+<i>187</i>&nbsp;            // The player had to end the turn without doing anything
+<b class="fc"><i>188</i>&nbsp;            doLose();</b>
+<b class="fc"><i>189</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>190</i>&nbsp;        }
+<i>191</i>&nbsp;
+<b class="fc"><i>192</i>&nbsp;        if (hasCompletedMandatoryInteractions(turn)) {</b>
+<b class="fc"><i>193</i>&nbsp;            playerIndex = (playerIndex + 1) % getPlayers().size();</b>
+<i>194</i>&nbsp;
+<b class="fc"><i>195</i>&nbsp;            var event = new PlayerTurnStartEvent(getCurrentPlayer().getName());</b>
+<b class="fc"><i>196</i>&nbsp;            setReceivers(event);</b>
+<b class="fc"><i>197</i>&nbsp;            event.accept(getModelEventProvider());</b>
+<b class="fc"><i>198</i>&nbsp;            generateRequests(getCurrentPlayer());</b>
+<b class="fc"><i>199</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>200</i>&nbsp;        }
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;        // The player had to end the turn without being able to either move or build after moving
+<b class="fc"><i>203</i>&nbsp;        doLose();</b>
+<b class="fc"><i>204</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>205</i>&nbsp;    }
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;    @Override
+<i>208</i>&nbsp;    public Player getCurrentPlayer() {
+<b class="fc"><i>209</i>&nbsp;        return getPlayers().get(playerIndex);</b>
+<i>210</i>&nbsp;    }
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;    @Override
+<i>213</i>&nbsp;    public AbstractGameState nextState() {
+<b class="fc"><i>214</i>&nbsp;        if (isDone()) {</b>
+<b class="fc"><i>215</i>&nbsp;            return new EndGame(getModelEventProvider(), getBoard(), getPlayers().get(0).getName(), getAllPlayers());</b>
+<i>216</i>&nbsp;        }
+<i>217</i>&nbsp;
+<b class="fc"><i>218</i>&nbsp;        return this;</b>
+<i>219</i>&nbsp;    }
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;    /**
+<i>222</i>&nbsp;     * Get the available moves for a worker
+<i>223</i>&nbsp;     * @param turn The Turn
+<i>224</i>&nbsp;     */
+<i>225</i>&nbsp;    private List&lt;Coordinates&gt; getAvailableMoves(Turn turn) {
+<b class="fc"><i>226</i>&nbsp;        return getAvailable((cell) -&gt; getCurrentPlayer().checkCanMove(turn, cell));</b>
+<i>227</i>&nbsp;    }
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;    /**
+<i>230</i>&nbsp;     * Get the available builds for a worker
+<i>231</i>&nbsp;     * @param turn The Turn
+<i>232</i>&nbsp;     */
+<i>233</i>&nbsp;    private List&lt;Coordinates&gt; getAvailableBlockBuilds(Turn turn) {
+<b class="fc"><i>234</i>&nbsp;        return getAvailable((cell) -&gt; getCurrentPlayer().checkCanBuildBlock(turn, cell));</b>
+<i>235</i>&nbsp;    }
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;    /**
+<i>238</i>&nbsp;     * Get the available dome builds for a worker
+<i>239</i>&nbsp;     * @param turn The Turn
+<i>240</i>&nbsp;     */
+<i>241</i>&nbsp;    private List&lt;Coordinates&gt; getAvailableDomeBuilds(Turn turn) {
+<b class="fc"><i>242</i>&nbsp;        return getAvailable((cell) -&gt; getCurrentPlayer().checkCanBuildDome(turn, cell));</b>
+<i>243</i>&nbsp;    }
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;    /**
+<i>246</i>&nbsp;     * Get the available force moves for the worker targeting an opponent worker
+<i>247</i>&nbsp;     * @param turn The Turn
+<i>248</i>&nbsp;     * @param target The worker to be forced
+<i>249</i>&nbsp;     */
+<i>250</i>&nbsp;    private List&lt;Coordinates&gt; getAvailableForces(Turn turn, Worker target) {
+<b class="fc"><i>251</i>&nbsp;        return getAvailable((cell) -&gt; getCurrentPlayer().checkCanForce(turn, target, cell));</b>
+<i>252</i>&nbsp;    }
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;    /**
+<i>255</i>&nbsp;     * Check if the current player can end the turn
+<i>256</i>&nbsp;     * @return true if the turn can be ended
+<i>257</i>&nbsp;     */
+<i>258</i>&nbsp;    private boolean checkCanEndTurn() {
+<b class="fc"><i>259</i>&nbsp;        if (this.turn == null) {</b>
+<b class="fc"><i>260</i>&nbsp;            for (Worker worker : getCurrentPlayer().getWorkers()) {</b>
+<b class="fc"><i>261</i>&nbsp;                if (hasOptions(generateTurn(worker))) {</b>
+<b class="fc"><i>262</i>&nbsp;                    return false;</b>
+<i>263</i>&nbsp;                }
+<b class="fc"><i>264</i>&nbsp;            }</b>
+<i>265</i>&nbsp;
+<b class="fc"><i>266</i>&nbsp;            return true;</b>
+<i>267</i>&nbsp;        }
+<i>268</i>&nbsp;
+<b class="fc"><i>269</i>&nbsp;        if (hasCompletedMandatoryInteractions(this.turn)) {</b>
+<b class="fc"><i>270</i>&nbsp;            return true;</b>
+<i>271</i>&nbsp;        }
+<i>272</i>&nbsp;
+<b class="fc"><i>273</i>&nbsp;        return !hasOptions(turn);</b>
+<i>274</i>&nbsp;    }
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;    private boolean isDone() {
+<b class="fc"><i>277</i>&nbsp;        return getPlayers().size() == 1;</b>
+<i>278</i>&nbsp;    }
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;    private void generateRequests(Player player) {
+<b class="fc"><i>281</i>&nbsp;        if (turn != null) {</b>
+<b class="fc"><i>282</i>&nbsp;            generateRequests(player, turn);</b>
+<b class="fc"><i>283</i>&nbsp;            return;</b>
+<i>284</i>&nbsp;        }
+<i>285</i>&nbsp;
+<b class="fc"><i>286</i>&nbsp;        for (Worker worker : player.getWorkers()) {</b>
+<b class="fc"><i>287</i>&nbsp;            generateRequests(player, generateTurn(worker));</b>
+<b class="fc"><i>288</i>&nbsp;        }</b>
+<b class="fc"><i>289</i>&nbsp;    }</b>
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;    private void generateRequests(Player player, Turn turn) {
+<i>292</i>&nbsp;        // Generate the request for block builds if available
+<b class="fc"><i>293</i>&nbsp;        List&lt;Coordinates&gt; availableBlockBuilds = getAvailableBlockBuilds(turn);</b>
+<i>294</i>&nbsp;
+<b class="fc"><i>295</i>&nbsp;        if (availableBlockBuilds.size() &gt; 0) {</b>
+<b class="fc"><i>296</i>&nbsp;            new RequestWorkerBuildBlockEvent(player.getName(), turn.getWorker().getId(), availableBlockBuilds)</b>
+<b class="fc"><i>297</i>&nbsp;                    .accept(getModelEventProvider());</b>
+<i>298</i>&nbsp;        }
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;        // Generate the request for dome builds if available
+<b class="fc"><i>301</i>&nbsp;        List&lt;Coordinates&gt; availableDomeBuilds = getAvailableDomeBuilds(turn);</b>
+<i>302</i>&nbsp;
+<b class="fc"><i>303</i>&nbsp;        if (availableDomeBuilds.size() &gt; 0) {</b>
+<b class="fc"><i>304</i>&nbsp;            new RequestWorkerBuildDomeEvent(player.getName(), turn.getWorker().getId(), availableDomeBuilds)</b>
+<b class="fc"><i>305</i>&nbsp;                    .accept(getModelEventProvider());</b>
+<i>306</i>&nbsp;        }
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;        // Generate the request for dome builds if available
+<b class="fc"><i>309</i>&nbsp;        List&lt;Coordinates&gt; availableMoves = getAvailableMoves(turn);</b>
+<i>310</i>&nbsp;
+<b class="fc"><i>311</i>&nbsp;        if (availableMoves.size() &gt; 0) {</b>
+<b class="fc"><i>312</i>&nbsp;            new RequestWorkerMoveEvent(player.getName(), turn.getWorker().getId(), availableMoves)</b>
+<b class="fc"><i>313</i>&nbsp;                    .accept(getModelEventProvider());</b>
+<i>314</i>&nbsp;        }
+<i>315</i>&nbsp;
+<i>316</i>&nbsp;        // Generate the request for forces if available
+<b class="fc"><i>317</i>&nbsp;        List&lt;Worker&gt; otherWorkers = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>318</i>&nbsp;        for (Player other : getOpponents(player)) {</b>
+<b class="fc"><i>319</i>&nbsp;            otherWorkers.addAll(other.getWorkers());</b>
+<b class="fc"><i>320</i>&nbsp;        }</b>
+<i>321</i>&nbsp;
+<b class="fc"><i>322</i>&nbsp;        Map&lt;Integer, List&lt;Coordinates&gt;&gt; availableTargetDestinations = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>323</i>&nbsp;        for (Worker other : otherWorkers) {</b>
+<b class="fc"><i>324</i>&nbsp;            List&lt;Coordinates&gt; availableForces = getAvailableForces(turn, other);</b>
+<i>325</i>&nbsp;
+<b class="fc"><i>326</i>&nbsp;            if (availableForces.size() &gt; 0) {</b>
+<b class="fc"><i>327</i>&nbsp;                availableTargetDestinations.put(other.getId(), availableForces);</b>
+<i>328</i>&nbsp;            }
+<b class="fc"><i>329</i>&nbsp;        }</b>
+<i>330</i>&nbsp;
+<b class="fc"><i>331</i>&nbsp;        if (availableTargetDestinations.size() &gt; 0) {</b>
+<b class="fc"><i>332</i>&nbsp;            new RequestWorkerForceEvent(player.getName(), turn.getWorker().getId(), availableTargetDestinations)</b>
+<b class="fc"><i>333</i>&nbsp;                    .accept(getModelEventProvider());</b>
+<i>334</i>&nbsp;        }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;        // Generate the request for end turn if available
+<i>337</i>&nbsp;        // This request also signals the client that no other request will be sent
+<b class="fc"><i>338</i>&nbsp;        boolean canBeEnded = checkCanEndTurn();</b>
+<b class="fc"><i>339</i>&nbsp;        new RequestPlayerEndTurnEvent(player.getName(), canBeEnded)</b>
+<b class="fc"><i>340</i>&nbsp;                .accept(getModelEventProvider());</b>
+<b class="fc"><i>341</i>&nbsp;    }</b>
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;    private List&lt;Coordinates&gt; getAvailable(Predicate&lt;Cell&gt; filter) {
+<b class="fc"><i>344</i>&nbsp;        List&lt;Cell&gt; cells = new ArrayList&lt;&gt;();</b>
+<i>345</i>&nbsp;
+<b class="fc"><i>346</i>&nbsp;        getBoard().getCells().forEach(cell -&gt; {</b>
+<b class="fc"><i>347</i>&nbsp;            if (filter.test(cell)) {</b>
+<b class="fc"><i>348</i>&nbsp;                cells.add(cell);</b>
+<i>349</i>&nbsp;            }
+<b class="fc"><i>350</i>&nbsp;        });</b>
+<i>351</i>&nbsp;
+<b class="fc"><i>352</i>&nbsp;        return toCoordinatesList(cells);</b>
+<i>353</i>&nbsp;    }
+<i>354</i>&nbsp;
+<i>355</i>&nbsp;    private Optional&lt;Turn&gt; getOrGenerateTurn(Worker worker) {
+<b class="fc"><i>356</i>&nbsp;        if (turn != null) {</b>
+<b class="fc"><i>357</i>&nbsp;            if (!turn.getWorker().equals(worker)) {</b>
+<i>358</i>&nbsp;                // Can&#39;t use more than one worker per turn
+<b class="fc"><i>359</i>&nbsp;                return Optional.empty();</b>
+<i>360</i>&nbsp;            }
+<i>361</i>&nbsp;
+<b class="fc"><i>362</i>&nbsp;            return Optional.of(turn);</b>
+<i>363</i>&nbsp;        }
+<i>364</i>&nbsp;
+<b class="fc"><i>365</i>&nbsp;        return Optional.of(generateTurn(worker));</b>
+<i>366</i>&nbsp;    }
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;    private Turn generateTurn(Worker worker) {
+<b class="fc"><i>369</i>&nbsp;        Map&lt;Worker, Boolean&gt; otherWorkers = new HashMap&lt;&gt;();</b>
+<i>370</i>&nbsp;
+<b class="fc"><i>371</i>&nbsp;        for (Player player : getPlayers()) {</b>
+<b class="fc"><i>372</i>&nbsp;            for (Worker other : player.getWorkers()) {</b>
+<b class="fc"><i>373</i>&nbsp;                if (other.equals(worker)) {</b>
+<b class="fc"><i>374</i>&nbsp;                    continue;</b>
+<i>375</i>&nbsp;                }
+<i>376</i>&nbsp;
+<b class="fc"><i>377</i>&nbsp;                otherWorkers.put(other, player.equals(getCurrentPlayer()));</b>
+<b class="fc"><i>378</i>&nbsp;            }</b>
+<b class="fc"><i>379</i>&nbsp;        }</b>
+<i>380</i>&nbsp;
+<b class="fc"><i>381</i>&nbsp;        return new Turn(worker, otherWorkers, cell -&gt; getBoard().getNeighborings(cell), cell -&gt; getBoard().isPerimeterSpace(cell));</b>
+<i>382</i>&nbsp;    }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;    private boolean hasOptions(Turn turn) {
+<b class="fc"><i>385</i>&nbsp;        if (getAvailableBlockBuilds(turn).size() &gt; 0) {</b>
+<b class="fc"><i>386</i>&nbsp;            return true;</b>
+<i>387</i>&nbsp;        }
+<i>388</i>&nbsp;
+<b class="fc"><i>389</i>&nbsp;        if (getAvailableDomeBuilds(turn).size() &gt; 0) {</b>
+<b class="fc"><i>390</i>&nbsp;            return true;</b>
+<i>391</i>&nbsp;        }
+<i>392</i>&nbsp;
+<b class="fc"><i>393</i>&nbsp;        return getAvailableMoves(turn).size() &gt; 0;</b>
+<i>394</i>&nbsp;    }
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;    private boolean hasCompletedMandatoryInteractions(Turn turn) {
+<b class="fc"><i>397</i>&nbsp;        boolean moved = false;</b>
+<b class="fc"><i>398</i>&nbsp;        boolean built = false;</b>
+<i>399</i>&nbsp;
+<b class="fc"><i>400</i>&nbsp;        for (Turn.Action action : turn.getStandardActions()) {</b>
+<b class="fc"><i>401</i>&nbsp;            if (action.getType() == Turn.ActionType.MOVEMENT) {</b>
+<b class="fc"><i>402</i>&nbsp;                moved = true;</b>
+<b class="fc"><i>403</i>&nbsp;            } else if (action.getType().isBuild() &amp;&amp; moved) {</b>
+<b class="fc"><i>404</i>&nbsp;                built = true;</b>
+<i>405</i>&nbsp;            }
+<b class="fc"><i>406</i>&nbsp;        }</b>
+<i>407</i>&nbsp;
+<b class="fc"><i>408</i>&nbsp;        return built;</b>
+<i>409</i>&nbsp;    }
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    private void doLose() {
+<b class="fc"><i>412</i>&nbsp;        Player player = getCurrentPlayer();</b>
+<b class="fc"><i>413</i>&nbsp;        removePlayer(player);</b>
+<i>414</i>&nbsp;
+<b class="fc"><i>415</i>&nbsp;        playerIndex = playerIndex % getPlayers().size();</b>
+<i>416</i>&nbsp;
+<b class="fc"><i>417</i>&nbsp;        var event = new PlayerLoseEvent(player.getName());</b>
+<b class="fc"><i>418</i>&nbsp;        setReceivers(event);</b>
+<b class="fc"><i>419</i>&nbsp;        event.accept(getModelEventProvider());</b>
+<i>420</i>&nbsp;
+<b class="fc"><i>421</i>&nbsp;        if (!isDone()) {</b>
+<b class="fc"><i>422</i>&nbsp;            generateRequests(getCurrentPlayer());</b>
+<i>423</i>&nbsp;        }
+<b class="fc"><i>424</i>&nbsp;    }</b>
+<i>425</i>&nbsp;
+<i>426</i>&nbsp;    private void notifyMovements(String player, Turn turn) {
+<b class="fc"><i>427</i>&nbsp;        List&lt;Worker&gt; movedWorkers = turn.getMovedWorkers();</b>
+<i>428</i>&nbsp;
+<b class="fc"><i>429</i>&nbsp;        for (Worker worker : movedWorkers) {</b>
+<b class="fc"><i>430</i>&nbsp;            var event = new WorkerMoveEvent(player, worker.getId(), toCoordinates(worker.getCell()));</b>
+<b class="fc"><i>431</i>&nbsp;            setReceivers(event);</b>
+<b class="fc"><i>432</i>&nbsp;            event.accept(getModelEventProvider());</b>
+<b class="fc"><i>433</i>&nbsp;        }</b>
+<i>434</i>&nbsp;
+<b class="fc"><i>435</i>&nbsp;        turn.clearMovedWorkers();</b>
+<b class="fc"><i>436</i>&nbsp;    }</b>
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;    private Coordinates toCoordinates(Cell cell) {
+<b class="fc"><i>439</i>&nbsp;        return new Coordinates(cell.getX(), cell.getY());</b>
+<i>440</i>&nbsp;    }
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;    private List&lt;Coordinates&gt; toCoordinatesList(List&lt;Cell&gt; cells) {
+<b class="fc"><i>443</i>&nbsp;        List&lt;Coordinates&gt; coordinates = new ArrayList&lt;&gt;();</b>
+<i>444</i>&nbsp;
+<b class="fc"><i>445</i>&nbsp;        for (Cell cell : cells) {</b>
+<b class="fc"><i>446</i>&nbsp;            coordinates.add(toCoordinates(cell));</b>
+<b class="fc"><i>447</i>&nbsp;        }</b>
+<i>448</i>&nbsp;
+<b class="fc"><i>449</i>&nbsp;        return coordinates;</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;    private Worker getWorkerById(int id) {
+<b class="fc"><i>453</i>&nbsp;        for (Worker worker : getCurrentPlayer().getWorkers()) {</b>
+<b class="fc"><i>454</i>&nbsp;            if (worker.getId() == id) {</b>
+<b class="fc"><i>455</i>&nbsp;                return worker;</b>
+<i>456</i>&nbsp;            }
+<b class="fc"><i>457</i>&nbsp;        }</b>
+<i>458</i>&nbsp;
+<b class="fc"><i>459</i>&nbsp;        return null;</b>
+<i>460</i>&nbsp;    }
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;    private Worker getOtherWorkerById(int id) {
+<b class="fc"><i>463</i>&nbsp;        for (Player player : getPlayers()) {</b>
+<b class="fc"><i>464</i>&nbsp;            for (Worker worker : player.getWorkers()) {</b>
+<b class="fc"><i>465</i>&nbsp;                if (worker.getId() == id) {</b>
+<b class="fc"><i>466</i>&nbsp;                    return worker;</b>
+<i>467</i>&nbsp;                }
+<b class="fc"><i>468</i>&nbsp;            }</b>
+<b class="fc"><i>469</i>&nbsp;        }</b>
+<i>470</i>&nbsp;
+<b class="fc"><i>471</i>&nbsp;        return null;</b>
+<i>472</i>&nbsp;    }
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 17:21</div>
+</div>
+</body>
+</html>

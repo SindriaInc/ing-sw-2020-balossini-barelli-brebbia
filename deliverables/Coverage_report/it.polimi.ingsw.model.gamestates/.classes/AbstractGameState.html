@@ -1,0 +1,298 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractGameState</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.gamestates</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractGameState (it.polimi.ingsw.model.gamestates)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractGameState</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (19/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (42/ 42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.gamestates;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.info.Coordinates;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.event.AbstractEvent;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.*;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.util.ArrayList;
+<i>8</i>&nbsp;import java.util.LinkedList;
+<i>9</i>&nbsp;import java.util.List;
+<i>10</i>&nbsp;import java.util.Optional;
+<i>11</i>&nbsp;import java.util.stream.Collectors;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;public abstract class AbstractGameState {
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    /**
+<i>16</i>&nbsp;     * The ModelEventProvider, used to register and notify observables
+<i>17</i>&nbsp;     */
+<i>18</i>&nbsp;    private final ModelEventProvider modelEventProvider;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    /**
+<i>21</i>&nbsp;     * The Board of this game
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    private final Board board;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    /**
+<i>26</i>&nbsp;     * List of the players in the game
+<i>27</i>&nbsp;     * The order of the players is preserved
+<i>28</i>&nbsp;     *
+<i>29</i>&nbsp;     * When a player loses it gets removed from this list
+<i>30</i>&nbsp;     */
+<b class="fc"><i>31</i>&nbsp;    private final List&lt;Player&gt; activePlayers = new LinkedList&lt;&gt;();</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * List of the players spectating
+<i>35</i>&nbsp;     *
+<i>36</i>&nbsp;     * When a player loses it gets added into this list
+<i>37</i>&nbsp;     */
+<b class="fc"><i>38</i>&nbsp;    private final List&lt;Player&gt; spectatorPlayers = new LinkedList&lt;&gt;();</b>
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * Class constructor, set model event provider, board and list of players
+<i>42</i>&nbsp;     *
+<i>43</i>&nbsp;     * @param provider The model event provider
+<i>44</i>&nbsp;     * @param board The board
+<i>45</i>&nbsp;     * @param players The player list
+<i>46</i>&nbsp;     */
+<b class="fc"><i>47</i>&nbsp;    public AbstractGameState(ModelEventProvider provider, Board board, List&lt;Player&gt; players) {</b>
+<b class="fc"><i>48</i>&nbsp;        this.modelEventProvider = provider;</b>
+<b class="fc"><i>49</i>&nbsp;        this.board = board;</b>
+<b class="fc"><i>50</i>&nbsp;        this.activePlayers.addAll(players);</b>
+<b class="fc"><i>51</i>&nbsp;    }</b>
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    /**
+<i>54</i>&nbsp;     * @see Game#selectGods(List)
+<i>55</i>&nbsp;     */
+<i>56</i>&nbsp;    public ModelResponse selectGods(List&lt;String&gt; gods) {
+<b class="fc"><i>57</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>58</i>&nbsp;    }
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * @see Game#chooseGod(String)
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public ModelResponse chooseGod(String god) {
+<b class="fc"><i>64</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * @see Game#selectFirst(String) 
+<i>69</i>&nbsp;     */
+<i>70</i>&nbsp;    public ModelResponse selectFirst(String first) {
+<b class="fc"><i>71</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * @see Game#spawnWorker(Coordinates)
+<i>76</i>&nbsp;     */
+<i>77</i>&nbsp;    public ModelResponse spawnWorker(Coordinates position) {
+<b class="fc"><i>78</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    /**
+<i>82</i>&nbsp;     * @see Game#moveWorker(int, Coordinates)
+<i>83</i>&nbsp;     */
+<i>84</i>&nbsp;    public ModelResponse moveWorker(int worker, Coordinates destination) {
+<b class="fc"><i>85</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    /**
+<i>89</i>&nbsp;     * @see Game#buildBlock(int, Coordinates)
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public ModelResponse buildBlock(int worker, Coordinates destination) {
+<b class="fc"><i>92</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * @see Game#buildDome(int, Coordinates)
+<i>97</i>&nbsp;     */
+<i>98</i>&nbsp;    public ModelResponse buildDome(int worker, Coordinates destination) {
+<b class="fc"><i>99</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;    /**
+<i>103</i>&nbsp;     * @see Game#forceWorker(int, int, Coordinates)
+<i>104</i>&nbsp;     */
+<i>105</i>&nbsp;    public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
+<b class="fc"><i>106</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>107</i>&nbsp;    }
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;    /**
+<i>110</i>&nbsp;     * @see Game#endTurn()
+<i>111</i>&nbsp;     */
+<i>112</i>&nbsp;    public ModelResponse endTurn() {
+<b class="fc"><i>113</i>&nbsp;        return ModelResponse.INVALID_STATE;</b>
+<i>114</i>&nbsp;    }
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;    /**
+<i>117</i>&nbsp;     * Handles the player disconnection
+<i>118</i>&nbsp;     * If the player is a spectator, logging out should have no effect
+<i>119</i>&nbsp;     * If the player is still in-game, the game is ended
+<i>120</i>&nbsp;     * @param player The disconnected player
+<i>121</i>&nbsp;     * @return true if the game has to be ended
+<i>122</i>&nbsp;     */
+<i>123</i>&nbsp;    public boolean logout(String player) {
+<b class="fc"><i>124</i>&nbsp;        Optional&lt;Player&gt; spectator = spectatorPlayers.stream().filter(other -&gt; other.getName().equals(player)).findFirst();</b>
+<i>125</i>&nbsp;
+<b class="fc"><i>126</i>&nbsp;        if (spectator.isPresent()) {</b>
+<i>127</i>&nbsp;            // The disconnected player is a spectator, no need to do anything
+<b class="fc"><i>128</i>&nbsp;            spectatorPlayers.remove(spectator.get());</b>
+<b class="fc"><i>129</i>&nbsp;            return false;</b>
+<i>130</i>&nbsp;        }
+<i>131</i>&nbsp;
+<b class="fc"><i>132</i>&nbsp;        Optional&lt;Player&gt; active = activePlayers.stream().filter(other -&gt; other.getName().equals(player)).findFirst();</b>
+<b class="fc"><i>133</i>&nbsp;        return active.isPresent();</b>
+<i>134</i>&nbsp;    }
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;    public final ModelEventProvider getModelEventProvider() {
+<b class="fc"><i>137</i>&nbsp;        return modelEventProvider;</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    public final Board getBoard() {
+<b class="fc"><i>141</i>&nbsp;        return board;</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    public final List&lt;Player&gt; getPlayers() {
+<b class="fc"><i>145</i>&nbsp;        return List.copyOf(activePlayers);</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /**
+<i>149</i>&nbsp;     * Get all the players both spectating and playing
+<i>150</i>&nbsp;     * @return The list of all players
+<i>151</i>&nbsp;     */
+<i>152</i>&nbsp;    public final List&lt;Player&gt; getAllPlayers() {
+<b class="fc"><i>153</i>&nbsp;        List&lt;Player&gt; allPlayers = new ArrayList&lt;&gt;(activePlayers);</b>
+<b class="fc"><i>154</i>&nbsp;        allPlayers.addAll(spectatorPlayers);</b>
+<b class="fc"><i>155</i>&nbsp;        return allPlayers;</b>
+<i>156</i>&nbsp;    }
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;    /**
+<i>159</i>&nbsp;     * Get all the opponents
+<i>160</i>&nbsp;     * @param player The player
+<i>161</i>&nbsp;     * @return The opponent list
+<i>162</i>&nbsp;     */
+<i>163</i>&nbsp;    public final List&lt;Player&gt; getOpponents(Player player) {
+<b class="fc"><i>164</i>&nbsp;        List&lt;Player&gt; opponents = new ArrayList&lt;&gt;(activePlayers);</b>
+<b class="fc"><i>165</i>&nbsp;        opponents.remove(player);</b>
+<i>166</i>&nbsp;
+<b class="fc"><i>167</i>&nbsp;        return opponents;</b>
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;    /**
+<i>171</i>&nbsp;     * Set the receivers of an event as every player in the game
+<i>172</i>&nbsp;     */
+<i>173</i>&nbsp;    final void setReceivers(AbstractEvent event) {
+<b class="fc"><i>174</i>&nbsp;        List&lt;String&gt; receivers = getAllPlayers().stream().map(Player::getName).collect(Collectors.toList());</b>
+<b class="fc"><i>175</i>&nbsp;        event.setReceivers(receivers);</b>
+<b class="fc"><i>176</i>&nbsp;    }</b>
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;    /**
+<i>179</i>&nbsp;     * Remove the player from the players list
+<i>180</i>&nbsp;     * The player is added as a spectator
+<i>181</i>&nbsp;     */
+<i>182</i>&nbsp;    final void removePlayer(Player player) {
+<b class="fc"><i>183</i>&nbsp;        this.activePlayers.remove(player);</b>
+<b class="fc"><i>184</i>&nbsp;        spectatorPlayers.add(player);</b>
+<b class="fc"><i>185</i>&nbsp;    }</b>
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;    /**
+<i>188</i>&nbsp;     * Update the list of players with the given sorted list
+<i>189</i>&nbsp;     * The list must contain each and every player originally present
+<i>190</i>&nbsp;     */
+<i>191</i>&nbsp;    final void sortPlayers(List&lt;Player&gt; players) {
+<b class="fc"><i>192</i>&nbsp;        if (players.size() != this.activePlayers.size() || !players.containsAll(this.activePlayers) || !this.activePlayers.containsAll(players)) {</b>
+<b class="fc"><i>193</i>&nbsp;            throw new IllegalArgumentException(&quot;The new player list is not a sort of the original list&quot;);</b>
+<i>194</i>&nbsp;        }
+<i>195</i>&nbsp;
+<b class="fc"><i>196</i>&nbsp;        this.activePlayers.clear();</b>
+<b class="fc"><i>197</i>&nbsp;        this.activePlayers.addAll(players);</b>
+<b class="fc"><i>198</i>&nbsp;    }</b>
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;    /**
+<i>201</i>&nbsp;     * Obtain the current player that is able to interact with the game
+<i>202</i>&nbsp;     * Calling this method repeatedly should not result in a different player unless other methods got called
+<i>203</i>&nbsp;     * If the game has ended, this method must return the winner
+<i>204</i>&nbsp;     * @return The Player
+<i>205</i>&nbsp;     */
+<i>206</i>&nbsp;    public abstract Player getCurrentPlayer();
+<i>207</i>&nbsp;
+<i>208</i>&nbsp;    /**
+<i>209</i>&nbsp;     * Obtain the next state of the game
+<i>210</i>&nbsp;     * Calling this method repeatedly should not result in a different state unless other methods got called
+<i>211</i>&nbsp;     * @return The AbstractGameState
+<i>212</i>&nbsp;     */
+<i>213</i>&nbsp;    public abstract AbstractGameState nextState();
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 17:21</div>
+</div>
+</body>
+</html>

@@ -88,7 +88,7 @@ public class GuiGodsView extends AbstractGameView {
 
             for (String player : selectFirstData.get().getAvailablePlayers()) {
                 Button button = new Button();
-                presentation.styleRoom(button);
+                presentation.styleButton(button);
                 button.setText(player);
                 button.setOnAction((event) -> onSelectFirst(player));
                 buttons.add(button);
@@ -145,7 +145,7 @@ public class GuiGodsView extends AbstractGameView {
                 GodBox godBox = new GodBox(god, text, enabled, handler, getAssets().getFont());
 
                 godComponentsList.add(godBox);
-                presentation.styleRoom(godBox.getButton());
+                presentation.styleButton(godBox.getButton());
 
                 godCard.setOnMouseClicked(event -> {
                     if (godComponentsList.get(godImageList.indexOf(godCard)).equals(bottom.getChildren().get(1))) {
@@ -167,7 +167,7 @@ public class GuiGodsView extends AbstractGameView {
             selectButton.setText("Done");
             selectButton.setOnAction(this::onGodToggle);
             selectButton.disableProperty().bind(selectEnabled.not());
-            presentation.styleRoom(selectButton);
+            presentation.styleButton(selectButton);
             center = new StackPane(godsScroll(godsView));
         } else if (chooseGodData.isPresent()) {
             action.setText("Choose a god to use");
@@ -181,7 +181,7 @@ public class GuiGodsView extends AbstractGameView {
 
                 EventHandler<ActionEvent> handler = (ignored) -> onChoose(god.getName());
                 GodBox godBox = new GodBox(god, text, enabled, handler, getAssets().getFont());
-                presentation.styleRoom(godBox.getButton());
+                presentation.styleButton(godBox.getButton());
 
                 godCard.setOnMouseClicked(event -> showGodInfo(godBox, bottom));
 

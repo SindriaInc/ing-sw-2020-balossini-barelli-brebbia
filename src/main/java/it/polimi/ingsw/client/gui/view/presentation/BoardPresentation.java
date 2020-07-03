@@ -54,7 +54,8 @@ public class BoardPresentation extends AbstractPresentation {
             infoPane.add(button, 0, index++);
             button.setAlignment(Pos.CENTER);
             GridPane.setHalignment(button, HPos.CENTER);
-            style(button);
+            styleButton(button);
+            button.setWrapText(true);
         }
 
         infoPane.setVgap(GuiConstants.DEFAULT_SPACING);
