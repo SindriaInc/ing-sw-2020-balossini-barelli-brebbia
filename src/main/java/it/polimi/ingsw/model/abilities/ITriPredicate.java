@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 
+/**
+ * Functional interface for the conditions check
+ */
 @FunctionalInterface
 public interface ITriPredicate {
 

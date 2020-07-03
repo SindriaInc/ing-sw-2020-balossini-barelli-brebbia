@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 
+/**
+ * Predicate for the move phase of the turn
+ */
 public class MovePhase implements ITriPredicate {
 
     /**
@@ -12,6 +15,10 @@ public class MovePhase implements ITriPredicate {
      */
     private final int maxMoves;
 
+    /**
+     * Class constructor
+     * @param maxMoves The max number of moves that a worker can do
+     */
     public MovePhase(int maxMoves) {
         this.maxMoves = maxMoves;
     }

@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 
+/**
+ * Predicate used to check if a cell is the same cell one provided
+ */
 public class SameCell implements ITriPredicate {
 
     /**

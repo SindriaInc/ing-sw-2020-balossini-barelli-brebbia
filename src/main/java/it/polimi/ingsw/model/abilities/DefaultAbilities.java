@@ -7,6 +7,10 @@ import it.polimi.ingsw.model.abilities.predicates.*;
 
 import java.util.Optional;
 
+/**
+ * The class representing the abilities of a player that hasn't got any god effect.
+ * This class is used in a simple game.
+ */
 public class DefaultAbilities implements IAbilities{
 
     public static final int DEFAULT_WIN_LEVEL = 3;

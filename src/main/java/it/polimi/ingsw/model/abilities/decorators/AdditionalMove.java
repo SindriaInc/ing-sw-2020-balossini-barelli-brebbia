@@ -11,6 +11,9 @@ import it.polimi.ingsw.model.abilities.predicates.MovePhase;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_UP;
 
+/**
+ * Decorator that allows an additional move
+ */
 public class AdditionalMove extends AbilitiesDecorator {
 
     private static final int MOVES = 2;
@@ -19,6 +22,10 @@ public class AdditionalMove extends AbilitiesDecorator {
     private final ITriPredicate cellLevelDifference;
     private final ITriPredicate canInteractNoWorkers;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public AdditionalMove(IAbilities abilities) {
         super(abilities);
 
@@ -27,6 +34,9 @@ public class AdditionalMove extends AbilitiesDecorator {
         canInteractNoWorkers = new CanInteractNoWorkers();
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanMove(Turn, Cell)
+     */
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
         if (!movePhase.check(turn, cell)) {

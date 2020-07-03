@@ -9,12 +9,22 @@ import it.polimi.ingsw.model.abilities.OpponentAbilitiesDecorator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Decorator that blocks an opponent movement on an higher level
+ */
 public class BlockOnPlayerMoveUp extends OpponentAbilitiesDecorator {
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public BlockOnPlayerMoveUp(IAbilities abilities, List<Worker> workers) {
         super(abilities, workers);
     }
 
+    /**
+     * @see OpponentAbilitiesDecorator#checkCanMove(Turn, Cell)
+     */
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
         if (cell.getLevel() <= turn.getWorker().getCell().getLevel()) {

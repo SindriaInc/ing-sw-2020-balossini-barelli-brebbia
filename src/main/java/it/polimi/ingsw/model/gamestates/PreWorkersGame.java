@@ -8,6 +8,9 @@ import it.polimi.ingsw.model.*;
 
 import java.util.*;
 
+/**
+ * The class representing the state of game in which the players choose where to spawn their workers and spans them
+ */
 public class PreWorkersGame extends AbstractGameState {
 
     /**
@@ -27,10 +30,26 @@ public class PreWorkersGame extends AbstractGameState {
      */
     private int nextWorkerId;
 
+    /**
+     * Class constructor
+     * @param provider The provider of the events
+     * @param board The game's board
+     * @param players The game's players
+     * @param maxWorkers The max number of worker each player can spawn
+     */
     public PreWorkersGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers) {
         this(provider, board, players, maxWorkers, false);
     }
 
+    /**
+     * Class constructor
+     * @param provider The provider of the events
+     * @param board The game's board
+     * @param players The game's players
+     * @param maxWorkers The max number of worker each player can spawn
+     * @param alreadySorted True if player's are ordered by age. If false the list of
+     *                      player is sorted.
+     */
     public PreWorkersGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers, boolean alreadySorted) {
         super(provider, board, players);
 
@@ -50,6 +69,9 @@ public class PreWorkersGame extends AbstractGameState {
                 .accept(getModelEventProvider());
     }
 
+    /**
+     * @see AbstractGameState#spawnWorker(Coordinates)
+     */
     @Override
     public ModelResponse spawnWorker(Coordinates position) {
         if (!getAvailablePositions().contains(position)) {
@@ -79,6 +101,9 @@ public class PreWorkersGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#getCurrentPlayer()
+     */
     @Override
     public Player getCurrentPlayer() {
         if (isDone()) {
@@ -104,6 +129,9 @@ public class PreWorkersGame extends AbstractGameState {
         return currentPlayer;
     }
 
+    /**
+     * @see AbstractGameState#nextState()
+     */
     @Override
     public AbstractGameState nextState() {
         if (!isDone()) {
@@ -112,7 +140,10 @@ public class PreWorkersGame extends AbstractGameState {
 
         return new OngoingGame(getModelEventProvider(), getBoard(), getPlayers());
     }
-
+    /**
+     * Check if a players has spawned all of his workers
+     * @return true if the player has spawned all of his workers
+     */
     private boolean isDone() {
         for (Player player : getPlayers()) {
             if (player.getWorkers().size() < maxWorkers) {
@@ -139,6 +170,11 @@ public class PreWorkersGame extends AbstractGameState {
         return toCoordinatesList(cells);
     }
 
+    /**
+     * Converts a list of cells in their corresponding coordinates
+     * @param cells The list of cells
+     * @return The list of coordinates
+     */
     private List<Coordinates> toCoordinatesList(List<Cell> cells) {
         List<Coordinates> coordinates = new ArrayList<>();
 
@@ -149,6 +185,11 @@ public class PreWorkersGame extends AbstractGameState {
         return coordinates;
     }
 
+    /**
+     * Converts a cells in his corresponding coordinates
+     * @param cell The selected cell
+     * @return The coordinates
+     */
     private Coordinates toCoordinates(Cell cell) {
         return new Coordinates(cell.getX(), cell.getY());
     }

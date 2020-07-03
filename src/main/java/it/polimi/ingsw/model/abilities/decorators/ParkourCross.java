@@ -10,16 +10,27 @@ import it.polimi.ingsw.model.abilities.predicates.MovePhase;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_MOVES;
 
+/**
+ * Decorator that allows to force a neighboring opponent worker to the space directly
+ * on the other side of the player's worker, if that space is unoccupied
+ */
 public class ParkourCross extends AbilitiesDecorator {
 
     private final ITriPredicate movePhase;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public ParkourCross(IAbilities abilities) {
         super(abilities);
 
         movePhase = new MovePhase(DEFAULT_MAX_MOVES);
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanForce(Turn, Worker, Cell)
+     */
     @Override
     public boolean checkCanForce(Turn turn, Worker worker, Cell cell) {
         if (!movePhase.check(turn, cell)) {

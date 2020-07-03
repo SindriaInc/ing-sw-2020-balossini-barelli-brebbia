@@ -2,8 +2,17 @@ package it.polimi.ingsw.model;
 
 import java.util.Optional;
 
+/**
+ * The class representing a worker, the unit that moves in the board and can build blocks/domes
+ * Each player has a set number of workers
+ */
 public class Worker {
 
+    /**
+     * The class representing the movement of the worker,
+     * with cell where the worker was in the last turn and
+     * the level of that cell
+     */
     private static class Movement {
 
         private final int previousLevel;
@@ -34,6 +43,11 @@ public class Worker {
      */
     private Movement lastMovement;
 
+    /**
+     * Class constructor
+     * @param id The work id
+     * @param cell The cell where the worker is present
+     */
     public Worker(int id, Cell cell) {
         this.id = id;
         this.cell = cell;
@@ -64,7 +78,7 @@ public class Worker {
     }
 
     /**
-     * Move the worker to the cell, updating the player current and previous position
+     * Moves the worker to the cell, updating the player current and previous position
      * @param cell The Cell
      */
     public void move(Cell cell) {
@@ -73,7 +87,7 @@ public class Worker {
     }
 
     /**
-     * Force the worker to the cell, updating the player current and previous position
+     * Forces the worker to the cell, updating the player current and previous position
      * @param cell The Cell
      */
     public void force(Cell cell) {

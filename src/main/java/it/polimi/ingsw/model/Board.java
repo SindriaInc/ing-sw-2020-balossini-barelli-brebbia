@@ -7,6 +7,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The class representing the board where the game is played. A board is composed by a group of cell forming the
+ * board's row and columns. The workers can be placed and can perform their action only on the board.
+ */
 public class Board {
 
     /**
@@ -24,6 +28,11 @@ public class Board {
      */
     private final Cell[][] map;
 
+    /**
+     * Class constructor
+     * @param rows The number of rows
+     * @param columns The number of columns
+     */
     public Board(int rows, int columns) {
         this.rows = rows;
         this.columns = columns;

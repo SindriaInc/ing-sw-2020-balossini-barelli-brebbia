@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The class representing the lobby of the game. A player enters the lobby after connecting to the server and here
+ * he can choose a room to join or create a new one. The lobby contains the list of rooms associated to the players.
+ */
 public class Lobby {
 
     private static final int MIN_ROOM_PLAYERS = 2;
@@ -27,6 +31,10 @@ public class Lobby {
 
     private final Deck deck;
 
+    /**
+     * Class constructor
+     * @param deck The chosen deck of god
+     */
     public Lobby(Deck deck) {
         this.provider = new ModelEventProvider();
         this.deck = deck;
@@ -186,7 +194,7 @@ public class Lobby {
     }
 
     /**
-     * Obtain the current game that the player is playing
+     * Obtains the current game that the player is playing
      * @param player The player
      * @return Optional.empty() if there player is not in a game, the game otherwise
      */
@@ -194,6 +202,10 @@ public class Lobby {
         return games.stream().filter(game -> game.getAllPlayers().stream().anyMatch(other -> other.getName().equals(player))).findFirst();
     }
 
+    /**
+     * Start the game in the selected room
+     * @param room The selected room
+     */
     private void startGame(Room room) {
         rooms.remove(room);
         notifyGameStart(room);
@@ -203,6 +215,10 @@ public class Lobby {
         games.add(game);
     }
 
+    /**
+     * Notifies the game start to the player in a selected room
+     * @param room The selected room
+     */
     private void notifyGameStart(Room room) {
         RoomInfo roomInfo = generateRoomInfo(room);
 
@@ -211,6 +227,10 @@ public class Lobby {
         }
     }
 
+    /**
+     * Notifies the room update (join or leave) in a selected room
+     * @param room The selected room
+     */
     private void notifyRoomUpdate(Room room) {
         RoomInfo roomInfo = generateRoomInfo(room);
 
@@ -218,7 +238,9 @@ public class Lobby {
             new LobbyRoomUpdateEvent(other.getName(), roomInfo).accept(provider);
         }
     }
-
+    /**
+     * Notifies them lobby update (join, leave, enter or exit a room)
+     */
     private void notifyLobbyUpdate() {
         List<RoomInfo> roomInfos = generateRoomInfos();
 
@@ -229,26 +251,52 @@ public class Lobby {
         }
     }
 
+    /**
+     * Obtains a free player in the lobby
+     * @param name The name of the player
+     */
     private Optional<Player> getFreePlayer(String name) {
         return freePlayers.stream().filter(player -> player.getName().equals(name)).findFirst();
     }
 
+    /**
+     * Obtains the other players in the room of a selected player
+     * @param room the selected room
+     * @param name The name of the player
+     */
     private Optional<Player> getRoomOtherPlayer(Room room, String name) {
         return room.getOtherPlayers().stream().filter(player -> player.getName().equals(name)).findFirst();
     }
 
+    /**
+     * Obtains the other players in the game of a selected player
+     * @param game The selected room
+     * @param name The name of the player
+     */
     private Optional<Player> getGamePlayer(Game game, String name) {
         return game.getAllPlayers().stream().filter(player -> player.getName().equals(name)).findFirst();
     }
 
+    /**
+     * Obtains the room where the selected player is present (if exist)
+     * @param name The name of the player
+     */
     private Optional<Room> getRoom(String name) {
         return rooms.stream().filter(room -> room.getAllPlayers().stream().anyMatch(player -> player.getName().equals(name))).findFirst();
     }
 
+    /**
+     * Obtains the room where the selected player is the owner (if exist)
+     * @param name The name of the player
+     */
     private Optional<Room> getRoomByOwner(String name) {
         return rooms.stream().filter(room -> room.getOwner().getName().equals(name)).findFirst();
     }
 
+    /**
+     * Generates the infos of all the rooms
+     * @return A list of room infos
+     */
     private List<RoomInfo> generateRoomInfos() {
         List<RoomInfo> roomInfos = new ArrayList<>();
 
@@ -259,6 +307,10 @@ public class Lobby {
         return roomInfos;
     }
 
+    /**
+     * Generates the info of a selected room
+     * @param room The selected room
+     */
     private RoomInfo generateRoomInfo(Room room) {
         return new RoomInfo(
                 room.getOwner().getName(),
@@ -267,14 +319,29 @@ public class Lobby {
                 room.isSimpleGame());
     }
 
+    /**
+     * Checks if a player is available
+     * @param player The selected player
+     * @return True if the player is available
+     */
     private boolean isAvailable(String player) {
         return !isFree(player) && !isInRoom(player) && !isInGame(player);
     }
 
+    /**
+     * Checks if a player is free
+     * @param name The player's name
+     * @return True if the player is free
+     */
     private boolean isFree(String name) {
         return getFreePlayer(name).isPresent();
     }
 
+    /**
+     * Checks if a player is in a room
+     * @param name The player's name
+     * @return True if the player is in a room
+     */
     private boolean isInRoom(String name) {
         return rooms.stream().anyMatch(
                 room -> room.getOwner().getName().equals(name) ||
@@ -282,6 +349,11 @@ public class Lobby {
         );
     }
 
+    /**
+     * Checks if a player is in a game
+     * @param name The player's name
+     * @return True if the player is in a game
+     */
     private boolean isInGame(String name) {
         return games.stream().anyMatch(
                 game -> game.getAllPlayers().stream().anyMatch(other -> other.getName().equals(name))

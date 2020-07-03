@@ -10,11 +10,18 @@ import it.polimi.ingsw.model.abilities.predicates.MaxLevel;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD_LEVEL;
 
+/**
+ * Decorator that allows to build on the cell where the worker is present
+ */
 public class BuildBelow extends AbilitiesDecorator {
 
     private final ITriPredicate maxBuildLevel;
     private final ITriPredicate buildPhase;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public BuildBelow(IAbilities abilities) {
         super(abilities);
 
@@ -22,6 +29,9 @@ public class BuildBelow extends AbilitiesDecorator {
         buildPhase = new BuildPhase();
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanBuildBlock(Turn, Cell)
+     */
     @Override
     public boolean checkCanBuildBlock(Turn turn, Cell cell) {
 

@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The class representing a player, which can choose a god and
+ * has a list of workers that can do actions during his turn.
+ * The player is identified by his nickname and age
+ */
 public class Player {
 
     /**
@@ -34,6 +39,11 @@ public class Player {
      */
     private IAbilities abilities;
 
+    /**
+     * Class constructor
+     * @param name The player's name
+     * @param age The player's age
+     */
     public Player(String name, int age) {
         this.name = name;
         this.age = age;
@@ -49,6 +59,10 @@ public class Player {
         return age;
     }
 
+    /**
+     * Obtains the list of the player's workers
+     * @return The players workers
+     */
     public List<Worker> getWorkers() {
         return List.copyOf(workers);
     }
@@ -129,15 +143,25 @@ public class Player {
         abilities.doForce(turn, worker, cell);
     }
 
+    /**
+     * Obtains the god associated to the player (if present)
+     * @return The player's god (if present)
+     */
     public Optional<God> getGod() {
         return Optional.ofNullable(god);
     }
-
+    /**
+     * Applies the god's effect to the player
+     * @param god The god chosen by the player
+     */
     public void applyGod(God god) {
         this.god = god;
         abilities = god.applyAbilities(abilities);
     }
-
+    /**
+     * Applies the god's effect to the other players (if the god effects apply to them)
+     * @param god The god chosen by the player
+     */
     public void applyOpponentGod(God god, Player owner) {
         abilities = god.applyOpponentAbilities(abilities, owner);
     }

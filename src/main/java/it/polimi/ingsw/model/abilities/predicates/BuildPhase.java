@@ -6,6 +6,9 @@ import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.*;
 
+/**
+ * Predicate for the build phase of the turn
+ */
 public class BuildPhase implements ITriPredicate {
 
     /**
@@ -13,6 +16,10 @@ public class BuildPhase implements ITriPredicate {
      */
     private final int maxBuilds;
 
+    /**
+     * Class constructor
+     * @param maxMoves The max number of builds that a worker can do
+     */
     public BuildPhase(int maxMoves) {
         this.maxBuilds = maxMoves;
     }

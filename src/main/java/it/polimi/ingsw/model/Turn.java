@@ -7,8 +7,15 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * The class representing a turn of the game, during which a worker
+ *  can move, build a block, force or build a dome
+ */
 public class Turn {
 
+    /**
+     * The enumeration representing the type of action of the worker
+     */
     public enum ActionType {
 
         MOVEMENT(false, true),
@@ -34,6 +41,10 @@ public class Turn {
 
     }
 
+    /**
+     * The class representing the action that
+     * a worker can do during a turn
+     */
     public static class Action {
 
         private final ActionType type;
@@ -119,6 +130,10 @@ public class Turn {
         return worker;
     }
 
+    /**
+     * Identifies the workers that can win
+     * @return A list of the workers candidate to win
+     */
     public List<Worker> getCandidateWinWorkers() {
         List<Worker> sameWorkers = new ArrayList<>();
         sameWorkers.add(worker);
@@ -133,22 +148,45 @@ public class Turn {
         return sameWorkers;
     }
 
+    /**
+     * Obtains a copy of the list which contains the other workers of the turn
+     * @return A list of the other workers
+     */
     public List<Worker> getOtherWorkers() {
         return List.copyOf(otherWorkers.keySet());
     }
 
+    /**
+     * Identifies the cells neighbours to the worker cell
+     * @param  cell The worker cell
+     * @return A list of the neighbour cells
+     */
     public List<Cell> getNeighbours(Cell cell) {
         return getNeighbours.apply(cell);
     }
 
+    /**
+     * Checks if the cell is a perimeter cell
+     * @param  cell The cell
+     * @return True if the cell is a perimeter cell
+     */
     public boolean isPerimeterSpace(Cell cell) {
         return isPerimeterSpace.test(cell);
     }
 
+    /**
+     * Checks if two worker have the same player
+     * @param  worker The selected worker
+     * @return True if the two workers have the same owner
+     */
     public boolean hasSamePlayer(Worker worker) {
         return otherWorkers.get(worker);
     }
 
+    /**
+     * Obtains the workers moves during a turn
+     * @return The list of moves
+     */
     public List<Cell> getMoves() {
         return actions.stream()
                 .filter(action -> action.getType() == ActionType.MOVEMENT)
@@ -156,67 +194,115 @@ public class Turn {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Obtains the worker builds during a turn
+     * @return The list of builds
+     */
     public List<Cell> getBuilds() {
         return actions.stream()
                 .filter(action -> action.getType().isBuild())
                 .map(Action::getCell)
                 .collect(Collectors.toList());
     }
-
+    /**
+     * Obtains the block placed during a turn
+     * @return The list of block placed
+     */
     public List<Cell> getBlocksPlaced() {
         return actions.stream()
                 .filter(action -> action.getType() == ActionType.BLOCK)
                 .map(Action::getCell)
                 .collect(Collectors.toList());
     }
-
+    /**
+     * Obtains the dome placed during a turn
+     * @return The list of dome placed
+     */
     public List<Cell> getDomesPlaced() {
         return actions.stream()
                 .filter(action -> action.getType() == ActionType.DOME)
                 .map(Action::getCell)
                 .collect(Collectors.toList());
     }
-
+    /**
+     * Obtains the forces during a turn
+     * @return The list of forces
+     */
     public List<Action> getForces() {
         return actions.stream()
                 .filter(action -> action.getType() == ActionType.FORCE)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Obtains the standard actions during a turn
+     * @return The list of standard actions
+     */
     public List<Action> getStandardActions() {
         return actions.stream()
                 .filter(action -> action.getType().isStandard())
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Obtains a copy of the list which contains the moved workers
+     * @return A list of the moved workers
+     */
     public List<Worker> getMovedWorkers() {
         return List.copyOf(movedWorkers);
     }
 
+    /**
+     * Adds a cell to the list of movements
+     * @param cell The cell of the movement
+     */
     public void addMovement(Cell cell) {
         actions.add(new Action(ActionType.MOVEMENT, null, cell));
     }
 
+    /**
+     * Adds a cell to the block placed
+     * @param cell The cell where the block is placed
+     */
     public void addBlockPlaced(Cell cell) {
         actions.add(new Action(ActionType.BLOCK, null, cell));
     }
 
+    /**
+     * Adds a cell to the dome placed
+     * @param cell The cell where the dome is placed
+     */
     public void addDomePlaced(Cell cell) {
         actions.add(new Action(ActionType.DOME, null, cell));
     }
 
+    /**
+     * Adds a cell to the list of force
+     * @param cell The cell of the force
+     */
     public void addForce(Worker target, Cell cell) {
         actions.add(new Action(ActionType.FORCE, target, cell));
     }
 
+    /**
+     * Adds a worker to the list of workers that can not win
+     * @param worker The banned worker
+     */
     public void addBannedWinWorker(Worker worker) {
         bannedWinWorkers.add(worker);
     }
 
+    /**
+     * Adds a worker to the list of moved worker
+     * @param worker The worker that had moved
+     */
     public void addMovedWorker(Worker worker) {
         movedWorkers.add(worker);
     }
 
+    /**
+     * Clears the moved workers list
+     */
     public void clearMovedWorkers() {
         movedWorkers.clear();
     }

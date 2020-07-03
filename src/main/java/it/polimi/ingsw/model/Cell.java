@@ -2,6 +2,12 @@ package it.polimi.ingsw.model;
 
 import java.util.Objects;
 
+/**
+ * The class representing the cell fo the board. In the cell a worker con move, build a block or a dome and force other
+ * players in.
+ * Each cell can contain only one worker and is dived in three levels of altitude where, at the top, a player can climb
+ * to win or place a dome
+ */
 public class Cell {
 
     /**
@@ -24,6 +30,11 @@ public class Cell {
      */
     private boolean doomed;
 
+    /**
+     * Class constructor
+     * @param x The cell's column
+     * @param y The cell's row
+     */
     public Cell(int x, int y) {
         this.x = x;
         this.y = y;

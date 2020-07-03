@@ -7,6 +7,10 @@ import it.polimi.ingsw.model.abilities.IAbilities;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The class representing a god, chosen by the player by a set. The god's abilities allow the
+ * player's workers to modify their behavior or can apply as a malus to the other players.
+ */
 public class God {
 
     /**
@@ -39,6 +43,15 @@ public class God {
      */
     private final Map<Class<? extends AbilitiesDecorator>, Boolean> effects;
 
+    /**
+     * Class constructor
+     * @param name The god's name
+     * @param id The god's id
+     * @param title The God's type
+     * @param description A brief description of the god
+     * @param type The God's type
+     * @param effects The God's effects as decorators
+     */
     public God(String name, int id, String title, String description, String type, Map<Class<? extends AbilitiesDecorator>, Boolean> effects) {
         this.name = name;
         this.id = id;
@@ -97,6 +110,11 @@ public class God {
         }
     }
 
+    /**
+     * Dynamically creates decorator effect instances and applies them to the abilities provided
+     * @param abilities Provided abilities
+     * @return The decorated abilities
+     */
     private IAbilities doApplyAbilities(IAbilities abilities) throws ReflectiveOperationException {
         for (Map.Entry<Class<? extends AbilitiesDecorator>, Boolean> entry : effects.entrySet()) {
             // Skip opponent decorators
@@ -112,6 +130,11 @@ public class God {
         return abilities;
     }
 
+    /**
+     * Dynamically creates decorator effect instances and applies them to the abilities provided (applied to the other players)
+     * @param abilities Provided abilities
+     * @return The decorated abilities
+     */
     private IAbilities doApplyOpponentAbilities(IAbilities abilities, Player originalPlayer) throws ReflectiveOperationException {
         for (Map.Entry<Class<? extends AbilitiesDecorator>, Boolean> entry : effects.entrySet()) {
             // Skip non-opponent decorators

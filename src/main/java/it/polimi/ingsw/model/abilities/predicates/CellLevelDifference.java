@@ -5,10 +5,17 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 
+/**
+ * Predicate used to check the level difference between two cells
+ */
 public class CellLevelDifference implements ITriPredicate {
 
     private final int maxUp;
 
+    /**
+     * Class constructor
+     * @param maxUp The cell level difference
+     */
     public CellLevelDifference(int maxUp) {
         this.maxUp = maxUp;
     }

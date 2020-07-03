@@ -4,6 +4,9 @@ import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 
+/**
+ *Interface containing the checks and the actions that con be modified by an ability
+ */
 public interface IAbilities {
 
     /**

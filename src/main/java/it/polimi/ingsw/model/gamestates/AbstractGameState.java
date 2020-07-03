@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * An abstract class that can be implemented by the states. It contains variables and methods that are common to
+ * all the implemented states.
+ */
+
 public abstract class AbstractGameState {
 
     /**
@@ -65,7 +70,7 @@ public abstract class AbstractGameState {
     }
 
     /**
-     * @see Game#selectFirst(String) 
+     * @see Game#selectFirst(String)
      */
     public ModelResponse selectFirst(String first) {
         return ModelResponse.INVALID_STATE;
@@ -141,6 +146,10 @@ public abstract class AbstractGameState {
         return board;
     }
 
+    /**
+     * Obtains a list of the active players in that state
+     * @return The list of players
+     */
     public final List<Player> getPlayers() {
         return List.copyOf(activePlayers);
     }

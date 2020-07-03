@@ -10,11 +10,18 @@ import it.polimi.ingsw.model.abilities.predicates.MaxLevel;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD_LEVEL;
 
+/**
+ * Decorator that allows to build before a move action
+ */
 public class BuildBeforeMove extends AbilitiesDecorator {
 
     private final ITriPredicate canInteractNoWorkers;
     private final ITriPredicate maxBuildLevel;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public BuildBeforeMove(IAbilities abilities) {
         super(abilities);
 
@@ -22,6 +29,9 @@ public class BuildBeforeMove extends AbilitiesDecorator {
         maxBuildLevel = new MaxLevel(DEFAULT_MAX_BUILD_LEVEL);
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanBuildBlock(Turn, Cell)
+     */
     @Override
     public boolean checkCanBuildBlock(Turn turn, Cell cell) {
         if (turn.getBuilds().size() == 0 && turn.getMoves().size() == 1) {
@@ -43,6 +53,9 @@ public class BuildBeforeMove extends AbilitiesDecorator {
         return super.checkCanBuildBlock(turn, cell);
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanBuildDome(Turn, Cell)
+     */
     @Override
     public boolean checkCanBuildDome(Turn turn, Cell cell) {
         if (turn.getBuilds().size() == 0 && turn.getMoves().size() == 1) {

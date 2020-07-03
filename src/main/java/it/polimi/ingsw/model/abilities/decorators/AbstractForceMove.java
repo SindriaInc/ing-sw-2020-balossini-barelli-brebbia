@@ -15,12 +15,19 @@ import java.util.Optional;
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_MOVES;
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_UP;
 
+/**
+ * Abstract class for the decorators that allow a force move
+ */
 public abstract class AbstractForceMove extends AbilitiesDecorator {
 
     private final ITriPredicate movePhase;
     private final ITriPredicate cellLevelDifference;
     private final ITriPredicate canInteract;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public AbstractForceMove(IAbilities abilities) {
         super(abilities);
 
@@ -60,6 +67,9 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
         return Optional.empty();
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanMove(Turn, Cell)
+     */
     @Override
     public boolean checkCanMove(Turn turn, Cell cell) {
         if (!movePhase.check(turn, cell)) {
@@ -83,6 +93,9 @@ public abstract class AbstractForceMove extends AbilitiesDecorator {
         return checkCanForceInMovePhase(turn, forcedWorker.get()) || super.checkCanMove(turn, cell);
     }
 
+    /**
+     * @see AbilitiesDecorator#doMove(Turn, Cell)
+     */
     @Override
     public void doMove(Turn turn, Cell cell) {
         Optional<Worker> forcedWorker = findForcedWorker(turn, cell);

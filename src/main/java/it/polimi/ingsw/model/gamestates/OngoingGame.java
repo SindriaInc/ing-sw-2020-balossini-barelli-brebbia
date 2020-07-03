@@ -8,6 +8,9 @@ import it.polimi.ingsw.model.*;
 import java.util.*;
 import java.util.function.Predicate;
 
+/**
+ * The class representing the state of the game in which a player can control his worker and eventually win or lose.
+ */
 public class OngoingGame extends AbstractGameState {
 
     /**
@@ -21,6 +24,12 @@ public class OngoingGame extends AbstractGameState {
      */
     private Turn turn;
 
+    /**
+     * Class constructor
+     * @param provider The provider of the events
+     * @param board The game's board
+     * @param players The game's players
+     */
     public OngoingGame(ModelEventProvider provider, Board board, List<Player> players) {
         super(provider, board, players);
 
@@ -31,6 +40,9 @@ public class OngoingGame extends AbstractGameState {
         generateRequests(player);
     }
 
+    /**
+     * @see AbstractGameState#moveWorker(int, Coordinates)
+     */
     @Override
     public ModelResponse moveWorker(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
@@ -70,6 +82,9 @@ public class OngoingGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#buildBlock(int, Coordinates)
+     */
     @Override
     public ModelResponse buildBlock(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
@@ -103,6 +118,9 @@ public class OngoingGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#buildDome(int, Coordinates)
+     */
     @Override
     public ModelResponse buildDome(int worker, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
@@ -136,6 +154,9 @@ public class OngoingGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#forceWorker(int, int, Coordinates)
+     */
     @Override
     public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
         Worker modelWorker = getWorkerById(worker);
@@ -174,6 +195,9 @@ public class OngoingGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#endTurn()
+     */
     @Override
     public ModelResponse endTurn() {
         if (!checkCanEndTurn()) {
@@ -204,11 +228,17 @@ public class OngoingGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#getCurrentPlayer()
+     */
     @Override
     public Player getCurrentPlayer() {
         return getPlayers().get(playerIndex);
     }
 
+    /**
+     * @see AbstractGameState#nextState()
+     */
     @Override
     public AbstractGameState nextState() {
         if (isDone()) {
@@ -273,10 +303,18 @@ public class OngoingGame extends AbstractGameState {
         return !hasOptions(turn);
     }
 
+    /**
+     * Check if there is only on player remaining
+     * @return true if there is only one player
+     */
     private boolean isDone() {
         return getPlayers().size() == 1;
     }
 
+    /**
+     * Generates requests from a player
+     * @param player The selected player
+     */
     private void generateRequests(Player player) {
         if (turn != null) {
             generateRequests(player, turn);
@@ -288,6 +326,11 @@ public class OngoingGame extends AbstractGameState {
         }
     }
 
+    /**
+     * Generates requests from a player and a turn
+     * @param player The selected player
+     * @param turn The current turn
+     */
     private void generateRequests(Player player, Turn turn) {
         // Generate the request for block builds if available
         List<Coordinates> availableBlockBuilds = getAvailableBlockBuilds(turn);
@@ -340,6 +383,10 @@ public class OngoingGame extends AbstractGameState {
                 .accept(getModelEventProvider());
     }
 
+    /**
+     * Obtains the avaible coordinates
+     * @param filter The predicate
+     */
     private List<Coordinates> getAvailable(Predicate<Cell> filter) {
         List<Cell> cells = new ArrayList<>();
 
@@ -352,6 +399,10 @@ public class OngoingGame extends AbstractGameState {
         return toCoordinatesList(cells);
     }
 
+    /**
+     * Get or generates a turn (if not present)
+     * @param worker The selected worker
+     */
     private Optional<Turn> getOrGenerateTurn(Worker worker) {
         if (turn != null) {
             if (!turn.getWorker().equals(worker)) {
@@ -365,6 +416,10 @@ public class OngoingGame extends AbstractGameState {
         return Optional.of(generateTurn(worker));
     }
 
+    /**
+     * Generates a turn for aworker
+     * @param worker The selected worker
+     */
     private Turn generateTurn(Worker worker) {
         Map<Worker, Boolean> otherWorkers = new HashMap<>();
 
@@ -381,6 +436,11 @@ public class OngoingGame extends AbstractGameState {
         return new Turn(worker, otherWorkers, cell -> getBoard().getNeighborings(cell), cell -> getBoard().isPerimeterSpace(cell));
     }
 
+    /**
+     * Check if a player has options a in that turn
+     * @param turn The turn
+     * @return true if the player has options
+     */
     private boolean hasOptions(Turn turn) {
         if (getAvailableBlockBuilds(turn).size() > 0) {
             return true;
@@ -393,6 +453,11 @@ public class OngoingGame extends AbstractGameState {
         return getAvailableMoves(turn).size() > 0;
     }
 
+    /**
+     * Check if a player has completed his mandatory interactions
+     * @param turn The turn
+     * @return true if the player has completed the interactions
+     */
     private boolean hasCompletedMandatoryInteractions(Turn turn) {
         boolean moved = false;
         boolean built = false;
@@ -407,7 +472,9 @@ public class OngoingGame extends AbstractGameState {
 
         return built;
     }
-
+    /**
+     * Removes the losing player and notifies him and the others player of his defeat
+     */
     private void doLose() {
         Player player = getCurrentPlayer();
         removePlayer(player);
@@ -423,6 +490,11 @@ public class OngoingGame extends AbstractGameState {
         }
     }
 
+    /**
+     * Notifies the movement of the player's workers ina turn
+     * @param player The selected player
+     * @param turn The current turn
+     */
     private void notifyMovements(String player, Turn turn) {
         List<Worker> movedWorkers = turn.getMovedWorkers();
 
@@ -435,10 +507,20 @@ public class OngoingGame extends AbstractGameState {
         turn.clearMovedWorkers();
     }
 
+    /**
+     * Converts a cells in his corresponding coordinates
+     * @param cell The selected cell
+     * @return The coordinates
+     */
     private Coordinates toCoordinates(Cell cell) {
         return new Coordinates(cell.getX(), cell.getY());
     }
 
+    /**
+     * Converts a list of cells in their corresponding coordinates
+     * @param cells The list of cells
+     * @return The list of coordinates
+     */
     private List<Coordinates> toCoordinatesList(List<Cell> cells) {
         List<Coordinates> coordinates = new ArrayList<>();
 
@@ -449,6 +531,11 @@ public class OngoingGame extends AbstractGameState {
         return coordinates;
     }
 
+    /**
+     * Retrieves a worker instance from its id (the worker is of the current player)
+     * @param id The worker's id
+     * @return The worker
+     */
     private Worker getWorkerById(int id) {
         for (Worker worker : getCurrentPlayer().getWorkers()) {
             if (worker.getId() == id) {
@@ -459,6 +546,11 @@ public class OngoingGame extends AbstractGameState {
         return null;
     }
 
+    /**
+     * Retrieves a worker instance from its id (the worker is not of the current player)
+     * @param id The worker's id
+     * @return The worker
+     */
     private Worker getOtherWorkerById(int id) {
         for (Player player : getPlayers()) {
             for (Worker worker : player.getWorkers()) {

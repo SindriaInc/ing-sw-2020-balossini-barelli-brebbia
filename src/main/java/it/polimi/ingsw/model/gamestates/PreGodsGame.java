@@ -15,6 +15,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The class representing the state of game in which the challenger chooses the gods from the deck and players
+ * choose from the challenger list a god to use in the game.
+ * If the game is simple this phase is skipped.
+ */
 public class PreGodsGame extends AbstractGameState {
 
     private enum Phase {
@@ -57,6 +62,14 @@ public class PreGodsGame extends AbstractGameState {
      */
     private Integer firstIndex;
 
+    /**
+     * Class constructor
+     * @param provider The provider of the events
+     * @param board The game's board
+     * @param players The game's players
+     * @param maxWorkers The max number of worker each player can spawn
+     * @param gods The gods list for the game
+     */
     public PreGodsGame(ModelEventProvider provider, Board board, List<Player> players, int maxWorkers, List<God> gods) {
         super(provider, board, players);
 
@@ -88,6 +101,9 @@ public class PreGodsGame extends AbstractGameState {
                 .accept(getModelEventProvider());
     }
 
+    /**
+     * @see AbstractGameState#selectGods(List)
+     */
     @Override
     public ModelResponse selectGods(List<String> gods) {
         if (phase != Phase.CHALLENGER_SELECT_GODS) {
@@ -121,6 +137,9 @@ public class PreGodsGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#chooseGod(String)
+     */
     @Override
     public ModelResponse chooseGod(String god) {
         if (phase != Phase.PLAYER_SELECT_GOD) {
@@ -169,6 +188,9 @@ public class PreGodsGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#selectFirst(String)
+     */
     @Override
     public ModelResponse selectFirst(String player) {
         if (phase != Phase.CHALLENGER_SELECT_FIRST) {
@@ -201,6 +223,9 @@ public class PreGodsGame extends AbstractGameState {
         return ModelResponse.ALLOW;
     }
 
+    /**
+     * @see AbstractGameState#getCurrentPlayer()
+     */
     @Override
     public Player getCurrentPlayer() {
         if (phase == Phase.CHALLENGER_SELECT_GODS || phase == Phase.CHALLENGER_SELECT_FIRST) {
@@ -222,6 +247,9 @@ public class PreGodsGame extends AbstractGameState {
         return getPlayers().get(playerIndex);
     }
 
+    /**
+     * @see AbstractGameState#nextState()
+     */
     @Override
     public AbstractGameState nextState() {
         if (!isDone()) {
@@ -277,6 +305,10 @@ public class PreGodsGame extends AbstractGameState {
         return gods.size() == getSelectGodsCount();
     }
 
+    /**
+     * Generates the choose requests of a player
+     * @param player The player
+     */
     private void generateChooseRequests(Player player) {
         var event = new PlayerTurnStartEvent(player.getName());
         setReceivers(event);
@@ -286,6 +318,11 @@ public class PreGodsGame extends AbstractGameState {
                 .accept(getModelEventProvider());
     }
 
+    /**
+     * Converts a list of gods in a list of string
+     * @param gods The list of gods
+     * @return A list of strings
+     */
     private List<String> toStringList(List<God> gods) {
         List<String> list = new ArrayList<>();
 
@@ -295,7 +332,11 @@ public class PreGodsGame extends AbstractGameState {
 
         return list;
     }
-
+    /**
+     * Generates a list of godinfo from a list of gods
+     * @param gods The list of gods
+     * @return A list of godinfo
+     */
     private List<GodInfo> toGodInfoList(List<God> gods) {
         List<GodInfo> list = new ArrayList<>();
 
@@ -306,10 +347,20 @@ public class PreGodsGame extends AbstractGameState {
         return list;
     }
 
+    /**
+     * Generates godinfo from a god
+     * @param god The selected gods
+     * @return The godinfo
+     */
     private GodInfo toGodInfo(God god) {
         return new GodInfo(god.getName(), god.getId(), god.getTitle(), god.getDescription(), god.getType());
     }
 
+    /**
+     * Obtains a god from its name
+     * @param god The god's name
+     * @return The selected god
+     */
     private God getGodByName(String god) {
         for (God modelGod : availableGods) {
             if (modelGod.getName().equals(god)) {

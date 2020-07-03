@@ -5,10 +5,17 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 
+/**
+ * Predicate used to check if a cell level is the max level
+ */
 public class MaxLevel implements ITriPredicate {
 
     private final int maxLevel;
 
+    /**
+     * Class constructor
+     * @param maxLevel The max level of the board
+     */
     public MaxLevel(int maxLevel) {
         this.maxLevel = maxLevel;
     }

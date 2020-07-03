@@ -11,12 +11,22 @@ import java.util.Optional;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_WIN_LEVEL;
 
+/**
+ * Decorator that forbids the player's win if his winning worker is on a perimeter cell
+ */
 public class NoWinOnPerimeter extends OpponentAbilitiesDecorator {
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public NoWinOnPerimeter(IAbilities abilities, List<Worker> workers) {
         super(abilities, workers);
     }
 
+    /**
+     * @see OpponentAbilitiesDecorator#checkHasWon(Turn)
+     */
     @Override
     public boolean checkHasWon(Turn turn) {
         for (Worker worker : turn.getCandidateWinWorkers()) {

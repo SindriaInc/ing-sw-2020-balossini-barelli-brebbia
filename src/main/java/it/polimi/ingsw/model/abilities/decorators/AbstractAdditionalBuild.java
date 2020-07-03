@@ -11,6 +11,9 @@ import it.polimi.ingsw.model.abilities.predicates.MaxLevel;
 
 import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_MAX_BUILD_LEVEL;
 
+/**
+ * Abstract class for the decorators that allow an additional built
+ */
 public abstract class AbstractAdditionalBuild extends AbilitiesDecorator {
 
     private static final int BUILDS = 2;
@@ -19,6 +22,10 @@ public abstract class AbstractAdditionalBuild extends AbilitiesDecorator {
     private final ITriPredicate canInteractNoWorkers;
     private final ITriPredicate maxBuildLevel;
 
+    /**
+     * Class constructor
+     * @param abilities The abilities to be decorated
+     */
     public AbstractAdditionalBuild(IAbilities abilities) {
         super(abilities);
 
@@ -35,6 +42,9 @@ public abstract class AbstractAdditionalBuild extends AbilitiesDecorator {
      */
     public abstract boolean checkCanAdditionalBuild(Turn turn, Cell cell);
 
+    /**
+     * @see AbilitiesDecorator#checkCanBuildBlock(Turn, Cell)
+     */
     @Override
     public boolean checkCanBuildBlock(Turn turn, Cell cell) {
         if (!buildPhase.check(turn, cell)) {
@@ -52,6 +62,9 @@ public abstract class AbstractAdditionalBuild extends AbilitiesDecorator {
         return canInteractNoWorkers.check(turn, cell) || super.checkCanBuildBlock(turn, cell);
     }
 
+    /**
+     * @see AbilitiesDecorator#checkCanBuildDome(Turn, Cell)
+     */
     @Override
     public boolean checkCanBuildDome(Turn turn, Cell cell) {
         if (!buildPhase.check(turn, cell)) {

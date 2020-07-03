@@ -5,6 +5,9 @@ import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 
+/**
+ * Predicate used to check the possible interactions of a worker (other workers excluded)
+ */
 public class CanInteract implements ITriPredicate {
 
     private final ITriPredicate neighbourCell = new NeighbourCell();

@@ -7,6 +7,11 @@ import it.polimi.ingsw.model.gamestates.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The class representing the game intended has the sequence of states and action that can be performed. The
+ * game is initialized and after every turn its state it's updated, following the action of the players and the
+ * game phases as stated by the rules.
+ */
 public class Game {
 
     public static final int BOARD_ROWS = 5;
@@ -188,6 +193,10 @@ public class Game {
         currentState = new EndGame(currentState.getModelEventProvider(), currentState.getBoard(), null, players);
     }
 
+    /**
+     * Obtains the board of the game
+     * @return The board in the current state
+     */
     protected Board getOriginalBoard() {
         return currentState.getBoard();
     }
