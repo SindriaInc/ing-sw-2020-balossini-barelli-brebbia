@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class LobbyPresentation extends AbstractPreGamePresentation {
                                      List<RoomBox> rooms,
                                      Button action
     ) {
-        styleRoom(action);
+        styleButton(action);
 
         StackPane center = new StackPane();
         StackPane bottom = new StackPane(action);
@@ -45,6 +46,7 @@ public class LobbyPresentation extends AbstractPreGamePresentation {
         if (rooms.size() <= 0) {
             Text noRoomsText = new Text("No rooms found, please create a new one\n\nYou can also wait for other players to create a room");
             style(noRoomsText);
+            noRoomsText.setTextAlignment(TextAlignment.CENTER);
             center.getChildren().add(noRoomsText);
             return super.generatePresentation(width, height, center, bottom);
         }
@@ -75,7 +77,7 @@ public class LobbyPresentation extends AbstractPreGamePresentation {
             style(roomBox.getName());
             style(roomBox.getPlayers());
             style(roomBox.getSimple());
-            styleRoom(roomBox.getButton());
+            styleButton(roomBox.getButton());
 
             roomsContainer.getChildren().add(roomBox);
         }

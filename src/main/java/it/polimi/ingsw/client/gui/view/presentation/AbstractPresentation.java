@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Presentation for a state of the game
@@ -192,10 +193,12 @@ public abstract class AbstractPresentation {
     }
 
     /**
-     * Style a button in the room style
-     * @param component The field
+     * Style a button
+     * @param component The button
      */
-    public void styleRoom(Button component) {
+    public void styleButton(Button component) {
+        component.setTextAlignment(TextAlignment.CENTER);
+
         Image image = getAssets().getImage(GuiAssets.Images.CREATE_ROOM_BUTTON);
         BackgroundSize backgroundSize = new BackgroundSize(1.0, 1.0, true, true, false , false);
         BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);

@@ -1,13 +1,11 @@
 package it.polimi.ingsw.model.gamestates;
 
-import it.polimi.ingsw.common.event.AbstractEvent;
 import it.polimi.ingsw.common.info.Coordinates;
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.ModelEventProvider;
-import it.polimi.ingsw.model.ModelResponse;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.common.event.AbstractEvent;
+import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,56 +24,91 @@ public abstract class AbstractGameState {
 
     /**
      * List of the players in the game
+     * The order of the players is preserved
      *
      * When a player loses it gets removed from this list
      */
-    private final List<Player> activePlayers = new ArrayList<>();
+    private final List<Player> activePlayers = new LinkedList<>();
 
     /**
      * List of the players spectating
      *
      * When a player loses it gets added into this list
      */
-    private final List<Player> spectatorPlayers = new ArrayList<>();
+    private final List<Player> spectatorPlayers = new LinkedList<>();
 
+    /**
+     * Class constructor, set model event provider, board and list of players
+     *
+     * @param provider The model event provider
+     * @param board The board
+     * @param players The player list
+     */
     public AbstractGameState(ModelEventProvider provider, Board board, List<Player> players) {
         this.modelEventProvider = provider;
         this.board = board;
         this.activePlayers.addAll(players);
     }
 
+    /**
+     * @see Game#selectGods(List)
+     */
     public ModelResponse selectGods(List<String> gods) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#chooseGod(String)
+     */
     public ModelResponse chooseGod(String god) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#selectFirst(String) 
+     */
     public ModelResponse selectFirst(String first) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#spawnWorker(Coordinates)
+     */
     public ModelResponse spawnWorker(Coordinates position) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#moveWorker(int, Coordinates)
+     */
     public ModelResponse moveWorker(int worker, Coordinates destination) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#buildBlock(int, Coordinates)
+     */
     public ModelResponse buildBlock(int worker, Coordinates destination) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#buildDome(int, Coordinates)
+     */
     public ModelResponse buildDome(int worker, Coordinates destination) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#forceWorker(int, int, Coordinates)
+     */
     public ModelResponse forceWorker(int worker, int target, Coordinates destination) {
         return ModelResponse.INVALID_STATE;
     }
 
+    /**
+     * @see Game#endTurn()
+     */
     public ModelResponse endTurn() {
         return ModelResponse.INVALID_STATE;
     }
@@ -112,12 +145,21 @@ public abstract class AbstractGameState {
         return List.copyOf(activePlayers);
     }
 
+    /**
+     * Get all the players both spectating and playing
+     * @return The list of all players
+     */
     public final List<Player> getAllPlayers() {
         List<Player> allPlayers = new ArrayList<>(activePlayers);
         allPlayers.addAll(spectatorPlayers);
         return allPlayers;
     }
 
+    /**
+     * Get all the opponents
+     * @param player The player
+     * @return The opponent list
+     */
     public final List<Player> getOpponents(Player player) {
         List<Player> opponents = new ArrayList<>(activePlayers);
         opponents.remove(player);

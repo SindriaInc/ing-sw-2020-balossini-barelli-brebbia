@@ -1,0 +1,121 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IAbilities</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.abilities</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IAbilities (it.polimi.ingsw.model.abilities)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IAbilities</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.abilities;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.model.Cell;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Turn;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Worker;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;public interface IAbilities {
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;    /**
+<i>10</i>&nbsp;     * Checks if the workers at the end of the turn meet any win condition
+<i>11</i>&nbsp;     * @param turn The Turn
+<i>12</i>&nbsp;     * @return true if any of the workers (of the turn player) met any win conditions
+<i>13</i>&nbsp;     */
+<i>14</i>&nbsp;    boolean checkHasWon(Turn turn);
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    /**
+<i>17</i>&nbsp;     * Whether or not the worker selected in the turn can move into the specified cell
+<i>18</i>&nbsp;     * @param turn The current Turn
+<i>19</i>&nbsp;     * @param cell The Cell
+<i>20</i>&nbsp;     * @return true if the action is allowed
+<i>21</i>&nbsp;     */
+<i>22</i>&nbsp;    boolean checkCanMove(Turn turn, Cell cell);
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    /**
+<i>25</i>&nbsp;     * Move the worker in the specified cell
+<i>26</i>&nbsp;     * @param turn The current Turn
+<i>27</i>&nbsp;     * @param cell The Cell
+<i>28</i>&nbsp;     */
+<i>29</i>&nbsp;    void doMove(Turn turn, Cell cell);
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;    /**
+<i>32</i>&nbsp;     * Whether or not the worker can build a block in the specified cell
+<i>33</i>&nbsp;     * @param turn The current Turn
+<i>34</i>&nbsp;     * @param cell The Cell
+<i>35</i>&nbsp;     * @return true if the action is allowed
+<i>36</i>&nbsp;     */
+<i>37</i>&nbsp;    boolean checkCanBuildBlock(Turn turn, Cell cell);
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    /**
+<i>40</i>&nbsp;     * Builds a block in the specified cell using the worker
+<i>41</i>&nbsp;     * @param turn The current Turn
+<i>42</i>&nbsp;     * @param cell The Cell
+<i>43</i>&nbsp;     */
+<i>44</i>&nbsp;    void doBuildBlock(Turn turn, Cell cell);
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * Whether or not the worker can build a dome in the specified cell
+<i>48</i>&nbsp;     * @param turn The current Turn
+<i>49</i>&nbsp;     * @param cell The Cell
+<i>50</i>&nbsp;     * @return true if the action is allowed
+<i>51</i>&nbsp;     */
+<i>52</i>&nbsp;    boolean checkCanBuildDome(Turn turn, Cell cell);
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Builds a dome in the specified cell using the worker
+<i>56</i>&nbsp;     * @param turn The current Turn
+<i>57</i>&nbsp;     * @param cell The Cell
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    void doBuildDome(Turn turn, Cell cell);
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * Whether or not a worker can force another out of his cell
+<i>63</i>&nbsp;     * @param turn The current Turn
+<i>64</i>&nbsp;     * @return true if the action is allowed
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    boolean checkCanForce(Turn turn, Worker worker, Cell cell);
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;    /**
+<i>69</i>&nbsp;     * Force a worker from his cell to another
+<i>70</i>&nbsp;     * @param turn The current Turn
+<i>71</i>&nbsp;     * @param cell The Cell
+<i>72</i>&nbsp;     */
+<i>73</i>&nbsp;    void doForce(Turn turn, Worker worker, Cell cell);
+<i>74</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 17:21</div>
+</div>
+</body>
+</html>
