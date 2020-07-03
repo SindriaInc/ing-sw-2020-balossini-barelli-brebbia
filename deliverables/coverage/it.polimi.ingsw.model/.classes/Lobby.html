@@ -1,0 +1,465 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Lobby</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Lobby (it.polimi.ingsw.model)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Lobby</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (115/ 115)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.common.IPlayerChecker;
+<i>4</i>&nbsp;import it.polimi.ingsw.common.info.RoomInfo;
+<i>5</i>&nbsp;import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
+<i>6</i>&nbsp;import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
+<i>7</i>&nbsp;import it.polimi.ingsw.common.event.lobby.LobbyUpdateEvent;
+<i>8</i>&nbsp;import it.polimi.ingsw.common.logging.Logger;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import java.util.ArrayList;
+<i>11</i>&nbsp;import java.util.List;
+<i>12</i>&nbsp;import java.util.Optional;
+<i>13</i>&nbsp;import java.util.stream.Collectors;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;/**
+<i>16</i>&nbsp; * The class representing the lobby of the game. A player enters the lobby after connecting to the server and here
+<i>17</i>&nbsp; * he can choose a room to join or create a new one. The lobby contains the list of rooms associated to the players.
+<i>18</i>&nbsp; */
+<i>19</i>&nbsp;public class Lobby {
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    private static final int MIN_ROOM_PLAYERS = 2;
+<i>22</i>&nbsp;    private static final int MAX_ROOM_PLAYERS = 4;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    /**
+<i>25</i>&nbsp;     * The model event provider
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    private final ModelEventProvider provider;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    /**
+<i>30</i>&nbsp;     * The list of players in the lobby that are neither in a game nor in a room
+<i>31</i>&nbsp;     */
+<b class="fc"><i>32</i>&nbsp;    private final List&lt;Player&gt; freePlayers = new ArrayList&lt;&gt;();</b>
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    /**
+<i>35</i>&nbsp;     * The list of rooms waiting for players to start a game
+<i>36</i>&nbsp;     */
+<b class="fc"><i>37</i>&nbsp;    private final List&lt;Room&gt; rooms = new ArrayList&lt;&gt;();</b>
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    /**
+<i>40</i>&nbsp;     * The list of ongoing games
+<i>41</i>&nbsp;     */
+<b class="fc"><i>42</i>&nbsp;    private final List&lt;Game&gt; games = new ArrayList&lt;&gt;();</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * The deck to be used in normal games
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    private final Deck deck;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     * Class constructor
+<i>51</i>&nbsp;     * @param deck The chosen deck of god
+<i>52</i>&nbsp;     */
+<b class="fc"><i>53</i>&nbsp;    public Lobby(Deck deck) {</b>
+<b class="fc"><i>54</i>&nbsp;        this.provider = new ModelEventProvider();</b>
+<b class="fc"><i>55</i>&nbsp;        this.deck = deck;</b>
+<b class="fc"><i>56</i>&nbsp;    }</b>
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public ModelEventProvider getModelEventProvider() {
+<b class="fc"><i>59</i>&nbsp;        return provider;</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    /**
+<i>63</i>&nbsp;     * The checker for player names
+<i>64</i>&nbsp;     * @return the checker
+<i>65</i>&nbsp;     */
+<i>66</i>&nbsp;    public IPlayerChecker getPlayerChecker() {
+<b class="fc"><i>67</i>&nbsp;        return this::isAvailable;</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Handle the player login
+<i>72</i>&nbsp;     * @param player The player that wants to login
+<i>73</i>&nbsp;     * @param age The age of the player, assumed to be valid
+<i>74</i>&nbsp;     * @return the response - ModelResponse.ALLOW if the name is available
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    public ModelResponse login(String player, int age) {
+<b class="fc"><i>77</i>&nbsp;        if (!isAvailable(player)) {</b>
+<b class="fc"><i>78</i>&nbsp;            Logger.getInstance().debug(&quot;Received login with an invalid player&quot;);</b>
+<b class="fc"><i>79</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;        freePlayers.add(new Player(player, age));</b>
+<b class="fc"><i>83</i>&nbsp;        notifyLobbyUpdate();</b>
+<b class="fc"><i>84</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    /**
+<i>88</i>&nbsp;     * Handle the player disconnection
+<i>89</i>&nbsp;     * This method must always return ModelResponse.ALLOW
+<i>90</i>&nbsp;     * @param player The player disconnected
+<i>91</i>&nbsp;     * @return ModelResponse.ALLOW
+<i>92</i>&nbsp;     */
+<i>93</i>&nbsp;    public ModelResponse logout(String player) {
+<b class="fc"><i>94</i>&nbsp;        Optional&lt;Player&gt; optionalPlayer = getFreePlayer(player);</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;        if (optionalPlayer.isPresent()) {</b>
+<i>97</i>&nbsp;            // The player was in the lobby
+<i>98</i>&nbsp;
+<b class="fc"><i>99</i>&nbsp;            freePlayers.remove(optionalPlayer.get());</b>
+<b class="fc"><i>100</i>&nbsp;            notifyLobbyUpdate();</b>
+<b class="fc"><i>101</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;
+<b class="fc"><i>104</i>&nbsp;        Optional&lt;Room&gt; optionalRoom = getRoom(player);</b>
+<i>105</i>&nbsp;
+<b class="fc"><i>106</i>&nbsp;        if (optionalRoom.isPresent()) {</b>
+<i>107</i>&nbsp;            // The player is in a room, either the owner or just a player
+<b class="fc"><i>108</i>&nbsp;            Room room = optionalRoom.get();</b>
+<i>109</i>&nbsp;
+<b class="fc"><i>110</i>&nbsp;            if (room.getOwner().getName().equals(player)) {</b>
+<i>111</i>&nbsp;                // The room owner has quit
+<b class="fc"><i>112</i>&nbsp;                rooms.remove(room);</b>
+<i>113</i>&nbsp;
+<b class="fc"><i>114</i>&nbsp;                if (room.getOtherPlayers().size() &gt; 0) {</b>
+<i>115</i>&nbsp;                    // Move the players in the deleted room into a new room
+<b class="fc"><i>116</i>&nbsp;                    rooms.remove(room);</b>
+<i>117</i>&nbsp;
+<b class="fc"><i>118</i>&nbsp;                    Player owner = room.getOtherPlayers().get(0);</b>
+<b class="fc"><i>119</i>&nbsp;                    Room replaced = new Room(owner, room.getMaxPlayers(), room.isSimpleGame());</b>
+<b class="fc"><i>120</i>&nbsp;                    room.getOtherPlayers().subList(1, room.getOtherPlayers().size()).forEach(replaced::addPlayer);</b>
+<i>121</i>&nbsp;
+<b class="fc"><i>122</i>&nbsp;                    rooms.add(replaced);</b>
+<b class="fc"><i>123</i>&nbsp;                    notifyRoomUpdate(replaced);</b>
+<b class="fc"><i>124</i>&nbsp;                }</b>
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;            } else {
+<i>127</i>&nbsp;                // The player was in another player&#39;s room
+<b class="fc"><i>128</i>&nbsp;                optionalPlayer = getRoomOtherPlayer(room, player);</b>
+<b class="fc"><i>129</i>&nbsp;                optionalPlayer.ifPresent(room::removePlayer);</b>
+<i>130</i>&nbsp;            }
+<i>131</i>&nbsp;
+<b class="fc"><i>132</i>&nbsp;            notifyLobbyUpdate();</b>
+<b class="fc"><i>133</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>134</i>&nbsp;        }
+<i>135</i>&nbsp;
+<b class="fc"><i>136</i>&nbsp;        Optional&lt;Game&gt; optionalGame = getGame(player);</b>
+<i>137</i>&nbsp;
+<b class="fc"><i>138</i>&nbsp;        if (optionalGame.isPresent()) {</b>
+<b class="fc"><i>139</i>&nbsp;            Game game = optionalGame.get();</b>
+<i>140</i>&nbsp;
+<b class="fc"><i>141</i>&nbsp;            optionalPlayer = getGamePlayer(game, player);</b>
+<b class="fc"><i>142</i>&nbsp;            optionalPlayer.ifPresent(modelPlayer -&gt; game.logout(modelPlayer.getName()));</b>
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<b class="fc"><i>145</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>146</i>&nbsp;    }
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;    /**
+<i>149</i>&nbsp;     * Moves a free player into a new room, using that player as the owner
+<i>150</i>&nbsp;     * @param player The player
+<i>151</i>&nbsp;     * @param maxPlayers The players needed to start the game
+<i>152</i>&nbsp;     * @param simpleGame True if the game should have gods
+<i>153</i>&nbsp;     * @return the response - ModelResponse.ALLOW if the player can create a room
+<i>154</i>&nbsp;     */
+<i>155</i>&nbsp;    public ModelResponse createRoom(String player, int maxPlayers, boolean simpleGame) {
+<b class="fc"><i>156</i>&nbsp;        Optional&lt;Player&gt; foundPlayer = getFreePlayer(player);</b>
+<i>157</i>&nbsp;
+<b class="fc"><i>158</i>&nbsp;        if (foundPlayer.isEmpty()) {</b>
+<i>159</i>&nbsp;            // Trying to create a room while already in a room or in game
+<b class="fc"><i>160</i>&nbsp;            return ModelResponse.INVALID_STATE;</b>
+<i>161</i>&nbsp;        }
+<i>162</i>&nbsp;
+<b class="fc"><i>163</i>&nbsp;        if (maxPlayers &lt; MIN_ROOM_PLAYERS || maxPlayers &gt; MAX_ROOM_PLAYERS) {</b>
+<i>164</i>&nbsp;            // Trying to create a room with an invalid player limit
+<b class="fc"><i>165</i>&nbsp;            return ModelResponse.INVALID_STATE;</b>
+<i>166</i>&nbsp;        }
+<i>167</i>&nbsp;
+<b class="fc"><i>168</i>&nbsp;        Room room = new Room(foundPlayer.get(), maxPlayers, simpleGame);</b>
+<b class="fc"><i>169</i>&nbsp;        rooms.add(room);</b>
+<b class="fc"><i>170</i>&nbsp;        freePlayers.remove(foundPlayer.get());</b>
+<b class="fc"><i>171</i>&nbsp;        notifyLobbyUpdate();</b>
+<b class="fc"><i>172</i>&nbsp;        notifyRoomUpdate(room);</b>
+<b class="fc"><i>173</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;    /**
+<i>177</i>&nbsp;     * Moves a free player into an existing room
+<i>178</i>&nbsp;     * @param player The player
+<i>179</i>&nbsp;     * @param owner The owner that identifies the room
+<i>180</i>&nbsp;     * @return the response - ModelResponse.ALLOW if the player can join the room
+<i>181</i>&nbsp;     */
+<i>182</i>&nbsp;    public ModelResponse joinRoom(String player, String owner) {
+<b class="fc"><i>183</i>&nbsp;        Optional&lt;Player&gt; foundPlayer = getFreePlayer(player);</b>
+<i>184</i>&nbsp;
+<b class="fc"><i>185</i>&nbsp;        if (foundPlayer.isEmpty()) {</b>
+<i>186</i>&nbsp;            // Trying to join a room while already in a room or in game
+<b class="fc"><i>187</i>&nbsp;            return ModelResponse.INVALID_STATE;</b>
+<i>188</i>&nbsp;        }
+<i>189</i>&nbsp;
+<b class="fc"><i>190</i>&nbsp;        Optional&lt;Room&gt; foundRoom = getRoomByOwner(owner);</b>
+<i>191</i>&nbsp;
+<b class="fc"><i>192</i>&nbsp;        if (foundRoom.isEmpty()) {</b>
+<i>193</i>&nbsp;            // Trying to join a non-existing room
+<b class="fc"><i>194</i>&nbsp;            return ModelResponse.INVALID_PARAMS;</b>
+<i>195</i>&nbsp;        }
+<i>196</i>&nbsp;
+<b class="fc"><i>197</i>&nbsp;        Room room = foundRoom.get();</b>
+<i>198</i>&nbsp;
+<b class="fc"><i>199</i>&nbsp;        room.addPlayer(foundPlayer.get());</b>
+<b class="fc"><i>200</i>&nbsp;        freePlayers.remove(foundPlayer.get());</b>
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;        // Always notify a room update so that the client can use this as a response
+<b class="fc"><i>203</i>&nbsp;        notifyRoomUpdate(room);</b>
+<i>204</i>&nbsp;
+<b class="fc"><i>205</i>&nbsp;        if (room.isFull()) {</b>
+<b class="fc"><i>206</i>&nbsp;            startGame(room);</b>
+<b class="fc"><i>207</i>&nbsp;            notifyLobbyUpdate();</b>
+<b class="fc"><i>208</i>&nbsp;            return ModelResponse.ALLOW;</b>
+<i>209</i>&nbsp;        }
+<i>210</i>&nbsp;
+<b class="fc"><i>211</i>&nbsp;        notifyLobbyUpdate();</b>
+<b class="fc"><i>212</i>&nbsp;        return ModelResponse.ALLOW;</b>
+<i>213</i>&nbsp;    }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;    /**
+<i>216</i>&nbsp;     * Obtains the current game that the player is playing
+<i>217</i>&nbsp;     * @param player The player
+<i>218</i>&nbsp;     * @return Optional.empty() if there player is not in a game, the game otherwise
+<i>219</i>&nbsp;     */
+<i>220</i>&nbsp;    public Optional&lt;Game&gt; getGame(String player) {
+<b class="fc"><i>221</i>&nbsp;        return games.stream().filter(game -&gt; game.getAllPlayers().stream().anyMatch(other -&gt; other.getName().equals(player))).findFirst();</b>
+<i>222</i>&nbsp;    }
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;    /**
+<i>225</i>&nbsp;     * Start the game in the selected room
+<i>226</i>&nbsp;     * @param room The selected room
+<i>227</i>&nbsp;     */
+<i>228</i>&nbsp;    private void startGame(Room room) {
+<b class="fc"><i>229</i>&nbsp;        rooms.remove(room);</b>
+<b class="fc"><i>230</i>&nbsp;        notifyGameStart(room);</b>
+<i>231</i>&nbsp;
+<b class="fc"><i>232</i>&nbsp;        Game game = new Game(provider);</b>
+<b class="fc"><i>233</i>&nbsp;        game.init(room.getAllPlayers(), deck, room.isSimpleGame());</b>
+<b class="fc"><i>234</i>&nbsp;        games.add(game);</b>
+<b class="fc"><i>235</i>&nbsp;    }</b>
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;    /**
+<i>238</i>&nbsp;     * Notifies the game start to the player in a selected room
+<i>239</i>&nbsp;     * @param room The selected room
+<i>240</i>&nbsp;     */
+<i>241</i>&nbsp;    private void notifyGameStart(Room room) {
+<b class="fc"><i>242</i>&nbsp;        RoomInfo roomInfo = generateRoomInfo(room);</b>
+<i>243</i>&nbsp;
+<b class="fc"><i>244</i>&nbsp;        for (Player other : room.getAllPlayers()) {</b>
+<b class="fc"><i>245</i>&nbsp;            new LobbyGameStartEvent(other.getName(), roomInfo).accept(provider);</b>
+<b class="fc"><i>246</i>&nbsp;        }</b>
+<b class="fc"><i>247</i>&nbsp;    }</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;    /**
+<i>250</i>&nbsp;     * Notifies the room update (join or leave) in a selected room
+<i>251</i>&nbsp;     * @param room The selected room
+<i>252</i>&nbsp;     */
+<i>253</i>&nbsp;    private void notifyRoomUpdate(Room room) {
+<b class="fc"><i>254</i>&nbsp;        RoomInfo roomInfo = generateRoomInfo(room);</b>
+<i>255</i>&nbsp;
+<b class="fc"><i>256</i>&nbsp;        for (Player other : room.getAllPlayers()) {</b>
+<b class="fc"><i>257</i>&nbsp;            new LobbyRoomUpdateEvent(other.getName(), roomInfo).accept(provider);</b>
+<b class="fc"><i>258</i>&nbsp;        }</b>
+<b class="fc"><i>259</i>&nbsp;    }</b>
+<i>260</i>&nbsp;    /**
+<i>261</i>&nbsp;     * Notifies them lobby update (join, leave, enter or exit a room)
+<i>262</i>&nbsp;     */
+<i>263</i>&nbsp;    private void notifyLobbyUpdate() {
+<b class="fc"><i>264</i>&nbsp;        List&lt;RoomInfo&gt; roomInfos = generateRoomInfos();</b>
+<i>265</i>&nbsp;
+<b class="fc"><i>266</i>&nbsp;        List&lt;String&gt; players = freePlayers.stream().map(Player::getName).collect(Collectors.toList());</b>
+<i>267</i>&nbsp;
+<b class="fc"><i>268</i>&nbsp;        for (Player player : freePlayers) {</b>
+<b class="fc"><i>269</i>&nbsp;            new LobbyUpdateEvent(player.getName(), players, roomInfos, MIN_ROOM_PLAYERS, MAX_ROOM_PLAYERS).accept(provider);</b>
+<b class="fc"><i>270</i>&nbsp;        }</b>
+<b class="fc"><i>271</i>&nbsp;    }</b>
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    /**
+<i>274</i>&nbsp;     * Obtains a free player in the lobby
+<i>275</i>&nbsp;     * @param name The name of the player
+<i>276</i>&nbsp;     */
+<i>277</i>&nbsp;    private Optional&lt;Player&gt; getFreePlayer(String name) {
+<b class="fc"><i>278</i>&nbsp;        return freePlayers.stream().filter(player -&gt; player.getName().equals(name)).findFirst();</b>
+<i>279</i>&nbsp;    }
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;    /**
+<i>282</i>&nbsp;     * Obtains the other players in the room of a selected player
+<i>283</i>&nbsp;     * @param room the selected room
+<i>284</i>&nbsp;     * @param name The name of the player
+<i>285</i>&nbsp;     */
+<i>286</i>&nbsp;    private Optional&lt;Player&gt; getRoomOtherPlayer(Room room, String name) {
+<b class="fc"><i>287</i>&nbsp;        return room.getOtherPlayers().stream().filter(player -&gt; player.getName().equals(name)).findFirst();</b>
+<i>288</i>&nbsp;    }
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;    /**
+<i>291</i>&nbsp;     * Obtains the other players in the game of a selected player
+<i>292</i>&nbsp;     * @param game The selected room
+<i>293</i>&nbsp;     * @param name The name of the player
+<i>294</i>&nbsp;     */
+<i>295</i>&nbsp;    private Optional&lt;Player&gt; getGamePlayer(Game game, String name) {
+<b class="fc"><i>296</i>&nbsp;        return game.getAllPlayers().stream().filter(player -&gt; player.getName().equals(name)).findFirst();</b>
+<i>297</i>&nbsp;    }
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;    /**
+<i>300</i>&nbsp;     * Obtains the room where the selected player is present (if exist)
+<i>301</i>&nbsp;     * @param name The name of the player
+<i>302</i>&nbsp;     */
+<i>303</i>&nbsp;    private Optional&lt;Room&gt; getRoom(String name) {
+<b class="fc"><i>304</i>&nbsp;        return rooms.stream().filter(room -&gt; room.getAllPlayers().stream().anyMatch(player -&gt; player.getName().equals(name))).findFirst();</b>
+<i>305</i>&nbsp;    }
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;    /**
+<i>308</i>&nbsp;     * Obtains the room where the selected player is the owner (if exist)
+<i>309</i>&nbsp;     * @param name The name of the player
+<i>310</i>&nbsp;     */
+<i>311</i>&nbsp;    private Optional&lt;Room&gt; getRoomByOwner(String name) {
+<b class="fc"><i>312</i>&nbsp;        return rooms.stream().filter(room -&gt; room.getOwner().getName().equals(name)).findFirst();</b>
+<i>313</i>&nbsp;    }
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;    /**
+<i>316</i>&nbsp;     * Generates the infos of all the rooms
+<i>317</i>&nbsp;     * @return A list of room infos
+<i>318</i>&nbsp;     */
+<i>319</i>&nbsp;    private List&lt;RoomInfo&gt; generateRoomInfos() {
+<b class="fc"><i>320</i>&nbsp;        List&lt;RoomInfo&gt; roomInfos = new ArrayList&lt;&gt;();</b>
+<i>321</i>&nbsp;
+<b class="fc"><i>322</i>&nbsp;        for (Room room : rooms) {</b>
+<b class="fc"><i>323</i>&nbsp;            roomInfos.add(generateRoomInfo(room));</b>
+<b class="fc"><i>324</i>&nbsp;        }</b>
+<i>325</i>&nbsp;
+<b class="fc"><i>326</i>&nbsp;        return roomInfos;</b>
+<i>327</i>&nbsp;    }
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;    /**
+<i>330</i>&nbsp;     * Generates the info of a selected room
+<i>331</i>&nbsp;     * @param room The selected room
+<i>332</i>&nbsp;     */
+<i>333</i>&nbsp;    private RoomInfo generateRoomInfo(Room room) {
+<b class="fc"><i>334</i>&nbsp;        return new RoomInfo(</b>
+<b class="fc"><i>335</i>&nbsp;                room.getOwner().getName(),</b>
+<b class="fc"><i>336</i>&nbsp;                room.getOtherPlayers().stream().map(Player::getName).collect(Collectors.toList()),</b>
+<b class="fc"><i>337</i>&nbsp;                room.getMaxPlayers(),</b>
+<b class="fc"><i>338</i>&nbsp;                room.isSimpleGame());</b>
+<i>339</i>&nbsp;    }
+<i>340</i>&nbsp;
+<i>341</i>&nbsp;    /**
+<i>342</i>&nbsp;     * Checks if a player is available
+<i>343</i>&nbsp;     * @param player The selected player
+<i>344</i>&nbsp;     * @return True if the player is available
+<i>345</i>&nbsp;     */
+<i>346</i>&nbsp;    private boolean isAvailable(String player) {
+<b class="fc"><i>347</i>&nbsp;        return !isFree(player) &amp;&amp; !isInRoom(player) &amp;&amp; !isInGame(player);</b>
+<i>348</i>&nbsp;    }
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;    /**
+<i>351</i>&nbsp;     * Checks if a player is free
+<i>352</i>&nbsp;     * @param name The player&#39;s name
+<i>353</i>&nbsp;     * @return True if the player is free
+<i>354</i>&nbsp;     */
+<i>355</i>&nbsp;    private boolean isFree(String name) {
+<b class="fc"><i>356</i>&nbsp;        return getFreePlayer(name).isPresent();</b>
+<i>357</i>&nbsp;    }
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;    /**
+<i>360</i>&nbsp;     * Checks if a player is in a room
+<i>361</i>&nbsp;     * @param name The player&#39;s name
+<i>362</i>&nbsp;     * @return True if the player is in a room
+<i>363</i>&nbsp;     */
+<i>364</i>&nbsp;    private boolean isInRoom(String name) {
+<b class="fc"><i>365</i>&nbsp;        return rooms.stream().anyMatch(</b>
+<b class="fc"><i>366</i>&nbsp;                room -&gt; room.getOwner().getName().equals(name) ||</b>
+<b class="fc"><i>367</i>&nbsp;                room.getOtherPlayers().stream().anyMatch(other -&gt; other.getName().equals(name))</b>
+<i>368</i>&nbsp;        );
+<i>369</i>&nbsp;    }
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;    /**
+<i>372</i>&nbsp;     * Checks if a player is in a game
+<i>373</i>&nbsp;     * @param name The player&#39;s name
+<i>374</i>&nbsp;     * @return True if the player is in a game
+<i>375</i>&nbsp;     */
+<i>376</i>&nbsp;    private boolean isInGame(String name) {
+<b class="fc"><i>377</i>&nbsp;        return games.stream().anyMatch(</b>
+<b class="fc"><i>378</i>&nbsp;                game -&gt; game.getAllPlayers().stream().anyMatch(other -&gt; other.getName().equals(name))</b>
+<i>379</i>&nbsp;        );
+<i>380</i>&nbsp;    }
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 23:06</div>
+</div>
+</body>
+</html>

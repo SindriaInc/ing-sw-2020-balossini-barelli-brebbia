@@ -131,6 +131,7 @@ public class Board {
 
     /**
      * Obtain a list of every cell, in no particular order
+     * @return The list of cells
      */
     public List<Cell> getCells() {
         return Arrays.stream(map).flatMap(Arrays::stream).collect(Collectors.toList());

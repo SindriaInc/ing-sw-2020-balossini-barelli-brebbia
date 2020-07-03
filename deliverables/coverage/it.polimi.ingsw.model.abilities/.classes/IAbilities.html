@@ -1,0 +1,124 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IAbilities</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.abilities</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IAbilities (it.polimi.ingsw.model.abilities)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">IAbilities</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.abilities;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.model.Cell;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Turn;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Worker;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;/**
+<i>8</i>&nbsp; *Interface containing the checks and the actions that con be modified by an ability
+<i>9</i>&nbsp; */
+<i>10</i>&nbsp;public interface IAbilities {
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;    /**
+<i>13</i>&nbsp;     * Checks if the workers at the end of the turn meet any win condition
+<i>14</i>&nbsp;     * @param turn The Turn
+<i>15</i>&nbsp;     * @return true if any of the workers (of the turn player) met any win conditions
+<i>16</i>&nbsp;     */
+<i>17</i>&nbsp;    boolean checkHasWon(Turn turn);
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    /**
+<i>20</i>&nbsp;     * Whether or not the worker selected in the turn can move into the specified cell
+<i>21</i>&nbsp;     * @param turn The current Turn
+<i>22</i>&nbsp;     * @param cell The Cell
+<i>23</i>&nbsp;     * @return true if the action is allowed
+<i>24</i>&nbsp;     */
+<i>25</i>&nbsp;    boolean checkCanMove(Turn turn, Cell cell);
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    /**
+<i>28</i>&nbsp;     * Move the worker in the specified cell
+<i>29</i>&nbsp;     * @param turn The current Turn
+<i>30</i>&nbsp;     * @param cell The Cell
+<i>31</i>&nbsp;     */
+<i>32</i>&nbsp;    void doMove(Turn turn, Cell cell);
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    /**
+<i>35</i>&nbsp;     * Whether or not the worker can build a block in the specified cell
+<i>36</i>&nbsp;     * @param turn The current Turn
+<i>37</i>&nbsp;     * @param cell The Cell
+<i>38</i>&nbsp;     * @return true if the action is allowed
+<i>39</i>&nbsp;     */
+<i>40</i>&nbsp;    boolean checkCanBuildBlock(Turn turn, Cell cell);
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * Builds a block in the specified cell using the worker
+<i>44</i>&nbsp;     * @param turn The current Turn
+<i>45</i>&nbsp;     * @param cell The Cell
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    void doBuildBlock(Turn turn, Cell cell);
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     * Whether or not the worker can build a dome in the specified cell
+<i>51</i>&nbsp;     * @param turn The current Turn
+<i>52</i>&nbsp;     * @param cell The Cell
+<i>53</i>&nbsp;     * @return true if the action is allowed
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    boolean checkCanBuildDome(Turn turn, Cell cell);
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Builds a dome in the specified cell using the worker
+<i>59</i>&nbsp;     * @param turn The current Turn
+<i>60</i>&nbsp;     * @param cell The Cell
+<i>61</i>&nbsp;     */
+<i>62</i>&nbsp;    void doBuildDome(Turn turn, Cell cell);
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Whether or not a worker can force another out of his cell
+<i>66</i>&nbsp;     * @param turn The current Turn
+<i>67</i>&nbsp;     * @return true if the action is allowed
+<i>68</i>&nbsp;     */
+<i>69</i>&nbsp;    boolean checkCanForce(Turn turn, Worker worker, Cell cell);
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /**
+<i>72</i>&nbsp;     * Force a worker from his cell to another
+<i>73</i>&nbsp;     * @param turn The current Turn
+<i>74</i>&nbsp;     * @param cell The Cell
+<i>75</i>&nbsp;     */
+<i>76</i>&nbsp;    void doForce(Turn turn, Worker worker, Cell cell);
+<i>77</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 23:06</div>
+</div>
+</body>
+</html>

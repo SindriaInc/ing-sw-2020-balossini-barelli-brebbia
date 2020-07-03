@@ -1,0 +1,132 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NoWinOnPerimeter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.abilities.decorators</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NoWinOnPerimeter (it.polimi.ingsw.model.abilities.decorators)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NoWinOnPerimeter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.abilities.decorators;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.model.Cell;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Turn;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Worker;
+<i>6</i>&nbsp;import it.polimi.ingsw.model.abilities.IAbilities;
+<i>7</i>&nbsp;import it.polimi.ingsw.model.abilities.OpponentAbilitiesDecorator;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;import java.util.List;
+<i>10</i>&nbsp;import java.util.Optional;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import static it.polimi.ingsw.model.abilities.DefaultAbilities.DEFAULT_WIN_LEVEL;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;/**
+<i>15</i>&nbsp; * Decorator that forbids the player&#39;s win if his winning worker is on a perimeter cell
+<i>16</i>&nbsp; */
+<i>17</i>&nbsp;public class NoWinOnPerimeter extends OpponentAbilitiesDecorator {
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    /**
+<i>20</i>&nbsp;     * Class constructor
+<i>21</i>&nbsp;     * @param abilities The abilities to be decorated
+<i>22</i>&nbsp;     */
+<i>23</i>&nbsp;    public NoWinOnPerimeter(IAbilities abilities, List&lt;Worker&gt; workers) {
+<b class="fc"><i>24</i>&nbsp;        super(abilities, workers);</b>
+<b class="fc"><i>25</i>&nbsp;    }</b>
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    /**
+<i>28</i>&nbsp;     * @see OpponentAbilitiesDecorator#checkHasWon(Turn)
+<i>29</i>&nbsp;     */
+<i>30</i>&nbsp;    @Override
+<i>31</i>&nbsp;    public boolean checkHasWon(Turn turn) {
+<b class="fc"><i>32</i>&nbsp;        for (Worker worker : turn.getCandidateWinWorkers()) {</b>
+<b class="fc"><i>33</i>&nbsp;            Optional&lt;Integer&gt; difference = worker.getLastMovementLevelDifference();</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;            if (difference.isEmpty() || difference.get() &lt;= 0) {</b>
+<b class="fc"><i>36</i>&nbsp;                continue;</b>
+<i>37</i>&nbsp;            }
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;            Optional&lt;Cell&gt; cell = worker.getLastMovementCell();</b>
+<i>40</i>&nbsp;
+<b class="fc"><i>41</i>&nbsp;            if (cell.isPresent() &amp;&amp; cell.get().getLevel() &gt;= DEFAULT_WIN_LEVEL &amp;&amp; turn.isPerimeterSpace(cell.get())) {</b>
+<b class="fc"><i>42</i>&nbsp;                turn.addBannedWinWorker(worker);</b>
+<i>43</i>&nbsp;            }
+<b class="fc"><i>44</i>&nbsp;        }</b>
+<i>45</i>&nbsp;
+<b class="fc"><i>46</i>&nbsp;        return super.checkHasWon(turn);</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 23:06</div>
+</div>
+</body>
+</html>

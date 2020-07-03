@@ -474,10 +474,32 @@ public class OngoingGame extends AbstractGameState {
     }
     /**
      * Removes the losing player and notifies him and the others player of his defeat
+     *
+     * The player abilities will be reset to remove possible "opponents" effects added by the player that has lost
      */
     private void doLose() {
         Player player = getCurrentPlayer();
         removePlayer(player);
+
+        for (Player other : getPlayers()) {
+            other.resetAbilities();
+        }
+
+        for (Player other : getPlayers()) {
+            Optional<God> god = other.getGod();
+
+            if (god.isEmpty()) {
+                continue;
+            }
+
+            for (Player enemy : getPlayers()) {
+                if (enemy.equals(other)) {
+                    continue;
+                }
+
+                enemy.applyOpponentGod(god.get(), other);
+            }
+        }
 
         playerIndex = playerIndex % getPlayers().size();
 
@@ -486,6 +508,10 @@ public class OngoingGame extends AbstractGameState {
         event.accept(getModelEventProvider());
 
         if (!isDone()) {
+            var startEvent = new PlayerTurnStartEvent(getCurrentPlayer().getName());
+            setReceivers(startEvent);
+            startEvent.accept(getModelEventProvider());
+
             generateRequests(getCurrentPlayer());
         }
     }

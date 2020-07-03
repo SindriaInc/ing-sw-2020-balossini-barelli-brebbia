@@ -3,10 +3,12 @@ package it.polimi.ingsw.model.gamestates;
 import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.abilities.DefaultAbilities;
+import it.polimi.ingsw.model.abilities.decorators.BlockOnPlayerMoveUp;
 import it.polimi.ingsw.model.abilities.decorators.ForceSwapMove;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -382,6 +384,34 @@ class OngoingGameTest {
         assertNotEquals(ongoingGame, ongoingGame.nextState());
     }
 
+
+    /**
+     * Check that, if trapped, a player loses
+     */
+    @Test
+    void checkLoseWithGods() {
+        modelEventProvider.registerPlayerLoseEventObserver(event -> loseCount++);
+
+        board.getCellFromCoords(0, 2).setLevel(2);
+        board.getCellFromCoords(1, 2).setLevel(2);
+
+        List<Player> threePlayers = new ArrayList<>(players);
+        threePlayers.add(new Player("C", 2));
+        threePlayers.get(2).addWorker(new Worker(4, board.getCellFromCoords(4, 0)));
+        threePlayers.get(2).addWorker(new Worker(5, board.getCellFromCoords(4, 1)));
+        ongoingGame = new OngoingGame(modelEventProvider, board, threePlayers);
+        for (Player player : players) {
+            player.applyGod(new God("A", 1, "Test", "Test", "Test", Map.of(BlockOnPlayerMoveUp.class, true)));
+        }
+
+        assertEquals(loseCount, 0);
+
+        ongoingGame.endTurn();
+        assertEquals(loseCount, 1);
+
+        assertEquals(ongoingGame, ongoingGame.nextState());
+    }
+
     /**
      * Check that, without a build, a player loses
      */
@@ -403,7 +433,7 @@ class OngoingGameTest {
         assertEquals(turnStartCount, 1);
         assertEquals(loseCount, 0);
         ongoingGame.endTurn();
-        assertEquals(turnStartCount, 1);
+        assertEquals(turnStartCount, 2);
         assertEquals(loseCount, 1);
 
         assertEquals(ongoingGame, ongoingGame.nextState());

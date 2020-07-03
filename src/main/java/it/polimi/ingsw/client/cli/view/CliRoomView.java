@@ -67,7 +67,7 @@ public class CliRoomView extends AbstractCliView {
                 output.append(leftPadAndCenter("Players (" + count + "/" + max + "): " +
                         String.join(", ", room.getOtherPlayers()), sideLineLength + SIDE_PADDING.length()));
             } else if (i == 10) {
-                output.append(leftPadAndCenter("The game will start as soon as the room is filled" + room.getOwner(), sideLineLength + SIDE_PADDING.length()));
+                output.append(leftPadAndCenter("The game will start as soon as the room is filled", sideLineLength + SIDE_PADDING.length()));
             }
 
             output.append(System.lineSeparator());

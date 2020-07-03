@@ -3,7 +3,6 @@ package it.polimi.ingsw.model.abilities.decorators;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
-import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 import it.polimi.ingsw.model.abilities.ITriPredicate;
 import it.polimi.ingsw.model.abilities.predicates.CanInteractNoWorkers;

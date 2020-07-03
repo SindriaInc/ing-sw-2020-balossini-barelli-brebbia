@@ -117,6 +117,7 @@ public class Turn {
      * @param worker The Worker used during the Turn
      * @param otherWorkers The other Workers present, the boolean represents whether or not they belong to the same player
      * @param getNeighbours List of neighboring to a cell
+     * @param isPerimeterSpace The function that checks the perimeter
      */
     public Turn(Worker worker, Map<Worker, Boolean> otherWorkers, Function<Cell, List<Cell>> getNeighbours, Predicate<Cell> isPerimeterSpace) {
         this.worker = worker;
@@ -278,6 +279,7 @@ public class Turn {
 
     /**
      * Adds a cell to the list of force
+     * @param target The target
      * @param cell The cell of the force
      */
     public void addForce(Worker target, Cell cell) {

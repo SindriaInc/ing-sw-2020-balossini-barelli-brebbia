@@ -63,6 +63,7 @@ public class Logger {
 
     /**
      * Starts the logging
+     * @param executorService The executor service
      * @throws IllegalStateException if already started
      */
     public void start(ExecutorService executorService) {

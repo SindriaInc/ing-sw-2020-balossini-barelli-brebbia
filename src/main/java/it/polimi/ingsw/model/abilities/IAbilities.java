@@ -64,6 +64,8 @@ public interface IAbilities {
     /**
      * Whether or not a worker can force another out of his cell
      * @param turn The current Turn
+     * @param worker The worker
+     * @param cell The cell
      * @return true if the action is allowed
      */
     boolean checkCanForce(Turn turn, Worker worker, Cell cell);
@@ -71,7 +73,8 @@ public interface IAbilities {
     /**
      * Force a worker from his cell to another
      * @param turn The current Turn
-     * @param cell The Cell
+     * @param worker The worker
+     * @param cell The cell
      */
     void doForce(Turn turn, Worker worker, Cell cell);
 }

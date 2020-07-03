@@ -21,14 +21,29 @@ public class Lobby {
     private static final int MIN_ROOM_PLAYERS = 2;
     private static final int MAX_ROOM_PLAYERS = 4;
 
+    /**
+     * The model event provider
+     */
     private final ModelEventProvider provider;
 
+    /**
+     * The list of players in the lobby that are neither in a game nor in a room
+     */
     private final List<Player> freePlayers = new ArrayList<>();
 
+    /**
+     * The list of rooms waiting for players to start a game
+     */
     private final List<Room> rooms = new ArrayList<>();
 
+    /**
+     * The list of ongoing games
+     */
     private final List<Game> games = new ArrayList<>();
 
+    /**
+     * The deck to be used in normal games
+     */
     private final Deck deck;
 
     /**
@@ -44,6 +59,10 @@ public class Lobby {
         return provider;
     }
 
+    /**
+     * The checker for player names
+     * @return the checker
+     */
     public IPlayerChecker getPlayerChecker() {
         return this::isAvailable;
     }

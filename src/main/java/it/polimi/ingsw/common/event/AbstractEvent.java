@@ -32,6 +32,7 @@ public abstract class AbstractEvent {
 
     /**
      * Checks if the parameters of this event are valid related to the sender
+     * @return true if valid
      */
     public boolean isValid() {
         return true;

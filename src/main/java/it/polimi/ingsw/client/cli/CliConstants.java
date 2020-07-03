@@ -12,7 +12,7 @@ public class CliConstants {
     /**
      * Color constants
      */
-    enum CliColor {
+    public enum CliColor {
 
         BLACK("30", "40", "Black"),
         RED("31", "41", "Red"),
@@ -61,7 +61,7 @@ public class CliConstants {
 
     public static final int STATUS_SPACING = 2;
 
-    public static final CliColor[] PLAYER_COLORS = {CliColor.RED, CliColor.GREEN, CliColor.BLUE};
+    public static final CliColor[] PLAYER_COLORS = {CliColor.BLUE, CliColor.RED, CliColor.GREEN, CliColor.MAGENTA};
 
     public static final String RESET = COLOR_PREFIX + "0" + COLOR_SUFFIX;
 

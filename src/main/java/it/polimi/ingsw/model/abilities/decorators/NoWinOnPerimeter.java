@@ -19,6 +19,7 @@ public class NoWinOnPerimeter extends OpponentAbilitiesDecorator {
     /**
      * Class constructor
      * @param abilities The abilities to be decorated
+     * @param workers The workers
      */
     public NoWinOnPerimeter(IAbilities abilities, List<Worker> workers) {
         super(abilities, workers);

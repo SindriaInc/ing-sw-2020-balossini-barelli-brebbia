@@ -76,6 +76,7 @@ public class SocketHandler {
 
     /**
      * Obtain the destination address of the socket
+     * @return The address
      */
     public String getAddress() {
         return socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
@@ -98,6 +99,7 @@ public class SocketHandler {
 
     /**
      * Schedules the packet to be sent later to the other entity
+     * @param message The message
      */
     public void schedulePacket(String message) {
         outboundHandler.scheduleMessage(message);

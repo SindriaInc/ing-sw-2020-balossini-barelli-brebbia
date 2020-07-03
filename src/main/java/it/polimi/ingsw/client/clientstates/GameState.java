@@ -327,12 +327,12 @@ public class GameState extends AbstractClientState {
         otherPlayers.removeIf(otherPlayer -> otherPlayer.equals(lost));
 
         String message = null;
-        boolean spectating = false;
+        boolean spectating = data.isSpectating();
 
-        if (lost.equals(data.getName()) && data.getOtherPlayers().size() > 0) {
+        if (lost.equals(data.getName()) && otherPlayers.size() > 1) {
             message = "You've lost!\nYou can continue watching the game or quit.";
             spectating = true;
-        } else if (data.getOtherPlayers().size() > 0) {
+        } else if (otherPlayers.size() > 1) {
             message = lost + " has lost!\nTheir workers have been removed.";
         }
 

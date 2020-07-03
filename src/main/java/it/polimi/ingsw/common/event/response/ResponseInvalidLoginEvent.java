@@ -16,6 +16,7 @@ public class ResponseInvalidLoginEvent extends AbstractResponseEvent {
      * Class constructor
      *
      * @param player The player that will receive the event
+     * @param message The message
      */
     public ResponseInvalidLoginEvent(String player, String message) {
         super(player);

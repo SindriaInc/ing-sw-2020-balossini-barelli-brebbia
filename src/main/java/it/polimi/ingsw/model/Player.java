@@ -150,6 +150,7 @@ public class Player {
     public Optional<God> getGod() {
         return Optional.ofNullable(god);
     }
+
     /**
      * Applies the god's effect to the player
      * @param god The god chosen by the player
@@ -158,12 +159,28 @@ public class Player {
         this.god = god;
         abilities = god.applyAbilities(abilities);
     }
+
     /**
      * Applies the god's effect to the other players (if the god effects apply to them)
      * @param god The god chosen by the player
      */
     public void applyOpponentGod(God god, Player owner) {
         abilities = god.applyOpponentAbilities(abilities, owner);
+    }
+
+    /**
+     * Reset the player abilities, restoring only the god's effect if present
+     */
+    public void resetAbilities() {
+        abilities = new DefaultAbilities();
+
+        Optional<God> god = getGod();
+
+        if (god.isEmpty()) {
+            return;
+        }
+
+        applyGod(god.get());
     }
 
 }

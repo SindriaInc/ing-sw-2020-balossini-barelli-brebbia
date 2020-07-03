@@ -1,25 +1,30 @@
 package it.polimi.ingsw.client.cli.view.game;
 
 import it.polimi.ingsw.client.cli.CliCommand;
+import it.polimi.ingsw.client.cli.CliConstants;
 import it.polimi.ingsw.client.cli.view.AbstractCliView;
 import it.polimi.ingsw.client.clientstates.GameState;
 import it.polimi.ingsw.client.data.GameData;
+import it.polimi.ingsw.client.data.request.InteractData;
+import it.polimi.ingsw.client.data.request.WorkersInteractData;
+import it.polimi.ingsw.client.data.request.WorkersOtherInteractData;
 import it.polimi.ingsw.common.info.CellInfo;
 import it.polimi.ingsw.common.info.Coordinates;
 import it.polimi.ingsw.common.info.WorkerInfo;
+import it.polimi.ingsw.model.Game;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Generate the cli view of the board and the responses to commands
  */
 public class CliBoardView extends AbstractGameView {
 
-    public static final String RESET = "\u001B[0m";
     public static final String COLOR_BACKGROUND = "\u001B[45m";
-    public static final String COLOR = "\u001B[35m";
+    public static final String HIGHLIGHT_COLOR = "\u001B[35m";
 
     private static final String BOARD_INDEX = "  0   1   2   3   4  ";
     private static final String BOARD_ROOF = "┌---┬---┬---┬---┬---┐";
@@ -39,6 +44,7 @@ public class CliBoardView extends AbstractGameView {
 
     private static final int SPACING = 8;
 
+    private static final String COMMAND_FAIL = "Invalid command, please try again";
     private static final String SPAWN_FAIL = "Please, type the coordinates of the cell chosen (Example: spawn 1 2)";
     private static final String MOVE_FAIL = "Please, type the number of the worker and the coordinates of the cell chosen (Example: move 1 1 2)";
     private static final String BLOCK_FAIL = "Please, type the number of the worker and the coordinates of the cell chosen (Example: block 1 4 0)";
@@ -46,6 +52,9 @@ public class CliBoardView extends AbstractGameView {
     private static final String FORCE_FAIL = "Please, type the numbers of the forcer and forced workers and the coordinates of the cell chosen (Example: force 0 2 2 2)";
     private static final String END_FAIL = "Please, just type end";
 
+    /**
+     * The related state
+     */
     private final GameState state;
 
     /**
@@ -73,7 +82,7 @@ public class CliBoardView extends AbstractGameView {
 
         output.append(" ".repeat(BOARD_PADDING)).append(BOARD_ROOF).append(System.lineSeparator());
 
-        List<String> otherPlayers = new ArrayList<>(List.copyOf(data.getOtherPlayers()));
+        List<String> otherPlayers = new ArrayList<>(data.getOtherPlayers());
         if (data.getTurnPlayer().isPresent() && !otherPlayers.contains(data.getTurnPlayer().get())) {
             otherPlayers.add(data.getTurnPlayer().get());
         }
@@ -101,13 +110,16 @@ public class CliBoardView extends AbstractGameView {
                             interact -> interact.getAvailableInteractions().values().stream().anyMatch(interactData -> interactData.getAvailableCoordinates().contains(coords))))
                 ) {
                     if (workerInfo != null) {
-                        output.append(COLOR_BACKGROUND).append(getPawn(workerInfo.getId())).append(RESET);
+                        output.append(COLOR_BACKGROUND).append(getPawn(workerInfo.getId())).append(CliConstants.RESET);
                     }
                     else {
-                        output.append(COLOR).append(POSSIBLE_INTERACTION).append(RESET);
+                        output.append(HIGHLIGHT_COLOR).append(POSSIBLE_INTERACTION).append(CliConstants.RESET);
                     }
                 } else if (workerInfo != null) {
-                    output.append(getPawn(workerInfo.getId()));
+                    int workersPerPlayer = Game.MAX_WORKERS;
+                    CliConstants.CliColor color = CliConstants.PLAYER_COLORS[(workerInfo.getId() / workersPerPlayer) % CliConstants.PLAYER_COLORS.length];
+
+                    output.append(color.getBackground()).append(getPawn(workerInfo.getId())).append(CliConstants.RESET);
                 } else {
                     output.append(" ");
                 }
@@ -155,7 +167,7 @@ public class CliBoardView extends AbstractGameView {
                 output.append(BOARD_FLOORS).append(System.lineSeparator());
             } else {
                 output.append(BOARD_BASEMENT).append(System.lineSeparator());
-                output.append(" ".repeat(BOARD_PADDING)).append(BOARD_INDEX).append(System.lineSeparator());;
+                output.append(" ".repeat(BOARD_PADDING)).append(BOARD_INDEX).append(System.lineSeparator());
             }
         }
 
@@ -167,7 +179,6 @@ public class CliBoardView extends AbstractGameView {
         lastMessage.ifPresent(string -> output.append(center(string)).append(System.lineSeparator()));
 
         return output.toString();
-
     }
 
     /**
@@ -175,7 +186,6 @@ public class CliBoardView extends AbstractGameView {
      */
     @Override
     public List<CliCommand> generateCommands() {
-
         List<CliCommand> commands = new ArrayList<>();
 
         if (state.getData().getTurnPlayer().isPresent() &&
@@ -213,6 +223,14 @@ public class CliBoardView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onSpawn(String[] arguments) {
+        GameData data = state.getData();
+
+        Optional<InteractData> interactData = data.getSpawnData();
+
+        if (interactData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 2) {
             return Optional.of(SPAWN_FAIL);
         }
@@ -220,6 +238,12 @@ public class CliBoardView extends AbstractGameView {
         try {
             int x = Integer.parseInt(arguments[0]);
             int y = Integer.parseInt(arguments[1]);
+
+            Coordinates coordinates = new Coordinates(x, y);
+
+            if (!interactData.get().getAvailableCoordinates().contains(coordinates)) {
+                return Optional.of("The worker can't spawn there, please choose a valid position\nThe worker can spawn everywhere except on top of another worker");
+            }
 
             state.acceptSpawn(x, y);
         } catch (NumberFormatException e) {
@@ -235,6 +259,14 @@ public class CliBoardView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onMove(String[] arguments) {
+        GameData data = state.getData();
+
+        Optional<WorkersInteractData> workersInteractData = data.getMoveData();
+
+        if (workersInteractData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 3) {
             return Optional.of(MOVE_FAIL);
         }
@@ -245,7 +277,19 @@ public class CliBoardView extends AbstractGameView {
             int y = Integer.parseInt(arguments[2]);
 
             if (!isCorrectWorker(worker)) {
-                return Optional.of(MOVE_FAIL);
+                return Optional.of("You cannot move another player's worker");
+            }
+
+            InteractData interactData = workersInteractData.get().getAvailableInteractions().get(worker);
+
+            if (interactData == null || interactData.getAvailableCoordinates().size() <= 0) {
+                String available = getReadableCanInteract(workersInteractData.get());
+                return Optional.of("The worker can't move, you must use another one\nWorkers that can move: " + available);
+            }
+
+            if (!interactData.getAvailableCoordinates().contains(new Coordinates(x, y))) {
+                String available = getReadablePositions(interactData);
+                return Optional.of("The worker can't move there, please choose a valid position\nAvailable positions: " + available);
             }
 
             state.acceptMove(worker, x, y);
@@ -263,6 +307,14 @@ public class CliBoardView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onBuildBlock(String[] arguments) {
+        GameData data = state.getData();
+
+        Optional<WorkersInteractData> workersInteractData = data.getBuildBlockData();
+
+        if (workersInteractData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 3) {
             return Optional.of(BLOCK_FAIL);
         }
@@ -273,7 +325,19 @@ public class CliBoardView extends AbstractGameView {
             int y = Integer.parseInt(arguments[2]);
 
             if (!isCorrectWorker(worker)) {
-                return Optional.of(BLOCK_FAIL);
+                return Optional.of("You cannot build a block with another player's worker");
+            }
+
+            InteractData interactData = workersInteractData.get().getAvailableInteractions().get(worker);
+
+            if (interactData == null || interactData.getAvailableCoordinates().size() <= 0) {
+                String available = getReadableCanInteract(workersInteractData.get());
+                return Optional.of("The worker can't build a block, you must use another one\nWorkers that can build a block: " + available);
+            }
+
+            if (!interactData.getAvailableCoordinates().contains(new Coordinates(x, y))) {
+                String available = getReadablePositions(interactData);
+                return Optional.of("The worker can't build a block there, please choose a valid position\nAvailable positions: " + available);
             }
 
             state.acceptBuildBlock(worker, x, y);
@@ -291,6 +355,14 @@ public class CliBoardView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onBuildDome(String[] arguments) {
+        GameData data = state.getData();
+
+        Optional<WorkersInteractData> workersInteractData = data.getBuildDomeData();
+
+        if (workersInteractData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 3) {
             return Optional.of(DOME_FAIL);
         }
@@ -301,7 +373,19 @@ public class CliBoardView extends AbstractGameView {
             int y = Integer.parseInt(arguments[2]);
 
             if (!isCorrectWorker(worker)) {
-                return Optional.of(DOME_FAIL);
+                return Optional.of("You cannot build a dome with another player's worker");
+            }
+
+            InteractData interactData = workersInteractData.get().getAvailableInteractions().get(worker);
+
+            if (interactData == null || interactData.getAvailableCoordinates().size() <= 0) {
+                String available = getReadableCanInteract(workersInteractData.get());
+                return Optional.of("The worker can't build a dome, you must use another one\nWorkers that can build a block: " + available);
+            }
+
+            if (!interactData.getAvailableCoordinates().contains(new Coordinates(x, y))) {
+                String available = getReadablePositions(interactData);
+                return Optional.of("The worker can't build a dome there, please choose a valid position\nAvailable positions: " + available);
             }
 
             state.acceptBuildDome(worker, x, y);
@@ -319,6 +403,14 @@ public class CliBoardView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onForce(String[] arguments) {
+        GameData data = state.getData();
+
+        Optional<WorkersOtherInteractData> workersOtherInteractData = data.getForceData();
+
+        if (workersOtherInteractData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 4) {
             return Optional.of(FORCE_FAIL);
         }
@@ -329,6 +421,31 @@ public class CliBoardView extends AbstractGameView {
             int x = Integer.parseInt(arguments[2]);
             int y = Integer.parseInt(arguments[3]);
 
+            if (!isCorrectWorker(forcer)) {
+                return Optional.of("You cannot force using another player's worker");
+            }
+
+            WorkersInteractData workersInteractData = workersOtherInteractData.get().getAvailableOtherInteractions().get(forcer);
+
+            if (workersInteractData == null || workersInteractData.getAvailableInteractions().size() == 0) {
+                String available = workersOtherInteractData.get().getAvailableOtherInteractions().entrySet().stream()
+                        .filter(entry -> entry.getValue() != null && entry.getValue().getAvailableInteractions().size() > 0)
+                        .map(entry -> "#" + entry.getKey())
+                        .collect(Collectors.joining(", "));
+                return Optional.of("The worker #" + forcer + " can't force this turn\nWorkers that can force: " + available);
+            }
+
+            InteractData interactData = workersInteractData.getAvailableInteractions().get(forced);
+
+            if (interactData == null || interactData.getAvailableCoordinates().size() == 0) {
+                String available = getReadableCanInteract(workersInteractData);
+                return Optional.of("The worker #" + forcer + " can't force the worker #" + forced + "\nWorkers that can be forced: " + available);
+            }
+
+            if (!interactData.getAvailableCoordinates().contains(new Coordinates(x, y))) {
+                String available = getReadablePositions(interactData);
+                return Optional.of("The worker #" + forcer + " can't force the worker #" + forced + " in that position\nAvailable positions: " + available);
+            }
 
             if (!isCorrectWorker(forcer) || isCorrectWorker(forced)) {
                 return Optional.of(FORCE_FAIL);
@@ -458,6 +575,29 @@ public class CliBoardView extends AbstractGameView {
             }
         }
         return false;
+    }
+
+    /**
+     * Get a readable list of workers that can interact
+     * @param data The workers interaction data
+     * @return The readable string
+     */
+    private String getReadableCanInteract(WorkersInteractData data) {
+        return data.getAvailableInteractions().entrySet().stream()
+                .filter(entry -> entry.getValue() != null && entry.getValue().getAvailableCoordinates().size() > 0)
+                .map(entry -> "#" + entry.getKey())
+                .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Get a readable list of positions where a worker can interact
+     * @param data The interaction data
+     * @return The readable string
+     */
+    private String getReadablePositions(InteractData data) {
+        return data.getAvailableCoordinates().stream()
+                .map(coordinates -> "[" + coordinates.getX() + " " + coordinates.getY() + "]")
+                .collect(Collectors.joining(", "));
     }
 
 }

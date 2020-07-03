@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.common.logging.LogLevel;
 import it.polimi.ingsw.common.logging.Logger;
 import it.polimi.ingsw.common.logging.reader.ConsoleLogReader;
 import it.polimi.ingsw.common.logging.reader.FileLogReader;
@@ -62,6 +63,7 @@ public class ServerMain {
         logger.info("Initializing server...");
         logger.filter("\"RequestPlayerPingEvent\"");
         logger.filter("\"PlayerPingEvent\"");
+        logger.setLevel(LogLevel.DEBUG);
 
         // Read the configuration, if it fails shut the server down
         ServerConfiguration configuration;

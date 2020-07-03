@@ -2,9 +2,12 @@ package it.polimi.ingsw.client.clientstates;
 
 import it.polimi.ingsw.client.ClientConnector;
 import it.polimi.ingsw.client.data.RoomData;
-import it.polimi.ingsw.common.info.RoomInfo;
 import it.polimi.ingsw.common.event.lobby.LobbyGameStartEvent;
 import it.polimi.ingsw.common.event.lobby.LobbyRoomUpdateEvent;
+import it.polimi.ingsw.common.info.RoomInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generate data for the room phase of the game
@@ -52,7 +55,11 @@ public class RoomState extends AbstractClientState {
      * @param event The event
      */
     private void onLobbyGameStart(LobbyGameStartEvent event) {
-        getClientConnector().updateState(new GameState(getClientConnector(), event.getPlayer(), event.getRoomInfo().getOtherPlayers(), event.getRoomInfo().isSimpleGame()));
+        List<String> players = new ArrayList<>(event.getRoomInfo().getOtherPlayers());
+        players.add(event.getRoomInfo().getOwner());
+        players.remove(event.getPlayer());
+
+        getClientConnector().updateState(new GameState(getClientConnector(), event.getPlayer(), players, event.getRoomInfo().isSimpleGame()));
     }
 
     /**

@@ -1,0 +1,207 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DefaultAbilities</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">it.polimi.ingsw.model.abilities</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DefaultAbilities (it.polimi.ingsw.model.abilities)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DefaultAbilities</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (44/ 44)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package it.polimi.ingsw.model.abilities;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import it.polimi.ingsw.model.Cell;
+<i>4</i>&nbsp;import it.polimi.ingsw.model.Turn;
+<i>5</i>&nbsp;import it.polimi.ingsw.model.Worker;
+<i>6</i>&nbsp;import it.polimi.ingsw.model.abilities.predicates.*;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import java.util.Optional;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * The class representing the abilities of a player that hasn&#39;t got any god effect.
+<i>12</i>&nbsp; * This class is used in a simple game.
+<i>13</i>&nbsp; */
+<i>14</i>&nbsp;public class DefaultAbilities implements IAbilities{
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    public static final int DEFAULT_WIN_LEVEL = 3;
+<i>17</i>&nbsp;    public static final int DEFAULT_DOME_LEVEL = 3;
+<i>18</i>&nbsp;    public static final int DEFAULT_MAX_BUILD_LEVEL = 3;
+<i>19</i>&nbsp;    public static final int DEFAULT_MAX_MOVES = 1;
+<i>20</i>&nbsp;    public static final int DEFAULT_MAX_UP = 1;
+<i>21</i>&nbsp;    public static final int DEFAULT_MAX_BUILDS = 1;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;    private final ITriPredicate movePhase;
+<i>24</i>&nbsp;    private final ITriPredicate buildPhase;
+<i>25</i>&nbsp;    private final ITriPredicate maxBuildLevel;
+<i>26</i>&nbsp;    private final ITriPredicate canInteractNoWorkers;
+<i>27</i>&nbsp;    private final ITriPredicate cellLevelDifference;
+<i>28</i>&nbsp;
+<b class="fc"><i>29</i>&nbsp;    public DefaultAbilities() {</b>
+<b class="fc"><i>30</i>&nbsp;        movePhase = new MovePhase(DEFAULT_MAX_MOVES);</b>
+<b class="fc"><i>31</i>&nbsp;        buildPhase = new BuildPhase();</b>
+<b class="fc"><i>32</i>&nbsp;        maxBuildLevel = new MaxLevel(DEFAULT_MAX_BUILD_LEVEL);</b>
+<b class="fc"><i>33</i>&nbsp;        canInteractNoWorkers = new CanInteractNoWorkers();</b>
+<b class="fc"><i>34</i>&nbsp;        cellLevelDifference = new CellLevelDifference(DEFAULT_MAX_UP);</b>
+<b class="fc"><i>35</i>&nbsp;    }</b>
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    @Override
+<i>38</i>&nbsp;    public boolean checkHasWon(Turn turn) {
+<b class="fc"><i>39</i>&nbsp;        for (Worker worker : turn.getCandidateWinWorkers()) {</b>
+<b class="fc"><i>40</i>&nbsp;            Optional&lt;Integer&gt; difference = worker.getLastMovementLevelDifference();</b>
+<i>41</i>&nbsp;
+<b class="fc"><i>42</i>&nbsp;            if (difference.isEmpty() || difference.get() &lt;= 0) {</b>
+<b class="fc"><i>43</i>&nbsp;                continue;</b>
+<i>44</i>&nbsp;            }
+<i>45</i>&nbsp;
+<b class="fc"><i>46</i>&nbsp;            Optional&lt;Cell&gt; cell = worker.getLastMovementCell();</b>
+<i>47</i>&nbsp;
+<b class="fc"><i>48</i>&nbsp;            if (cell.isPresent() &amp;&amp; cell.get().getLevel() &gt;= DEFAULT_WIN_LEVEL) {</b>
+<b class="fc"><i>49</i>&nbsp;                return true;</b>
+<i>50</i>&nbsp;            }
+<b class="fc"><i>51</i>&nbsp;        }</b>
+<i>52</i>&nbsp;
+<b class="fc"><i>53</i>&nbsp;        return false;</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    @Override
+<i>57</i>&nbsp;    public boolean checkCanMove(Turn turn, Cell cell) {
+<b class="fc"><i>58</i>&nbsp;        if (!movePhase.check(turn, cell)) {</b>
+<b class="fc"><i>59</i>&nbsp;            return false;</b>
+<i>60</i>&nbsp;        }
+<i>61</i>&nbsp;
+<b class="fc"><i>62</i>&nbsp;        if (!cellLevelDifference.check(turn, cell)) {</b>
+<b class="fc"><i>63</i>&nbsp;            return false;</b>
+<i>64</i>&nbsp;        }
+<i>65</i>&nbsp;
+<b class="fc"><i>66</i>&nbsp;        return canInteractNoWorkers.check(turn, cell);</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    @Override
+<i>70</i>&nbsp;    public void doMove(Turn turn, Cell cell) {
+<b class="fc"><i>71</i>&nbsp;        turn.addMovement(cell);</b>
+<b class="fc"><i>72</i>&nbsp;        turn.getWorker().move(cell);</b>
+<b class="fc"><i>73</i>&nbsp;    }</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    @Override
+<i>76</i>&nbsp;    public boolean checkCanBuildBlock(Turn turn, Cell cell) {
+<b class="fc"><i>77</i>&nbsp;        if (!buildPhase.check(turn, cell)) {</b>
+<b class="fc"><i>78</i>&nbsp;            return false;</b>
+<i>79</i>&nbsp;        }
+<i>80</i>&nbsp;
+<b class="fc"><i>81</i>&nbsp;        if (maxBuildLevel.check(turn, cell)) {</b>
+<b class="fc"><i>82</i>&nbsp;            return false;</b>
+<i>83</i>&nbsp;        }
+<i>84</i>&nbsp;
+<b class="fc"><i>85</i>&nbsp;        return canInteractNoWorkers.check(turn, cell);</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    @Override
+<i>89</i>&nbsp;    public void doBuildBlock(Turn turn, Cell cell) {
+<b class="fc"><i>90</i>&nbsp;        turn.addBlockPlaced(cell);</b>
+<b class="fc"><i>91</i>&nbsp;        cell.setLevel(cell.getLevel() + 1);</b>
+<b class="fc"><i>92</i>&nbsp;    }</b>
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;    @Override
+<i>95</i>&nbsp;    public boolean checkCanBuildDome(Turn turn, Cell cell) {
+<b class="fc"><i>96</i>&nbsp;        if (!buildPhase.check(turn, cell)) {</b>
+<b class="fc"><i>97</i>&nbsp;            return false;</b>
+<i>98</i>&nbsp;        }
+<i>99</i>&nbsp;
+<b class="fc"><i>100</i>&nbsp;        if (!maxBuildLevel.check(turn, cell)) {</b>
+<b class="fc"><i>101</i>&nbsp;            return false;</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;
+<b class="fc"><i>104</i>&nbsp;        return canInteractNoWorkers.check(turn, cell);</b>
+<i>105</i>&nbsp;    }
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;    @Override
+<i>108</i>&nbsp;    public void doBuildDome(Turn turn, Cell cell) {
+<b class="fc"><i>109</i>&nbsp;        turn.addDomePlaced(cell);</b>
+<b class="fc"><i>110</i>&nbsp;        cell.setDoomed(true);</b>
+<b class="fc"><i>111</i>&nbsp;    }</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    @Override
+<i>114</i>&nbsp;    public boolean checkCanForce(Turn turn, Worker target, Cell cell) {
+<b class="fc"><i>115</i>&nbsp;        return false;</b>
+<i>116</i>&nbsp;    }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    @Override
+<i>119</i>&nbsp;    public void doForce(Turn turn, Worker target, Cell cell) {
+<b class="fc"><i>120</i>&nbsp;        turn.addForce(target, cell);</b>
+<b class="fc"><i>121</i>&nbsp;        target.force(cell);</b>
+<b class="fc"><i>122</i>&nbsp;    }</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-07-03 23:06</div>
+</div>
+</body>
+</html>

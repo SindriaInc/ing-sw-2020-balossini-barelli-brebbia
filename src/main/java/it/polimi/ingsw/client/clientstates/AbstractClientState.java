@@ -26,9 +26,9 @@ public abstract class AbstractClientState {
     private final ResponseEventProvider responseEventProvider;
 
     /**
-     * Class constructor, set the client connector and initialie new event providers
+     * Class constructor, set the client connector and initialize new event providers
      *
-     * @param clientConnector <the client connector
+     * @param clientConnector The client connector
      */
     protected AbstractClientState(ClientConnector clientConnector) {
         this.clientConnector = clientConnector;

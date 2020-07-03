@@ -17,6 +17,7 @@ public class BlockOnPlayerMoveUp extends OpponentAbilitiesDecorator {
     /**
      * Class constructor
      * @param abilities The abilities to be decorated
+     * @param workers The workers
      */
     public BlockOnPlayerMoveUp(IAbilities abilities, List<Worker> workers) {
         super(abilities, workers);

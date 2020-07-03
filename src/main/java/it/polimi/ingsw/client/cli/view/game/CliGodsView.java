@@ -5,6 +5,9 @@ import it.polimi.ingsw.client.cli.CliConstants;
 import it.polimi.ingsw.client.cli.view.AbstractCliView;
 import it.polimi.ingsw.client.clientstates.GameState;
 import it.polimi.ingsw.client.data.GameData;
+import it.polimi.ingsw.client.data.request.ChooseGodData;
+import it.polimi.ingsw.client.data.request.SelectFirstData;
+import it.polimi.ingsw.client.data.request.SelectGodsData;
 import it.polimi.ingsw.common.info.GodInfo;
 
 import java.util.ArrayList;
@@ -23,7 +26,6 @@ public class CliGodsView extends AbstractGameView {
 
     private static final String GODS_HEADER = "    ID  NAME         TYPE       TITLE                 DESCRIPTION";
     private static final String PADDING = "    ";
-    private static final int OS_ID = 4;
     private static final int OS_NAME = 8;
     private static final int OS_TYPE = 21;
     private static final int OS_TITLE = 32;
@@ -31,6 +33,7 @@ public class CliGodsView extends AbstractGameView {
     private static final int OS_END = TERM_WIDTH - PADDING.length();
     private static final int AFTER_TABLE_HEADER = 2;
 
+    private static final String COMMAND_FAIL = "Invalid command, please try again";
     private static final String SELECT_FAIL = "Please, type the name of the gods you want to select (Example: select Athena Hera Zeus)";
     private static final String CHOOSE_FAIL = "Please, type the name of the gos you want to chose (Example: choose Atlas)";
     private static final String FIRST_FAIL = "Please, type the name of the player that will start (Example: first NicePlayer1)";
@@ -96,11 +99,9 @@ public class CliGodsView extends AbstractGameView {
             String name = god.getName();
             String type = god.getType();
             String title = god.getTitle();
-            List<String> decomposedTitle = new ArrayList<>();
-            decomposedTitle.addAll(Arrays.asList(title.split(" ")));
+            List<String> decomposedTitle = new ArrayList<>(Arrays.asList(title.split(" ")));
             String description = god.getDescription();
-            List<String> decomposedDescription = new ArrayList<>();
-            decomposedDescription.addAll(Arrays.asList(description.split(" ")));
+            List<String> decomposedDescription = new ArrayList<>(Arrays.asList(description.split(" ")));
 
             while (decomposedTitle.size() > 0 || decomposedDescription.size() > 0) {
                 //Add the padding and initiate the current offset to 4
@@ -128,10 +129,9 @@ public class CliGodsView extends AbstractGameView {
 
                     //Add description
                     output.append(" ".repeat(OS_DESCRIPTION - currOS));
-                    currOS = printUntilLimit(output, decomposedDescription, OS_DESCRIPTION, OS_END);
+                    printUntilLimit(output, decomposedDescription, OS_DESCRIPTION, OS_END);
 
                     firstRow = false;
-                    output.append(System.lineSeparator());
                 } else {
                     if (decomposedTitle.size() > 0) {
                         output.append(" ".repeat(OS_TITLE - currOS));
@@ -140,10 +140,10 @@ public class CliGodsView extends AbstractGameView {
 
                     if (decomposedDescription.size() > 0) {
                         output.append(" ".repeat(OS_DESCRIPTION - currOS));
-                        currOS = printUntilLimit(output, decomposedDescription, OS_DESCRIPTION, OS_END);
+                        printUntilLimit(output, decomposedDescription, OS_DESCRIPTION, OS_END);
                     }
-                    output.append(System.lineSeparator());
                 }
+                output.append(System.lineSeparator());
             }
 
             output.append(System.lineSeparator());
@@ -184,7 +184,7 @@ public class CliGodsView extends AbstractGameView {
                 );
             } else if (data.getSelectFirstData().isPresent()) {
                 return List.of(
-                        new CliCommand("first", new String[]{"<player>"}, "Select the first player", this::onFirst)
+                        new CliCommand("first", new String[]{"<Player>"}, "Select the first player", this::onFirst)
                 );
             }
         }
@@ -200,13 +200,23 @@ public class CliGodsView extends AbstractGameView {
     private Optional<String> onSelect(String[] arguments) {
         GameData data = getState().getData();
 
-        if (arguments.length != data.getOtherPlayers().size() + 1) {
-            return Optional.of(SELECT_FAIL);
+        Optional<SelectGodsData> selectGodsData = data.getSelectGodsData();
+
+        if (selectGodsData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
+        if (arguments.length != selectGodsData.get().getSelectGodsCount()) {
+            return Optional.of("You must select " + selectGodsData.get().getSelectGodsCount() + " gods");
         }
 
         for (String argument : arguments) {
             if (argument.length() <= 0) {
                 return Optional.of(SELECT_FAIL);
+            }
+
+            if (selectGodsData.get().getAvailableGods().stream().noneMatch(godInfo -> godInfo.getName().equals(argument))) {
+                return Optional.of("You must select valid gods (" + argument + " is not a valid god)");
             }
         }
 
@@ -222,15 +232,25 @@ public class CliGodsView extends AbstractGameView {
      * @return An empty optional if the command is correct, a fail if not
      */
     private Optional<String> onChoose(String[] arguments) {
+        GameData data = getState().getData();
+
+        Optional<ChooseGodData> chooseGodData = data.getChooseGodData();
+
+        if (chooseGodData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 1) {
             return Optional.of(CHOOSE_FAIL);
         }
 
-        if (arguments[0].length() <= 0) {
-            return Optional.of(CHOOSE_FAIL);
+        String god = arguments[0];
+
+        if (chooseGodData.get().getAvailableGods().stream().noneMatch(godInfo -> godInfo.getName().equals(god))) {
+            return Optional.of("Invalid god: " + god + " (Please type the name of the god you want)");
         }
 
-        state.acceptChooseGod(arguments[0]);
+        state.acceptChooseGod(god);
 
         return Optional.empty();
     }
@@ -243,11 +263,22 @@ public class CliGodsView extends AbstractGameView {
     private Optional<String> onFirst(String[] arguments) {
         GameData data = getState().getData();
 
+        Optional<SelectFirstData> selectFirstData = data.getSelectFirstData();
+
+        if (selectFirstData.isEmpty()) {
+            return Optional.of(COMMAND_FAIL);
+        }
+
         if (arguments.length != 1) {
             return Optional.of(FIRST_FAIL);
         }
 
         String player = arguments[0];
+
+        if (!selectFirstData.get().getAvailablePlayers().contains(player)) {
+            return Optional.of("Invalid player: " + player + " (Please select one of the players above)");
+        }
+
         state.acceptSelectFirst(player);
 
         return Optional.empty();
@@ -268,7 +299,7 @@ public class CliGodsView extends AbstractGameView {
             output.append(toPrint.get(0)).append(" ");
             toPrint.remove(0);
             currOS += length + 1;
-            if (toPrint.size()>0) {
+            if (toPrint.size() > 0) {
                 length = toPrint.get(0).length();
             } else {
                 break;

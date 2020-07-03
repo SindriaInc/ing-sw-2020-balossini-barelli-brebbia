@@ -70,6 +70,7 @@ public class OutboundHandler implements Runnable {
 
     /**
      * Schedules the message to be sent later
+     * @param message The message
      */
     public void scheduleMessage(String message) {
         pendingMessages.addLast(message);

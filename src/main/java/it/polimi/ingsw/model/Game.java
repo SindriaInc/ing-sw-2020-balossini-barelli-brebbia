@@ -26,6 +26,7 @@ public class Game {
     /**
      * Instantiates the Game
      * The game will have only have the ModelEventProvider, Game#init needs to be called to start the game
+     * @param provider The model event provider
      */
     public Game(ModelEventProvider provider) {
         currentState = new PreInitGame(provider);
@@ -49,6 +50,7 @@ public class Game {
 
     /**
      * Obtain the IModelEventProvider, to be used to register model event observers
+     * @return The model event provider
      */
     public IModelEventProvider getModelEventProvider() {
         return currentState.getModelEventProvider();

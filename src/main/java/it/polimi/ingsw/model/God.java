@@ -99,6 +99,7 @@ public class God {
     /**
      * Decorates the given player's abilities with the god effect on opponents
      * @param abilities Previous player' abilities
+     * @param originalPlayer The owner of the god
      * @return The decorated abilities
      */
     public IAbilities applyOpponentAbilities(IAbilities abilities, Player originalPlayer) {

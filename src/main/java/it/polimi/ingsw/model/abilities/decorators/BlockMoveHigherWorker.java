@@ -3,7 +3,6 @@ package it.polimi.ingsw.model.abilities.decorators;
 import it.polimi.ingsw.model.Cell;
 import it.polimi.ingsw.model.Turn;
 import it.polimi.ingsw.model.Worker;
-import it.polimi.ingsw.model.abilities.AbilitiesDecorator;
 import it.polimi.ingsw.model.abilities.IAbilities;
 import it.polimi.ingsw.model.abilities.OpponentAbilitiesDecorator;
 
@@ -17,6 +16,7 @@ public class BlockMoveHigherWorker extends OpponentAbilitiesDecorator {
     /**
      * Class constructor
      * @param abilities The abilities to be decorated
+     * @param workers The workers
      */
     public BlockMoveHigherWorker(IAbilities abilities, List<Worker> workers) {
         super(abilities, workers);

@@ -35,7 +35,7 @@ public class VirtualView {
 
     private static final int MIN_NAME_LENGTH = 3;
     private static final int MAX_NAME_LENGTH = 20;
-    private static final String PLAYER_NAME = "^[a-zA-Z0-9_-][a-zA-Z0-9_ .-]{" + (MIN_NAME_LENGTH - 2) + "," + (MAX_NAME_LENGTH - 2) + "}[a-zA-Z0-9_-]$";
+    private static final String PLAYER_NAME = "^[a-zA-Z0-9_-][a-zA-Z0-9_.-]{" + (MIN_NAME_LENGTH - 2) + "," + (MAX_NAME_LENGTH - 2) + "}[a-zA-Z0-9_-]$";
 
     public static final long PING_SCHEDULE_MS = 1000;
     public static final long PING_TIMEOUT_MS = PING_SCHEDULE_MS * 3;
@@ -218,7 +218,7 @@ public class VirtualView {
             } else if (player.length() > MAX_NAME_LENGTH) {
                 reason = "Can't have more than " + MAX_NAME_LENGTH + " characters";
             } else {
-                reason = "Only letters, numbers, underscores and separators are allowed (spaces and dots are allowed inside the name)";
+                reason = "Only letters, numbers, underscores and separators are allowed (dots are allowed inside the name)";
             }
 
             throw new IllegalArgumentException("Invalid player name (" + reason + ")");

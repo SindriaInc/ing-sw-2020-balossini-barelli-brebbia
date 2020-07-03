@@ -89,6 +89,7 @@ public class GuiGodsView extends AbstractGameView {
             for (String player : selectFirstData.get().getAvailablePlayers()) {
                 Button button = new Button();
                 presentation.styleButton(button);
+                button.setMinWidth(200);
                 button.setText(player);
                 button.setOnAction((event) -> onSelectFirst(player));
                 buttons.add(button);

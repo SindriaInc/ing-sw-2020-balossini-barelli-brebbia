@@ -12,7 +12,7 @@ public abstract class OpponentAbilitiesDecorator extends AbilitiesDecorator {
     /**
      * The original player workers
      */
-    private List<Worker> workers;
+    private final List<Worker> workers;
 
     /**
      * Class constructor

@@ -148,8 +148,9 @@ public abstract class AbstractPresentation {
 
     /**
      * Style a button with a background image
-     * @param button The field
      * @param buttonImage The field background
+     * @param button The field
+     * @param pane The container
      */
     public void style(ImageView buttonImage, Button button, StackPane pane) {
         button.setBackground(null);

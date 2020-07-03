@@ -233,7 +233,7 @@ public class GameData extends AbstractData {
      * Get a cell info
      * @param x The x index
      * @param y The y index
-     * @return
+     * @return The cell
      */
     public Optional<CellInfo> getCellInfo(int x, int y) {
         if (x >= map.length) {

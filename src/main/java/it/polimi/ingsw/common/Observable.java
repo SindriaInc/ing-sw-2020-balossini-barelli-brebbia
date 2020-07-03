@@ -17,6 +17,7 @@ public class Observable<T> {
 
     /**
      * Registers an observer
+     * @param observer The observer
      */
     public void register(Observer<T> observer) {
         observers.add(observer);
@@ -24,6 +25,7 @@ public class Observable<T> {
 
     /**
      * Notifies all observers in the observers list
+     * @param object The event
      */
     public void notifyObservers(T object) {
         for (Observer<T> observer : observers) {
