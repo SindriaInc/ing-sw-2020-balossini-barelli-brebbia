@@ -9,10 +9,18 @@ import it.polimi.ingsw.model.ModelEventProvider;
  */
 public class PlayerLoseEvent extends AbstractPlayerEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that has lost
+     */
     public PlayerLoseEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getPlayerLoseEventObservable().notifyObservers(this);

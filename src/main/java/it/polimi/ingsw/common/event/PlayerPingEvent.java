@@ -10,10 +10,18 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class PlayerPingEvent extends AbstractPlayerEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that sent the ping
+     */
     public PlayerPingEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getPlayerPingEventObservable().notifyObservers(this);

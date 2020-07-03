@@ -241,7 +241,7 @@ public class GuiBoardView extends AbstractGameView {
      * @param buttonText The text for the button
      * @param textToSet The text to set
      * @param actionConsumerSupplier The action consumer supplier
-     * @return
+     * @return The generated pane
      */
     private Button generate(Text text, BoardBox boardBox, InteractData data, String buttonText,
                             String textToSet, Supplier<Consumer<Coordinates>> actionConsumerSupplier) {

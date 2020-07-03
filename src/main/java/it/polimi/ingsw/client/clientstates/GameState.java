@@ -213,8 +213,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onSelectGods(PlayerChallengerSelectGodsEvent event) {
-        // TODO: Show something?
-
         data = data.withNoRequests();
         dataSnapshot = null;
         updateView();
@@ -225,8 +223,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onChooseGod(PlayerChooseGodEvent event) {
-        // TODO: Show something?
-
         data = data.withNoRequests();
         dataSnapshot = null;
         updateView();
@@ -237,8 +233,6 @@ public class GameState extends AbstractClientState {
      * @param event The event
      */
     private void onSelectFirst(PlayerChallengerSelectFirstEvent event) {
-        // TODO: Show something?
-
         // Leave the gods phase
         data = new GameData(null, data.getName(), data.getOtherPlayers(),
                 false, data.isSpectating(), data.getMap(), data.getWorkers())

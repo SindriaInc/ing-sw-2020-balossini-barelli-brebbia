@@ -5,6 +5,11 @@ import it.polimi.ingsw.common.Observable;
 import it.polimi.ingsw.common.Observer;
 import it.polimi.ingsw.common.event.*;
 
+/**
+ * The provider of Observables for view events
+ *
+ * View events are events sent by a view (in the client)
+ */
 @SuppressWarnings("unused")
 public class ViewEventProvider implements IViewEventProvider {
 

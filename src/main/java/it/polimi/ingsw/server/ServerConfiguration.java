@@ -13,33 +13,94 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The server configuration, containing the parameters used to determine the port binding, gods and the log path
+ */
 public class ServerConfiguration {
 
+    /**
+     * A god card effect, specifying which decorators will apply to the players
+     */
     private static class EffectConfiguration {
 
+        /**
+         * The name of the effect, must match one of the classes in <code>it.polimi.ingsw.model.abilities.decorators</code>
+         */
         private final String name;
+
+        /**
+         * Whether or not the effect is applied to opponents instead of the player that owns the god card
+         */
         private final Boolean opponents;
 
+        /**
+         * Class constructor
+         * Called by the configuration deserializer
+         *
+         * @param name The effect name
+         * @param opponents The opponent status
+         */
         public EffectConfiguration(String name, Boolean opponents) {
             this.name = name;
             this.opponents = opponents;
         }
 
+        /**
+         * Whether or not this section of the config has all the parameters
+         * @return true if the data is valid
+         */
         public boolean isValid() {
             return name != null && opponents != null;
         }
 
     }
 
+    /**
+     * A god card, which contains informations on the god including its effects
+     */
     private static class GodConfiguration {
 
+        /**
+         * The god id
+         */
         private final Integer id;
+
+        /**
+         * The god description
+         */
         private final String description;
+
+        /**
+         * The god name
+         */
         private final String name;
+
+        /**
+         * The god title
+         */
         private final String title;
+
+        /**
+         * The god type
+         */
         private final String type;
+
+        /**
+         * The list of effects
+         */
         private final List<EffectConfiguration> effects;
 
+        /**
+         * Class constructor
+         * Called by the configuration deserializer
+         *
+         * @param id The god id
+         * @param description The god description
+         * @param name The god name
+         * @param title The god title
+         * @param type The god type
+         * @param effects The god effects
+         */
         public GodConfiguration(Integer id, String description, String name, String title, String type, List<EffectConfiguration> effects) {
             this.id = id;
             this.description = description;
@@ -49,6 +110,10 @@ public class ServerConfiguration {
             this.effects = effects;
         }
 
+        /**
+         * Whether or not this section of the config has all the parameters
+         * @return true if the data is valid
+         */
         public boolean isValid() {
             return id != null && description != null && name != null && title != null && type != null && effects != null;
         }
@@ -81,33 +146,70 @@ public class ServerConfiguration {
      */
     private final String deckPath;
 
+    /**
+     * Reads the default server configuration
+     * @return The configuration
+     */
     public static ServerConfiguration readDefault() {
         return new ServerConfiguration(null, null, null);
     }
 
+    /**
+     * Reads the server configuration from a file
+     * @param configPath The file path
+     * @return The configuration
+     * @throws IOException if there's an error while reading or parsing the file
+     */
     public static ServerConfiguration readFromFile(String configPath) throws IOException {
         JsonReader jsonReader = new JsonReader(new FileReader(configPath));
         return new Gson().fromJson(jsonReader, ServerConfiguration.class);
     }
 
+    /**
+     * Class constructor
+     * Called by the configuration deserializer
+     *
+     * @param port The server port
+     * @param logPath The log path
+     * @param deckPath The deck configuration path
+     */
     private ServerConfiguration(Integer port, String logPath, String deckPath) {
         this.port = port;
         this.logPath = logPath;
         this.deckPath = deckPath;
     }
 
+    /**
+     * Creates a new <code>ServerConfiguration</code> with the specified port
+     * @param port The port
+     * @return The new configuration
+     */
     public ServerConfiguration withPort(int port) {
         return new ServerConfiguration(port, logPath, deckPath);
     }
 
+    /**
+     * Creates a new <code>ServerConfiguration</code> with the specified log path
+     * @param logPath The log path
+     * @return The new configuration
+     */
     public ServerConfiguration withLogPath(String logPath) {
         return new ServerConfiguration(port, logPath, deckPath);
     }
 
+    /**
+     * Creates a new <code>ServerConfiguration</code> with the specified deck path
+     * @param deckPath The deck path
+     * @return The new configuration
+     */
     public ServerConfiguration withDeckPath(String deckPath) {
         return new ServerConfiguration(port, logPath, deckPath);
     }
 
+    /**
+     * The server port, or <code>DEFAULT_PORT</code> if not configured
+     * @return The port
+     */
     public Integer getPort() {
         if (port == null) {
             return DEFAULT_PORT;
@@ -116,6 +218,10 @@ public class ServerConfiguration {
         return port;
     }
 
+    /**
+     * The server log path, or <code>DEFAULT_LOG_PATH</code> if not configured
+     * @return The log path
+     */
     public String getLogPath() {
         if (logPath == null) {
             return DEFAULT_LOG_PATH;
@@ -124,6 +230,13 @@ public class ServerConfiguration {
         return logPath;
     }
 
+    /**
+     * Loads the deck configuration from the jar of the deck path (if specified)
+     *
+     * @return The loaded deck
+     * @throws ConfigurationException if invalid configuration parameters are found
+     * @throws IOException if the deck file can't be loaded
+     */
     @SuppressWarnings("unchecked")
     public Deck loadDeck() throws ConfigurationException, IOException {
         Reader reader;

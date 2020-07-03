@@ -12,8 +12,18 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class WorkerSpawnEvent extends AbstractWorkerEvent {
 
+    /**
+     * The worker position
+     */
     private final Coordinates position;
 
+    /**
+     * Class constructor
+     *
+     * @param player The owner
+     * @param id The worker id
+     * @param position The worker position
+     */
     public WorkerSpawnEvent(String player, int id, Coordinates position) {
         super(player, id);
 
@@ -24,11 +34,17 @@ public class WorkerSpawnEvent extends AbstractWorkerEvent {
         return position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getWorkerSpawnEventObservable().notifyObservers(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getWorkerSpawnEventObservable().notifyObservers(this);

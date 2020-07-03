@@ -12,8 +12,19 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class WorkerForceEvent extends AbstractWorkerInteractEvent {
 
+    /**
+     * The worker id of the target to be forced
+     */
     private final int target;
 
+    /**
+     * Class constructor
+     *
+     * @param player The owner
+     * @param worker The worker id
+     * @param target The target worker id
+     * @param destination The target destination
+     */
     public WorkerForceEvent(String player, int worker, int target, Coordinates destination) {
         super(player, worker, destination);
 
@@ -24,11 +35,17 @@ public class WorkerForceEvent extends AbstractWorkerInteractEvent {
         return target;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getWorkerForceEventObservable().notifyObservers(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getWorkerForceEventObservable().notifyObservers(this);

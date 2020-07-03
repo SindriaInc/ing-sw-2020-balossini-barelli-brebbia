@@ -8,10 +8,18 @@ import it.polimi.ingsw.controller.ResponseEventProvider;
  */
 public class ResponseInvalidStateEvent extends AbstractResponseEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that will receive the event
+     */
     public ResponseInvalidStateEvent(String player) {
         super(player);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ResponseEventProvider provider) {
         provider.getResponseInvalidStateEventObservable().notifyObservers(this);

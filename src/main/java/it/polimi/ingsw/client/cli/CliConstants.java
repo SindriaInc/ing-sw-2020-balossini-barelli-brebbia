@@ -55,7 +55,7 @@ public class CliConstants {
 
     public static final int TERM_WIDTH = 120;
 
-    public static final String CLEAR = System.lineSeparator().repeat(TERM_HEIGHT);
+    public static final String CLEAR = System.lineSeparator().repeat(TERM_HEIGHT * 10);
 
     public static final int HEADER_SPACING = 1;
 

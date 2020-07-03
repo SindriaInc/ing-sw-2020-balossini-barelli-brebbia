@@ -3,6 +3,11 @@ package it.polimi.ingsw.common;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A collection of observers that can be registered and notified when an event of type <code>T</code> occurs
+ *
+ * @param <T> The event type
+ */
 public class Observable<T> {
 
     /**

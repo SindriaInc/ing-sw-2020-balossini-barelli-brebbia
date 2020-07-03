@@ -16,8 +16,8 @@ public abstract class AbstractGuiView {
     private final GuiAssets assets;
 
     /**
-     * Class constructor, set hte assets
-     * @param assets
+     * Abstract class constructor, sets the assets
+     * @param assets The assets
      */
     public AbstractGuiView(GuiAssets assets) {
         this.assets = assets;

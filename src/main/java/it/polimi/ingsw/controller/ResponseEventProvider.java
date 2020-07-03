@@ -8,6 +8,11 @@ import it.polimi.ingsw.common.event.response.ResponseInvalidParametersEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidPlayerEvent;
 import it.polimi.ingsw.common.event.response.ResponseInvalidStateEvent;
 
+/**
+ * The provider of Observables for response events
+ *
+ * Response events are events sent by the controller (server)
+ */
 public class ResponseEventProvider implements IResponseEventProvider {
 
     /**

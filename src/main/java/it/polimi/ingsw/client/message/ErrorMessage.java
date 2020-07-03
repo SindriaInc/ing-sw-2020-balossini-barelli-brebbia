@@ -35,6 +35,11 @@ public class ErrorMessage {
         return errorType;
     }
 
+    /**
+     * Obtains the message related that was being sent
+     *
+     * @return the message, or <code>Optional.empty()</code> if no message was being sent
+     */
     public Optional<String> getMessage() {
         return Optional.ofNullable(message);
     }

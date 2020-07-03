@@ -56,7 +56,7 @@ public abstract class AbstractGuiFieldsView extends AbstractGuiView {
     private Parent generatedView;
 
     /**
-     * Class constructor, set labels, prompt texts and assets
+     * Abstract class constructor, set labels, prompt texts and assets
      * @param images The assets
      * @param stringLabel The text label
      * @param stringPrompt The text prompt string

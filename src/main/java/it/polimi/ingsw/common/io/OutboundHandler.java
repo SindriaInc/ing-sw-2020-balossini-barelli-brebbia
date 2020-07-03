@@ -6,6 +6,10 @@ import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Consumer;
 
+/**
+ * An OutboundHandler takes messages in a thread-safe way and prints them to the <code>OutputStream</code> using a
+ * single thread
+ */
 public class OutboundHandler implements Runnable {
 
     /**
@@ -28,11 +32,20 @@ public class OutboundHandler implements Runnable {
      */
     private boolean active = true;
 
+    /**
+     * Class constructor
+     *
+     * @param outputStream The output stream
+     * @param errorMessageConsumer The error messages handler
+     */
     public OutboundHandler(OutputStream outputStream, Consumer<String> errorMessageConsumer) {
         this.outputStream = outputStream;
         this.errorMessageConsumer = errorMessageConsumer;
     }
 
+    /**
+     * Takes messages to be sent and prints them
+     */
     @Override
     public void run() {
         while (active) {

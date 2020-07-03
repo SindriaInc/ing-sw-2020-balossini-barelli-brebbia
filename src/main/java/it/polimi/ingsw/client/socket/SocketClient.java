@@ -82,7 +82,6 @@ public class SocketClient implements IClient {
         socketHandler.schedulePacket(message);
     }
 
-
     /**
      * @see IClient#registerHandler(IMessageHandler)
      */
@@ -91,7 +90,6 @@ public class SocketClient implements IClient {
         packetHandlers.add(packetHandler);
     }
 
-
     /**
      * @see IClient#registerHandler(IErrorHandler)
      */
@@ -99,7 +97,6 @@ public class SocketClient implements IClient {
     public void registerHandler(IErrorHandler errorHandler) {
         errorHandlers.add(errorHandler);
     }
-
 
     /**
      * @see IClient#shutdown()

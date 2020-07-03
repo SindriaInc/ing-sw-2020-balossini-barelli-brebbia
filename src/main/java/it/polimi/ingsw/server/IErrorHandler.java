@@ -2,6 +2,9 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.message.ErrorMessage;
 
+/**
+ * Handles an error message produced by the server related to a message sent to a player
+ */
 public interface IErrorHandler {
 
     /**

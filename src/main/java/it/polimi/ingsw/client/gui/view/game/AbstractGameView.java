@@ -15,12 +15,12 @@ public abstract class AbstractGameView extends AbstractGuiView {
     private GameState state;
 
     /**
-     * Class constructor, set assets and the game state
-     * @param state
-     * @param images
+     * Abstract class constructor, set assets and the game state
+     * @param state The game state
+     * @param assets The gui assets
      */
-    public AbstractGameView(GameState state, GuiAssets images) {
-        super(images);
+    public AbstractGameView(GameState state, GuiAssets assets) {
+        super(assets);
 
         this.state = state;
     }

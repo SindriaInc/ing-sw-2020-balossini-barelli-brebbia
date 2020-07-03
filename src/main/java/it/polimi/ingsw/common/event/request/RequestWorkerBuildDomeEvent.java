@@ -11,10 +11,20 @@ import java.util.List;
  */
 public class RequestWorkerBuildDomeEvent extends AbstractRequestWorkerInteractEvent {
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that the request is targeted to
+     * @param worker The worker that can be moved
+     * @param availableDestinations The list of coordinates where the worker can build a dome
+     */
     public RequestWorkerBuildDomeEvent(String player, int worker, List<Coordinates> availableDestinations) {
         super(player, worker, availableDestinations);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getRequestWorkerBuildDomeEventObservable().notifyObservers(this);

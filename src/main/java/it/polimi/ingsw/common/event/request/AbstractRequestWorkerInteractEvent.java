@@ -9,9 +9,23 @@ import java.util.List;
  */
 public abstract class AbstractRequestWorkerInteractEvent extends AbstractRequestEvent {
 
+    /**
+     * The worker that can interact
+     */
     private final int worker;
+
+    /**
+     * The destinations available for the interaction
+     */
     private final List<Coordinates> availableDestinations;
 
+    /**
+     * Abstract class constructor
+     *
+     * @param player The player that the request is targeted to
+     * @param worker The worker that can be moved
+     * @param availableDestinations The list of coordinates that the worker can interact with
+     */
     public AbstractRequestWorkerInteractEvent(String player, int worker, List<Coordinates> availableDestinations) {
         super(player);
 
@@ -23,8 +37,13 @@ public abstract class AbstractRequestWorkerInteractEvent extends AbstractRequest
         return worker;
     }
 
+    /**
+     * A copy of the list of available destinations
+     *
+     * @return The list
+     */
     public List<Coordinates> getAvailableDestinations() {
-        return availableDestinations;
+        return List.copyOf(availableDestinations);
     }
 
 }

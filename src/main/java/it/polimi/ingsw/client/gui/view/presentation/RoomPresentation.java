@@ -30,7 +30,7 @@ public class RoomPresentation extends AbstractPreGamePresentation {
      * @param room The room name
      * @param count The room number of people
      * @param start The start text
-     * @return
+     * @return The generated pane
      */
     public Pane generatePresentation(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height, Text room, Text count, Text start) {
         styleTitle(room);

@@ -4,6 +4,10 @@ import java.io.InputStream;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
+/**
+ * An InboundHandler scans for messages from an InputStream and passes them to a message consumer when they are ready,
+ * always using a single thread
+ */
 public class InboundHandler implements Runnable {
 
     /**
@@ -21,11 +25,20 @@ public class InboundHandler implements Runnable {
      */
     private boolean active = true;
 
+    /**
+     * Class constructor
+     *
+     * @param inputStream The input stream
+     * @param inboundMessageConsumer The inbound message handler
+     */
     public InboundHandler(InputStream inputStream, Consumer<String> inboundMessageConsumer) {
         this.inputStream = inputStream;
         this.inboundMessageConsumer = inboundMessageConsumer;
     }
 
+    /**
+     * Scans for messages in the input stream
+     */
     @Override
     public void run() {
         try {
@@ -41,6 +54,9 @@ public class InboundHandler implements Runnable {
         }
     }
 
+    /**
+     * Shuts down the handler, stopping any active scan
+     */
     public void shutdown() {
         active = false;
     }

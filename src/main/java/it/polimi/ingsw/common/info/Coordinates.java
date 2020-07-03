@@ -2,18 +2,27 @@ package it.polimi.ingsw.common.info;
 
 import java.util.Objects;
 
+/**
+ * An object representing a pair of x and y variables
+ */
 public class Coordinates {
-
-    /**
-     * The row
-     */
-    private final int x;
 
     /**
      * The column
      */
+    private final int x;
+
+    /**
+     * The row
+     */
     private final int y;
 
+    /**
+     * Class constructor
+     *
+     * @param x The column
+     * @param y The row
+     */
     public Coordinates(int x, int y) {
         this.x = x;
         this.y = y;

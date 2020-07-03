@@ -2,6 +2,9 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.message.InboundMessage;
 
+/**
+ * Handles a message received from a player
+ */
 public interface IMessageHandler {
 
     /**

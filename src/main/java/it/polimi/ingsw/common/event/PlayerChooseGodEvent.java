@@ -11,8 +11,17 @@ import it.polimi.ingsw.view.ViewEventProvider;
  */
 public class PlayerChooseGodEvent extends AbstractPlayerEvent {
 
+    /**
+     * The god chosen by the player
+     */
     private final String god;
 
+    /**
+     * Class constructor
+     *
+     * @param player The player that is choosing the god
+     * @param god The chosen god
+     */
     public PlayerChooseGodEvent(String player, String god) {
         super(player);
 
@@ -23,11 +32,17 @@ public class PlayerChooseGodEvent extends AbstractPlayerEvent {
         return god;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ModelEventProvider provider) {
         provider.getPlayerChooseGodEventObservable().notifyObservers(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void accept(ViewEventProvider provider) {
         provider.getPlayerChooseGodEventObservable().notifyObservers(this);
