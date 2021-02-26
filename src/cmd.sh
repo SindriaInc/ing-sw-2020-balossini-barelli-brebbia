@@ -12,4 +12,5 @@ if [ "$TZ" != "" ] || [ "$TZ" != "Europe/Rome" ]; then
 fi
 
 # App services
-screen -dm -S server java -jar /var/www/app/Santorini.jar server -port ${SANTORINI_SERVER_PORT}
+#screen -dm -S server java -jar /var/www/app/Santorini.jar server -port ${SANTORINI_SERVER_PORT}
+java -jar /var/www/app/Santorini.jar server -port ${SANTORINI_SERVER_PORT}
