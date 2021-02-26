@@ -1,4 +1,4 @@
-image: sindria/image-builder:latest
+image: sindriainc/image-builder:latest
 
 definitions:
   steps:
@@ -11,7 +11,7 @@ definitions:
           - NC='\033[0m' #No Color
           - NOW=$(date "+%Y-%m-%d_%H-%M-%S")
   caches:
-    nodejs: src/node_modules
+    maven: src/deliverables
     ssh: ~/.ssh
 
 pipelines:
@@ -21,29 +21,28 @@ pipelines:
       - step:
           <<: *colors
           name: Build Dependencies
-          image: sindria/maven:1.0.0
+          image: sindriainc/openjdk:1.1.0-14
           deployment: Production
           script:
             - echo -e "${BLUE}Building dependencies...${NC}"
+            - cd src
+            - mvn clean
             - cowsay -f tux "Build Success"
           caches:
-            - nodejs
+            - maven
           artifacts:
-            - "src/vendor/**"
-            - "src/node_modules/**"
-            - "src/public/**"
-            - "src/.env"
+            - "src/deliverables/jar/*.jar"
       - step:
           <<: *colors
           name: Test App
-          image: sindria/openjdk:1.0.0-14
+          image: sindriainc/openjdk:1.1.0-14
           script:
             - echo -e "${BLUE}Testing app...${NC}"
             - cd src
             - ls -la
             - cowsay -f tux "Test Success"
           caches:
-            - nodejs
+            - maven
       - step:
           <<: *colors
           name: Build Image
@@ -56,7 +55,7 @@ pipelines:
             - docker
           caches:
             - docker
-            - nodejs
+            - maven
           artifacts:
             - "*.tar"
       - step:
@@ -84,7 +83,7 @@ pipelines:
       - step:
           <<: *colors
           name: Init Deploy
-          image: sindria/deployer:latest
+          image: sindriainc/deployer:latest
           trigger: manual
           script:
             - SERVER=${PRODUCTION_SERVER}
@@ -109,7 +108,7 @@ pipelines:
       - step:
           <<: *colors
           name: Deploy App
-          image: sindria/deployer:latest
+          image: sindriainc/deployer:latest
           trigger: manual
           script:
             - SERVER=${PRODUCTION_SERVER}
@@ -133,7 +132,7 @@ pipelines:
       - step:
           <<: *colors
           name: Logs App
-          image: sindria/deployer:latest
+          image: sindriainc/deployer:latest
           trigger: manual
           script:
             - SERVER=${PRODUCTION_SERVER}

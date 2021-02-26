@@ -5,6 +5,7 @@ services:
   app:
     image: "sindriainc/openjdk:${OPENJDK_TAG}-${OPENJDK_VERSION}"
     container_name: "${APP_NAME}"
+    user: sindria
     command: /bin/bash -c "rmdir /var/www/app; ln -s /home/sindria/Projects/Sindria/giovannibrebbia/ing-sw-2020-balossini-barelli-brebbia/src /var/www/app; tail -f /dev/null"
     volumes:
       #- "${CODE_PATH}:${APP_CODE_PATH}"
