@@ -1,4 +1,4 @@
-FROM sindriainc/nginx-php:1.5.0-7.4-production
+FROM sindriainc/openjdk:1.0.0-14
 
 WORKDIR /var/www/app
 
@@ -7,8 +7,8 @@ ARG HOST_USER_UID
 ARG TIMEZONE
 
 LABEL \
-	name="tca-backend" \
-	image="registry.sindria.org/tennisclubarzachena-team/tca-backend" \
+	name="ing-sw-2020-balossini-barelli-brebbia" \
+	image="sindriainc/ing-sw-2020-balossini-barelli-brebbia" \
 	tag="${TAG_VERSION}${TAG_SUFFIX}" \
 	vendor="sindria"
 
@@ -24,3 +24,5 @@ COPY ./ /var/www/app
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
     chmod -R 770 /var/www/app && \
     chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
+
+CMD ["app", "&"]
