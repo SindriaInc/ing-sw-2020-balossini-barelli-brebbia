@@ -26,5 +26,5 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &
     chmod -R 770 /var/www/app && \
     chown -R ${SINDRIA_USER}:${SINDRIA_USER} /var/www/app
 
-COPY ./cmd.sh /cmd.sh
-CMD ["bash", "-c", "/cmd.sh"]
+COPY cmd.sh /cmd.sh
+CMD ["/bin/bash", "/cmd.sh"]
