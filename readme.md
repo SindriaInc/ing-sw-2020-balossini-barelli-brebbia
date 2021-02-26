@@ -1,11 +1,11 @@
-# Tennis Club Arzachena - Backend
+# ing-sw-2020-balossini-barelli-brebbia - Game
 
-This repo is for api gateway of tennisclubarzachena.it webapp.
+This repo is a fork of ing-sw-2020-balossini-barelli-brebbia game for dockerized environment.
 
 ## Setup Development Environment
 
-- Clone this repo: `git clone git@git.sindria.org:tennisclubarzachena-team/tca-backend.git`
-- Move into it: `cd tca-backend`
+- Clone this repo: `git clone git@github.com:SindriaInc/ing-sw-2020-balossini-barelli-brebbia.git`
+- Move into it: `cd ing-sw-2020-balossini-barelli-brebbia`
 - Setup env: `cp .env.local .env`
 - Setup docker compose: `cp docker-compose.local.yml docker-compose.yml`
 - Start environment: `docker-compose up -d`
