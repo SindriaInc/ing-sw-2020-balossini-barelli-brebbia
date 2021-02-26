@@ -1,4 +1,4 @@
-.idea/
-target/
-*.iml
-*.log
+/.idea
+
+.env
+docker-compose.yml
