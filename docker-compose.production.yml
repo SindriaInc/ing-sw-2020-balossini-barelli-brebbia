@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  # =app
+  app:
+    image: "sindriainc/ing-sw-2020-balossini-barelli-brebbia:${APP_VERSION}"
+    container_name: "${APP_NAME}"
+    #user: sindria
+    environment:
+      - SANTORINI_SERVER_PORT=${SANTORINI_SERVER_PORT} 
+    hostname: "${APP_NAME}.local"
+    ports:
+      - ${SANTORINI_SERVER_PORT}:${SANTORINI_SERVER_PORT}
+    networks:
+      default:
+        ipv4_address: "${APP_IP_ADDRESS}"
+        aliases:
+          - "${APP_NAME}.local"
+    #networks:
+    #  vpc_<app-name>:
+    #    ipv4_address: "${APP_IP_ADDRESS}"
+    #    aliases:
+    #     - "${APP_NAME}.local"
+
+
+# =networks
+networks:
+  default:
+    name: "vpc_${APP_NAME}"
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET}
+
+# =networks
+#networks:
+#  vpc_<app-name>:
+#    external: true
